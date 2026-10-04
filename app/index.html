@@ -1,63 +1,152 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="night">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#0B0D13">
+<meta name="theme-color" content="#0B0D13" id="metaThemeColor">
 <meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>倒计时</title>
 <style>
 /* ==========================================================
- * 倒计时 v2 —— 深色高级感设计系统
- * 兼容目标：Chromium 55+（无 flex gap / clamp / backdrop-filter）
+ * 倒计时 v3 —— 多主题设计系统（星夜/翡翠/暖阳/樱粉/素墨）
+ * 兼容目标：Chromium 55+（无 flex gap / clamp / backdrop-filter / inset）
  * ========================================================== */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-:root {
-  --bg: #0B0D13;
-  --bg-soft: #10131B;
-  --surface: rgba(255, 255, 255, 0.045);
-  --surface-2: rgba(255, 255, 255, 0.08);
-  --line: rgba(255, 255, 255, 0.09);
-  --line-2: rgba(255, 255, 255, 0.16);
-  --t1: #F4F6FA;
-  --t2: #9AA3B4;
-  --t3: #5D6577;
-  --brand: #8B7CFF;
-  --brand-soft: rgba(139, 124, 255, 0.16);
-  --brand-line: rgba(139, 124, 255, 0.38);
-  --teal: #5EEAD4;
-  --amber: #FFC24B;
-  --coral: #FF7A6B;
-  --red: #FF5D5D;
-  --radius: 16px;
-  --dock-h: 60px;
+/* ---------- 主题：星夜（默认·深色） ---------- */
+:root, html[data-theme="night"] {
+  --bg: #0B0D13; --bg-soft: #10131B;
+  --chrome: rgba(11, 13, 19, 0.88); --dock-bg: rgba(16, 19, 27, 0.94);
+  --modal-bg: #141824; --bar-bg: rgba(16, 19, 27, 0.96);
+  --card: rgba(255, 255, 255, 0.045); --card-2: rgba(255, 255, 255, 0.08);
+  --card-open: rgba(139, 124, 255, 0.055);
+  --line: rgba(255, 255, 255, 0.09); --line-2: rgba(255, 255, 255, 0.16);
+  --t1: #F4F6FA; --t2: #9AA3B4; --t3: #5D6577;
+  --brand: #8B7CFF; --brand-2: #5EEAD4; --brand-txt: #B4A7FF; --link-txt: #A99BFF;
+  --brand-soft: rgba(139, 124, 255, 0.16); --brand-line: rgba(139, 124, 255, 0.38);
+  --input: rgba(0, 0, 0, 0.24); --ring-bg: rgba(255, 255, 255, 0.08); --cb-border: rgba(255, 255, 255, 0.28);
+  --btn-grad: linear-gradient(135deg, #7C6BFF 0%, #9B8FFF 52%, #5EEAD4 135%);
+  --btn-shadow: rgba(124, 107, 255, 0.32);
+  --glow: radial-gradient(620px 420px at 88% -12%, rgba(139, 124, 255, 0.17), transparent 62%),
+          radial-gradient(520px 400px at -12% 34%, rgba(94, 234, 212, 0.07), transparent 60%),
+          radial-gradient(760px 540px at 50% 112%, rgba(139, 124, 255, 0.11), transparent 62%);
+  --u-red: #FF5D5D; --u-coral: #FF7A6B; --u-amber: #FFC24B; --u-violet: #8B7CFF; --u-teal: #5EEAD4;
+  --fit-bg: rgba(94, 234, 212, 0.12); --fit-txt: #7CF0DE;
+  --unsure-bg: rgba(255, 194, 75, 0.13); --unsure-txt: #FFD37A;
+  --mis-bg: rgba(255, 93, 93, 0.13); --mis-txt: #FF9C93;
+  --danger-txt: #FF8A80; --ok-txt: #7CF0DE;
+  --theme-color: #0B0D13;
+}
+/* ---------- 主题：翡翠（浅色·绿） ---------- */
+html[data-theme="emerald"] {
+  --bg: #EFF7F2; --bg-soft: #E6F1EA;
+  --chrome: rgba(239, 247, 242, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
+  --card: #FFFFFF; --card-2: #EDF4EF; --card-open: rgba(15, 169, 113, 0.06);
+  --line: rgba(23, 37, 30, 0.09); --line-2: rgba(23, 37, 30, 0.16);
+  --t1: #17251E; --t2: #5A6E64; --t3: #93A69B;
+  --brand: #0FA971; --brand-2: #34D399; --brand-txt: #0B8A5E; --link-txt: #0B8A5E;
+  --brand-soft: rgba(15, 169, 113, 0.12); --brand-line: rgba(15, 169, 113, 0.35);
+  --input: #F0F6F2; --ring-bg: rgba(23, 37, 30, 0.08); --cb-border: rgba(23, 37, 30, 0.22);
+  --btn-grad: linear-gradient(135deg, #0FA971 0%, #34D399 100%);
+  --btn-shadow: rgba(15, 169, 113, 0.30);
+  --glow: radial-gradient(620px 420px at 88% -12%, rgba(15, 169, 113, 0.10), transparent 62%),
+          radial-gradient(520px 400px at -12% 34%, rgba(52, 211, 153, 0.08), transparent 60%),
+          radial-gradient(760px 540px at 50% 112%, rgba(15, 169, 113, 0.07), transparent 62%);
+  --u-red: #E5484D; --u-coral: #F06B5A; --u-amber: #DD9A22; --u-violet: #7C6BFF; --u-teal: #0D9488;
+  --fit-bg: rgba(13, 148, 136, 0.12); --fit-txt: #0B7A70;
+  --unsure-bg: rgba(221, 154, 34, 0.14); --unsure-txt: #9A6E10;
+  --mis-bg: rgba(229, 72, 77, 0.12); --mis-txt: #C53438;
+  --danger-txt: #D63A3F; --ok-txt: #0B7A70;
+  --theme-color: #EFF7F2;
+}
+/* ---------- 主题：暖阳（浅色·橙） ---------- */
+html[data-theme="solar"] {
+  --bg: #FDF6EE; --bg-soft: #F8EDDF;
+  --chrome: rgba(253, 246, 238, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
+  --card: #FFFFFF; --card-2: #FBF0E3; --card-open: rgba(249, 115, 22, 0.06);
+  --line: rgba(49, 36, 26, 0.09); --line-2: rgba(49, 36, 26, 0.16);
+  --t1: #31241A; --t2: #77604C; --t3: #A89781;
+  --brand: #F97316; --brand-2: #FBBF24; --brand-txt: #C2540A; --link-txt: #C2540A;
+  --brand-soft: rgba(249, 115, 22, 0.12); --brand-line: rgba(249, 115, 22, 0.35);
+  --input: #FBF1E6; --ring-bg: rgba(49, 36, 26, 0.08); --cb-border: rgba(49, 36, 26, 0.22);
+  --btn-grad: linear-gradient(135deg, #F97316 0%, #FBBF24 100%);
+  --btn-shadow: rgba(249, 115, 22, 0.30);
+  --glow: radial-gradient(620px 420px at 88% -12%, rgba(249, 115, 22, 0.10), transparent 62%),
+          radial-gradient(520px 400px at -12% 34%, rgba(251, 191, 36, 0.10), transparent 60%),
+          radial-gradient(760px 540px at 50% 112%, rgba(249, 115, 22, 0.07), transparent 62%);
+  --u-red: #E5484D; --u-coral: #F06B5A; --u-amber: #D98E1B; --u-violet: #8B5CF6; --u-teal: #0D9488;
+  --fit-bg: rgba(13, 148, 136, 0.12); --fit-txt: #0B7A70;
+  --unsure-bg: rgba(217, 142, 27, 0.14); --unsure-txt: #8F5F0A;
+  --mis-bg: rgba(229, 72, 77, 0.12); --mis-txt: #C53438;
+  --danger-txt: #D63A3F; --ok-txt: #0B7A70;
+  --theme-color: #FDF6EE;
+}
+/* ---------- 主题：樱粉（浅色·粉） ---------- */
+html[data-theme="sakura"] {
+  --bg: #FDF2F6; --bg-soft: #F9E7EE;
+  --chrome: rgba(253, 242, 246, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
+  --card: #FFFFFF; --card-2: #FAE9F0; --card-open: rgba(236, 72, 153, 0.06);
+  --line: rgba(51, 32, 42, 0.09); --line-2: rgba(51, 32, 42, 0.16);
+  --t1: #33202A; --t2: #7A5A6B; --t3: #AB8E9C;
+  --brand: #EC4899; --brand-2: #F9A8D4; --brand-txt: #C42B75; --link-txt: #C42B75;
+  --brand-soft: rgba(236, 72, 153, 0.12); --brand-line: rgba(236, 72, 153, 0.35);
+  --input: #FBEFF4; --ring-bg: rgba(51, 32, 42, 0.08); --cb-border: rgba(51, 32, 42, 0.22);
+  --btn-grad: linear-gradient(135deg, #EC4899 0%, #F9A8D4 100%);
+  --btn-shadow: rgba(236, 72, 153, 0.28);
+  --glow: radial-gradient(620px 420px at 88% -12%, rgba(236, 72, 153, 0.10), transparent 62%),
+          radial-gradient(520px 400px at -12% 34%, rgba(249, 168, 212, 0.12), transparent 60%),
+          radial-gradient(760px 540px at 50% 112%, rgba(236, 72, 153, 0.07), transparent 62%);
+  --u-red: #E5484D; --u-coral: #F06B5A; --u-amber: #DD9A22; --u-violet: #8B5CF6; --u-teal: #0D9488;
+  --fit-bg: rgba(13, 148, 136, 0.12); --fit-txt: #0B7A70;
+  --unsure-bg: rgba(221, 154, 34, 0.14); --unsure-txt: #9A6E10;
+  --mis-bg: rgba(229, 72, 77, 0.12); --mis-txt: #C53438;
+  --danger-txt: #D63A3F; --ok-txt: #0B7A70;
+  --theme-color: #FDF2F6;
+}
+/* ---------- 主题：素墨（极简·黑白） ---------- */
+html[data-theme="mono"] {
+  --bg: #FAFAF8; --bg-soft: #F1F1EE;
+  --chrome: rgba(250, 250, 248, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
+  --card: #FFFFFF; --card-2: #F1F1EE; --card-open: rgba(31, 31, 35, 0.05);
+  --line: rgba(26, 26, 26, 0.10); --line-2: rgba(26, 26, 26, 0.18);
+  --t1: #1A1A1A; --t2: #52525B; --t3: #A1A1AA;
+  --brand: #1F1F23; --brand-2: #71717A; --brand-txt: #1F1F23; --link-txt: #3F3F46;
+  --brand-soft: rgba(31, 31, 35, 0.08); --brand-line: rgba(31, 31, 35, 0.30);
+  --input: #F2F2EF; --ring-bg: rgba(26, 26, 26, 0.08); --cb-border: rgba(26, 26, 26, 0.24);
+  --btn-grad: linear-gradient(135deg, #27272A 0%, #52525B 100%);
+  --btn-shadow: rgba(31, 31, 35, 0.22);
+  --glow: radial-gradient(620px 420px at 88% -12%, rgba(31, 31, 35, 0.05), transparent 62%),
+          radial-gradient(520px 400px at -12% 34%, rgba(113, 113, 122, 0.06), transparent 60%),
+          radial-gradient(760px 540px at 50% 112%, rgba(31, 31, 35, 0.04), transparent 62%);
+  --u-red: #E5484D; --u-coral: #F06B5A; --u-amber: #DD9A22; --u-violet: #6D5AE8; --u-teal: #0D9488;
+  --fit-bg: rgba(13, 148, 136, 0.12); --fit-txt: #0B7A70;
+  --unsure-bg: rgba(217, 142, 27, 0.14); --unsure-txt: #8F5F0A;
+  --mis-bg: rgba(229, 72, 77, 0.12); --mis-txt: #C53438;
+  --danger-txt: #D63A3F; --ok-txt: #0B7A70;
+  --theme-color: #FAFAF8;
 }
 
 html, body { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Noto Sans SC", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--t1);
-  font-size: 14px;
-  line-height: 1.55;
+  background: var(--bg); color: var(--t1);
+  font-size: 14px; line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
-/* 背景氛围光 */
 body::before {
-  content: "";
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background:
-    radial-gradient(620px 420px at 88% -12%, rgba(139, 124, 255, 0.17), transparent 62%),
-    radial-gradient(520px 400px at -12% 34%, rgba(94, 234, 212, 0.07), transparent 60%),
-    radial-gradient(760px 540px at 50% 112%, rgba(139, 124, 255, 0.11), transparent 62%);
+  content: ""; position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 0; pointer-events: none;
+  background: var(--glow);
 }
-::selection { background: rgba(139, 124, 255, 0.35); }
+::selection { background: var(--brand-soft); }
 ::-webkit-scrollbar { width: 0; height: 0; }
-a { color: #A99BFF; text-decoration: none; }
+a { color: var(--link-txt); text-decoration: none; }
 button { font-family: inherit; border: 0; background: none; color: inherit; cursor: pointer; }
 input, select, textarea { font-family: inherit; color: var(--t1); }
 
@@ -71,31 +160,35 @@ input, select, textarea { font-family: inherit; color: var(--t1); }
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 18px 12px;
-  background: rgba(11, 13, 19, 0.88);
-  border-bottom: 1px solid var(--line);
+  background: var(--chrome); border-bottom: 1px solid var(--line);
 }
 .brand { display: flex; align-items: center; }
 .brand-mark {
   width: 30px; height: 30px; border-radius: 9px; margin-right: 10px;
-  background: linear-gradient(135deg, #7C6BFF 0%, #9B8FFF 52%, #5EEAD4 135%);
+  background: var(--btn-grad);
   display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 14px rgba(124, 107, 255, 0.38);
+  box-shadow: 0 4px 14px var(--btn-shadow);
 }
 .brand-mark svg { width: 17px; height: 17px; }
 .brand-text { font-size: 17px; font-weight: 800; letter-spacing: 0.5px; }
+.top-actions { display: flex; align-items: center; }
 .urgent-chip {
   display: flex; align-items: center;
   background: rgba(255, 122, 107, 0.13); border: 1px solid rgba(255, 122, 107, 0.35);
-  color: #FFB3A9; border-radius: 999px; padding: 4px 11px; font-size: 12px; font-weight: 600;
+  color: var(--u-coral); border-radius: 999px; padding: 4px 11px; font-size: 12px; font-weight: 600;
+}
+html[data-theme="emerald"] .urgent-chip, html[data-theme="solar"] .urgent-chip,
+html[data-theme="sakura"] .urgent-chip, html[data-theme="mono"] .urgent-chip {
+  color: #C53438; background: rgba(229, 72, 77, 0.10); border-color: rgba(229, 72, 77, 0.30);
 }
 .urgent-chip .dot {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--coral); margin-right: 6px;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--u-coral); margin-right: 6px;
   animation: pulse 1.6s ease-in-out infinite;
 }
 @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.75); } }
 
 /* ---------- 视图与页面结构 ---------- */
-main { padding: 18px 16px calc(var(--dock-h) + 58px); }
+main { padding: 18px 16px calc(var(--dock-h, 60px) + 58px); }
 .view { display: none; animation: fadeUp 0.32s ease both; }
 .view.on { display: block; }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
@@ -103,26 +196,32 @@ main { padding: 18px 16px calc(var(--dock-h) + 58px); }
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
 .page-title { font-size: 21px; font-weight: 800; letter-spacing: 0.3px; }
 .page-sub { font-size: 12px; color: var(--t3); margin-top: 2px; }
-
-.card {
-  background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--radius); overflow: hidden;
+.head-btns { display: flex; align-items: center; margin-left: 8px; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 10px; margin-left: 8px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card); border: 1px solid var(--line); color: var(--t2);
+  transition: background 0.15s ease;
 }
-.card.pad { padding: 15px 16px; }
-.card + .card { margin-top: 12px; }
-.card-list .card { margin-bottom: 12px; }
+.icon-btn:active { background: var(--card-2); }
+.icon-btn.on { background: var(--brand-soft); border-color: var(--brand-line); color: var(--brand-txt); }
 
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+.card.pad { padding: 15px 16px; }
+.card + .card, .card + .btn-primary, .btn-primary + .card { margin-top: 12px; }
 .field-label { font-size: 12px; font-weight: 600; color: var(--t2); letter-spacing: 0.6px; margin-bottom: 9px; }
+.mt { margin-top: 12px; }
 
 /* ---------- 通用按钮 ---------- */
 .btn-primary {
   display: flex; align-items: center; justify-content: center;
   width: 100%; padding: 13px 16px; border-radius: 13px;
-  background: linear-gradient(135deg, #7C6BFF 0%, #9B8FFF 52%, #5EEAD4 135%);
+  background: var(--btn-grad);
   color: #fff; font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
-  box-shadow: 0 8px 24px rgba(124, 107, 255, 0.32);
+  box-shadow: 0 8px 24px var(--btn-shadow);
   transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
+html[data-theme="mono"] .btn-primary { color: #fff; }
 .btn-primary:active { transform: scale(0.975); }
 .btn-primary:disabled { opacity: 0.55; box-shadow: none; }
 .btn-primary svg { margin-right: 8px; }
@@ -132,13 +231,13 @@ main { padding: 18px 16px calc(var(--dock-h) + 58px); }
 .btn-ghost {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
-  background: var(--surface); border: 1px solid var(--line-2); color: var(--t1);
+  background: var(--card); border: 1px solid var(--line-2); color: var(--t1);
   transition: background 0.15s ease, transform 0.12s ease;
 }
-.btn-ghost:active { transform: scale(0.96); background: var(--surface-2); }
-.btn-danger-txt { color: #FF8A80; font-size: 13px; font-weight: 600; padding: 8px 0; display: inline-flex; align-items: center; }
+.btn-ghost:active { transform: scale(0.96); background: var(--card-2); }
+.btn-danger-txt { color: var(--danger-txt); font-size: 13px; font-weight: 600; padding: 8px 0; display: inline-flex; align-items: center; }
 .btn-danger-txt svg { margin-right: 5px; }
-.mini-link { font-size: 12px; color: #A99BFF; padding: 6px 8px; }
+.mini-link { font-size: 12px; color: var(--link-txt); padding: 6px 8px; }
 .mini-link:active { opacity: 0.6; }
 
 /* ---------- 紧急横幅 ---------- */
@@ -148,13 +247,15 @@ main { padding: 18px 16px calc(var(--dock-h) + 58px); }
   border: 1px solid rgba(255, 122, 107, 0.32);
   display: flex; align-items: center; justify-content: space-between;
 }
-.urgent-banner .ub-txt { font-size: 13px; color: #FFC9C2; }
-.urgent-banner .ub-txt b { color: #FF9C90; font-weight: 700; }
-.urgent-banner .ub-close { margin-left: 10px; color: rgba(255, 194, 194, 0.65); display: flex; }
+.urgent-banner .ub-txt { font-size: 13px; color: var(--u-coral); }
+.urgent-banner .ub-txt b { color: var(--u-coral); font-weight: 700; }
+html[data-theme="emerald"] .ub-txt, html[data-theme="solar"] .ub-txt,
+html[data-theme="sakura"] .ub-txt, html[data-theme="mono"] .ub-txt { color: #C53438; }
+.urgent-banner .ub-close { margin-left: 10px; color: var(--t3); display: flex; }
 
 /* ---------- 分段筛选 ---------- */
 .seg {
-  display: flex; background: var(--surface); border: 1px solid var(--line);
+  display: flex; background: var(--card); border: 1px solid var(--line);
   border-radius: 12px; padding: 3px; margin-bottom: 12px;
 }
 .seg button {
@@ -162,44 +263,39 @@ main { padding: 18px 16px calc(var(--dock-h) + 58px); }
   color: var(--t2); transition: background 0.15s ease, color 0.15s ease;
   white-space: nowrap;
 }
-.seg button.on { background: var(--surface-2); color: var(--t1); box-shadow: inset 0 0 0 1px var(--line-2); }
+.seg button.on { background: var(--card-2); color: var(--t1); box-shadow: inset 0 0 0 1px var(--line-2); }
 .seg button .cnt { opacity: 0.6; font-weight: 500; margin-left: 2px; font-size: 11px; }
 
 .searchbar {
-  display: flex; align-items: center; background: var(--surface);
+  display: flex; align-items: center; background: var(--card);
   border: 1px solid var(--line); border-radius: 12px; padding: 0 12px; margin-bottom: 14px;
   color: var(--t3);
 }
-.searchbar input {
-  flex: 1; background: none; border: 0; outline: none; padding: 10px 8px; font-size: 13.5px;
-}
+.searchbar input { flex: 1; background: none; border: 0; outline: none; padding: 10px 8px; font-size: 13.5px; }
 .searchbar input::placeholder { color: var(--t3); }
 
 /* ---------- 倒计时卡片 ---------- */
 .rcard {
   position: relative; display: flex; align-items: center;
-  background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--radius); padding: 14px 14px 12px 12px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 16px; padding: 14px 14px 12px 12px;
   animation: fadeUp 0.34s ease both;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
-.rcard:active { background: var(--surface-2); }
-.rcard.open { border-color: var(--brand-line); background: rgba(139, 124, 255, 0.055); }
+.rcard:active { background: var(--card-2); }
+.rcard.open { border-color: var(--brand-line); background: var(--card-open); }
 .rcard.urg-coral { border-left: 3px solid rgba(255, 122, 107, 0.75); }
-.rcard.urg-amber { border-left: 3px solid rgba(255, 194, 75, 0.7); }
+.rcard.urg-amber { border-left: 3px solid rgba(255, 194, 75, 0.70); }
 .rcard.urg-violet { border-left: 3px solid rgba(139, 124, 255, 0.65); }
 .rcard.urg-teal { border-left: 3px solid rgba(94, 234, 212, 0.55); }
-.rcard.urg-red { border-left: 3px solid rgba(255, 93, 93, 0.8); }
-.rcard.urg-none { border-left: 3px solid rgba(255, 255, 255, 0.14); }
+.rcard.urg-red { border-left: 3px solid rgba(255, 93, 93, 0.80); }
+.rcard.urg-none { border-left: 3px solid var(--line-2); }
 
 .ring-box { position: relative; width: 64px; height: 64px; margin-right: 13px; flex-shrink: 0; }
 .ring-box svg { transform: rotate(-90deg); }
-.ring-bg { stroke: rgba(255, 255, 255, 0.08); }
+.ring-bg { stroke: var(--ring-bg); }
 .ring-fg { transition: stroke-dashoffset 0.9s cubic-bezier(0.25, 0.8, 0.3, 1); }
-.ring-mid {
-  position: absolute; inset: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-}
+.ring-mid { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .ring-num { font-size: 19px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
 .ring-unit { font-size: 8.5px; color: var(--t3); margin-top: 2.5px; letter-spacing: 1px; }
 
@@ -210,20 +306,21 @@ main { padding: 18px 16px calc(var(--dock-h) + 58px); }
   -webkit-line-clamp: 2; -webkit-box-orient: vertical;
 }
 .rcard-date { font-size: 12px; color: var(--t2); margin-top: 3px; font-variant-numeric: tabular-nums; }
-.rcard-date .dd-today { color: var(--coral); font-weight: 700; }
+.rcard-date .dd-today { color: var(--u-coral); font-weight: 700; }
 
 .chips { display: flex; flex-wrap: wrap; margin-top: 7px; margin-left: -4px; }
 .chip {
   display: inline-flex; align-items: center;
   font-size: 10.5px; font-weight: 600; letter-spacing: 0.3px;
   border-radius: 999px; padding: 2.5px 8px; margin: 3px 4px 0 0;
-  background: var(--surface-2); color: var(--t2); border: 1px solid transparent;
+  background: var(--card-2); color: var(--t2); border: 1px solid transparent;
 }
-.chip.fit { background: rgba(94, 234, 212, 0.12); color: #7CF0DE; }
-.chip.unsure { background: rgba(255, 194, 75, 0.13); color: #FFD37A; }
-.chip.mismatch { background: rgba(255, 93, 93, 0.13); color: #FF9C93; }
-.chip.brand { background: var(--brand-soft); color: #B4A7FF; }
-.chip.link { color: #A99BFF; background: rgba(139, 124, 255, 0.1); }
+.chip.fit { background: var(--fit-bg); color: var(--fit-txt); }
+.chip.unsure { background: var(--unsure-bg); color: var(--unsure-txt); }
+.chip.mismatch { background: var(--mis-bg); color: var(--mis-txt); }
+.chip.brand { background: var(--brand-soft); color: var(--brand-txt); }
+.chip.link { color: var(--link-txt); background: var(--brand-soft); }
+.chip.todo { background: var(--unsure-bg); color: var(--unsure-txt); }
 
 .rcard-detail { display: none; margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
 .rcard.open .rcard-detail { display: block; }
@@ -235,174 +332,347 @@ main { padding: 18px 16px calc(var(--dock-h) + 58px); }
 .added-at { font-size: 11px; color: var(--t3); }
 
 /* ---------- 空状态 ---------- */
-.empty { text-align: center; padding: 96px 20px 30px; color: var(--t3); }
+.empty { text-align: center; padding: 72px 20px 30px; color: var(--t3); }
 .empty > svg { width: 62px; height: 62px; opacity: 0.34; margin-bottom: 16px; }
 .empty-title { font-size: 15px; font-weight: 700; color: var(--t2); margin-bottom: 5px; }
 .empty-sub { font-size: 12.5px; line-height: 1.7; }
 .empty .btn-primary { width: auto; padding: 11px 26px; margin: 20px auto 0; }
+</style>
+
+<style>
+/* ---------- 待办视图 ---------- */
+.add-bar { display: flex; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 13px; padding: 5px 5px 5px 13px; margin-bottom: 12px; }
+.add-bar input { flex: 1; background: none; border: 0; outline: none; font-size: 14px; padding: 9px 0; min-width: 0; }
+.add-bar input::placeholder { color: var(--t3); }
+.add-bar .date-chip {
+  display: flex; align-items: center; font-size: 12px; font-weight: 600; color: var(--t2);
+  background: var(--card-2); border: 1px solid var(--line); border-radius: 9px;
+  padding: 6px 10px; margin: 0 6px 0 8px; white-space: nowrap;
+}
+.add-bar .date-chip.has { color: var(--brand-txt); border-color: var(--brand-line); background: var(--brand-soft); }
+.add-bar .date-chip input { width: 0; padding: 0; margin: 0; opacity: 0; position: absolute; }
+.add-bar .add-btn {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  background: var(--btn-grad); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}
+.add-bar .add-btn:active { transform: scale(0.94); }
+
+.todo-list { }
+.todo {
+  display: flex; align-items: flex-start;
+  background: var(--card); border: 1px solid var(--line); border-radius: 13px;
+  padding: 12px 12px 10px; margin-bottom: 9px;
+  animation: fadeUp 0.3s ease both;
+}
+.tcb {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin: 1px 11px 0 1px;
+  border: 2px solid var(--cb-border); display: flex; align-items: center; justify-content: center;
+  color: transparent; transition: all 0.18s ease;
+}
+.tcb svg { width: 12px; height: 12px; }
+.tcb.on { background: var(--btn-grad); border-color: transparent; color: #fff; box-shadow: 0 3px 10px var(--btn-shadow); }
+.tcb.sm { width: 19px; height: 19px; margin: 2px 9px 0 0; }
+.tcb.sm svg { width: 10px; height: 10px; }
+.t-main { flex: 1; min-width: 0; }
+.t-text { font-size: 14px; font-weight: 600; line-height: 1.45; word-break: break-word; transition: color 0.2s ease; }
+.todo.done .t-text { color: var(--t3); text-decoration: line-through; text-decoration-color: var(--t3); text-decoration-thickness: 1.5px; }
+.t-meta { display: flex; flex-wrap: wrap; align-items: center; margin-top: 4px; margin-left: -3px; }
+.t-tag {
+  font-size: 10.5px; font-weight: 600; border-radius: 999px; padding: 2px 8px; margin: 2px 3px 0 0;
+  background: var(--card-2); color: var(--t2);
+}
+.t-tag.due { background: var(--brand-soft); color: var(--brand-txt); font-variant-numeric: tabular-nums; }
+.t-tag.overdue { background: var(--mis-bg); color: var(--mis-txt); font-variant-numeric: tabular-nums; }
+.t-tag.sub { background: var(--brand-soft); color: var(--brand-txt); }
+.t-chev { width: 26px; height: 26px; margin: 0 0 0 4px; color: var(--t3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.2s ease; }
+.todo.open .t-chev { transform: rotate(180deg); }
+.t-detail { display: none; margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.todo.open .t-detail { display: block; }
+.t-note { font-size: 12.5px; color: var(--t2); line-height: 1.6; word-break: break-word; margin-bottom: 8px; }
+.t-edit-row { display: flex; align-items: center; margin-bottom: 8px; }
+.t-edit-row .lb { font-size: 12px; color: var(--t3); margin-right: 8px; flex-shrink: 0; }
+.t-edit-row input[type="date"] { flex: 1; background: var(--input); border: 1px solid var(--line); border-radius: 9px; color: var(--t1); outline: none; padding: 7px 9px; font-size: 12.5px; min-width: 0; }
+.t-edit-row input[type="text"] { flex: 1; background: var(--input); border: 1px solid var(--line); border-radius: 9px; color: var(--t1); outline: none; padding: 7px 9px; font-size: 12.5px; min-width: 0; }
+.t-foot { display: flex; justify-content: space-between; align-items: center; }
+.t-time { font-size: 11px; color: var(--t3); }
+.todo-group-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12.5px; font-weight: 700; color: var(--t2);
+  margin: 16px 2px 10px; letter-spacing: 0.5px;
+}
+.todo-group-head .fold { color: var(--t3); font-size: 11.5px; font-weight: 600; padding: 4px 8px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); }
+.todo-group-head .fold:active { background: var(--card-2); }
+
+/* ---------- 子待办（日程卡内） ---------- */
+.sub-box { margin-top: 4px; background: var(--card-2); border: 1px solid var(--line); border-radius: 11px; padding: 10px 11px 8px; }
+.sub-head { display: flex; align-items: center; font-size: 11.5px; font-weight: 700; color: var(--t2); margin-bottom: 8px; letter-spacing: 0.5px; }
+.sub-head .cnt { margin-left: 6px; color: var(--brand-txt); font-variant-numeric: tabular-nums; }
+.sub-head .sub-bar { flex: 1; height: 4px; border-radius: 999px; background: var(--ring-bg); margin-left: 10px; overflow: hidden; }
+.sub-head .sub-bar i { display: block; height: 4px; border-radius: 999px; background: var(--btn-grad); transition: width 0.4s ease; }
+.sub-row { display: flex; align-items: flex-start; margin-bottom: 6px; }
+.sub-text { flex: 1; font-size: 12.5px; font-weight: 500; line-height: 1.5; word-break: break-word; padding-top: 1px; }
+.sub-row.done .sub-text { color: var(--t3); text-decoration: line-through; }
+.sub-del { width: 22px; height: 22px; margin-left: 4px; color: var(--t3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sub-del:active { color: var(--danger-txt); }
+.sub-add { display: flex; margin-top: 6px; }
+.sub-add input { flex: 1; background: var(--input); border: 1px solid var(--line); border-radius: 9px; color: var(--t1); outline: none; font-size: 12.5px; padding: 7px 10px; min-width: 0; }
+.sub-add input::placeholder { color: var(--t3); }
+.sub-add button {
+  margin-left: 7px; padding: 0 14px; border-radius: 9px; font-size: 12.5px; font-weight: 700;
+  background: var(--brand-soft); color: var(--brand-txt); border: 1px solid var(--brand-line);
+}
+
+/* ---------- 统计视图 ---------- */
+.stat-tiles { display: flex; margin-left: -6px; }
+.stat-tile {
+  flex: 1; margin-left: 6px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 12px 10px 10px; text-align: center;
+}
+.stat-num { font-size: 22px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+.stat-lb { font-size: 10.5px; color: var(--t3); margin-top: 4px; letter-spacing: 0.5px; }
+.stat-big { display: flex; align-items: center; }
+.stat-big .ring-box { width: 84px; height: 84px; margin-right: 16px; }
+.stat-big .ring-num { font-size: 24px; }
+.stat-big .sb-main { flex: 1; }
+.sb-row { display: flex; align-items: center; font-size: 12.5px; color: var(--t2); margin-bottom: 7px; }
+.sb-row .dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; }
+.sb-row b { margin-left: auto; font-size: 15px; color: var(--t1); font-variant-numeric: tabular-nums; }
+.stat-progress-row { margin-bottom: 12px; }
+.stat-progress-row:last-child { margin-bottom: 2px; }
+.spr-name { display: flex; align-items: baseline; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; }
+.spr-name .n { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.spr-name .v { font-size: 11px; color: var(--t3); font-variant-numeric: tabular-nums; }
+.spr-bar { height: 6px; border-radius: 999px; background: var(--ring-bg); overflow: hidden; }
+.spr-bar i { display: block; height: 6px; border-radius: 999px; background: var(--btn-grad); }
+.stat-list-row { display: flex; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.stat-list-row:last-child { border-bottom: 0; }
+.slr-main { flex: 1; min-width: 0; }
+.slr-name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.slr-sub { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.slr-num { font-size: 15px; font-weight: 800; margin-left: 10px; font-variant-numeric: tabular-nums; flex-shrink: 0; }
 
 /* ---------- 解析页 ---------- */
 .card .textarea-wrap { position: relative; }
 textarea#noticeText {
-  width: 100%; min-height: 168px; resize: vertical; outline: none;
-  background: rgba(0, 0, 0, 0.28); border: 1px solid var(--line);
+  width: 100%; min-height: 150px; resize: vertical; outline: none;
+  background: var(--input); border: 1px solid var(--line);
   border-radius: 12px; padding: 12px 13px; font-size: 13.5px; line-height: 1.6;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
-textarea#noticeText:focus { border-color: var(--brand-line); box-shadow: 0 0 0 3px rgba(139, 124, 255, 0.13); }
+textarea#noticeText:focus { border-color: var(--brand-line); box-shadow: 0 0 0 3px var(--brand-soft); }
 textarea#noticeText::placeholder { color: var(--t3); }
 .ta-meta { text-align: right; font-size: 11px; color: var(--t3); margin-top: 6px; }
 
-.engine-pills { display: flex; margin-left: -5px; }
-.engine-pill {
+.img-pick { display: flex; align-items: center; }
+.img-thumb-box {
+  position: relative; width: 56px; height: 56px; border-radius: 11px; overflow: hidden;
+  border: 1px solid var(--line); background: var(--card-2); flex-shrink: 0;
+}
+.img-thumb-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-thumb-box .img-del {
+  position: absolute; top: 0; right: 0; width: 18px; height: 18px;
+  background: rgba(0, 0, 0, 0.55); color: #fff; border-radius: 0 0 0 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+.img-pick-btn {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 11px 6px; margin: 0 5px; border-radius: 12px;
-  background: var(--surface); border: 1px solid var(--line);
+  margin-left: 12px; padding: 12px 8px; border-radius: 11px;
+  border: 1.5px dashed var(--line-2); color: var(--t2); background: none;
+}
+.img-pick-btn:active { background: var(--card-2); }
+.img-pick-btn .ip-name { font-size: 12.5px; font-weight: 600; display: flex; align-items: center; }
+.img-pick-btn .ip-name svg { margin-right: 5px; }
+.img-pick-btn .ip-sub { font-size: 10.5px; color: var(--t3); margin-top: 3px; }
+
+.mode-pills, .engine-pills { display: flex; margin-left: -5px; }
+.mode-pill, .engine-pill {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 10px 6px; margin: 0 5px; border-radius: 12px;
+  background: var(--card); border: 1px solid var(--line);
   color: var(--t2); transition: all 0.18s ease;
 }
-.engine-pill .ep-name { font-size: 13.5px; font-weight: 700; display: flex; align-items: center; }
-.engine-pill .ep-name svg { margin-right: 5px; }
-.engine-pill .ep-sub { font-size: 10.5px; color: var(--t3); margin-top: 3px; }
-.engine-pill.on {
-  background: rgba(139, 124, 255, 0.1); border-color: var(--brand-line); color: var(--t1);
-  box-shadow: 0 0 0 3px rgba(139, 124, 255, 0.08);
+.mode-pill .ep-name, .engine-pill .ep-name { font-size: 13px; font-weight: 700; display: flex; align-items: center; }
+.mode-pill .ep-name svg, .engine-pill .ep-name svg { margin-right: 5px; }
+.mode-pill .ep-sub, .engine-pill .ep-sub { font-size: 10px; color: var(--t3); margin-top: 3px; }
+.mode-pill.on, .engine-pill.on {
+  background: var(--brand-soft); border-color: var(--brand-line); color: var(--t1);
+  box-shadow: 0 0 0 3px var(--brand-soft);
 }
-.engine-pill.on .ep-sub { color: #B4A7FF; }
-.mt { margin-top: 12px; }
+.mode-pill.on .ep-sub, .engine-pill.on .ep-sub { color: var(--brand-txt); }
+.mode-pills.tight .mode-pill { padding: 8px 4px; }
 
-.parse-status {
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12.5px; color: #B4A7FF; padding: 10px 0 2px;
-}
+.parse-status { display: flex; align-items: center; justify-content: center; font-size: 12.5px; color: var(--brand-txt); padding: 10px 0 2px; }
 .parse-status .spin {
   width: 14px; height: 14px; border-radius: 50%; margin-right: 8px;
-  border: 2px solid rgba(139, 124, 255, 0.25); border-top-color: var(--brand);
+  border: 2px solid var(--brand-soft); border-top-color: var(--brand);
   animation: rot 0.8s linear infinite;
 }
 @keyframes rot { to { transform: rotate(360deg); } }
 
-.engine-badge {
-  display: flex; align-items: center; font-size: 11.5px; color: var(--t3);
-  padding: 10px 2px 4px;
-}
+.engine-badge { display: flex; align-items: center; font-size: 11.5px; color: var(--t3); padding: 10px 2px 4px; }
 .engine-badge svg { width: 12px; height: 12px; margin-right: 5px; color: var(--brand); }
 .engine-badge b { color: var(--t2); font-weight: 600; }
 
-/* 解析结果卡 */
-.pcard { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 13px 14px; margin-bottom: 12px; animation: fadeUp 0.34s ease both; }
-.pcard.checked { border-color: var(--brand-line); background: rgba(139, 124, 255, 0.06); }
+.pcard { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 13px 14px; margin-bottom: 12px; animation: fadeUp 0.34s ease both; }
+.pcard.checked { border-color: var(--brand-line); background: var(--card-open); }
 .pcard-head { display: flex; align-items: flex-start; }
 .cb {
   width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; margin-right: 11px; margin-top: 1px;
-  border: 2px solid rgba(255, 255, 255, 0.28); display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--cb-border); display: flex; align-items: center; justify-content: center;
   transition: all 0.16s ease; color: transparent;
 }
-.pcard.checked .cb { background: linear-gradient(135deg, #7C6BFF, #9B8FFF); border-color: transparent; color: #fff; box-shadow: 0 3px 10px rgba(124, 107, 255, 0.4); }
+.pcard.checked .cb { background: var(--btn-grad); border-color: transparent; color: #fff; box-shadow: 0 3px 10px var(--btn-shadow); }
 .cb svg { width: 12px; height: 12px; }
 .pcard-name { flex: 1; font-size: 14.5px; font-weight: 700; line-height: 1.4; }
 .pcard-due { font-size: 12px; color: var(--t2); margin-top: 3px; font-variant-numeric: tabular-nums; }
 .pcard .chips { margin-top: 8px; }
 .pcard-grid { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.kind-toggle {
+  font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; flex-shrink: 0;
+  background: var(--card-2); border: 1px solid var(--line); color: var(--t2); margin-left: 8px; margin-top: 1px;
+}
+.kind-toggle:active { background: var(--brand-soft); }
 
 .actionbar {
-  position: sticky; bottom: calc(var(--dock-h) + 26px); z-index: 20;
+  position: sticky; bottom: calc(var(--dock-h, 60px) + 26px); z-index: 20;
   display: flex; margin-top: 14px;
-  background: rgba(16, 19, 27, 0.96); border: 1px solid var(--line);
-  border-radius: 15px; padding: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+  background: var(--bar-bg); border: 1px solid var(--line);
+  border-radius: 15px; padding: 8px; box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
 }
 .actionbar .btn-primary { flex: 1; padding: 11px 14px; }
 .actionbar .btn-ghost { margin-right: 8px; }
-</style>
-<style>
+
+/* ---------- 我的：主题 / 同步 / 更新 ---------- */
+.theme-swatches { display: flex; margin-left: -7px; }
+.swatch {
+  flex: 1; margin-left: 7px; display: flex; flex-direction: column; align-items: center;
+}
+.swatch .sw-dot {
+  width: 44px; height: 44px; border-radius: 14px; border: 2px solid var(--line);
+  position: relative; overflow: hidden;
+}
+.swatch .sw-dot i { position: absolute; top: 9px; right: 9px; bottom: 9px; left: 9px; border-radius: 8px; }
+.swatch .sw-name { font-size: 10.5px; color: var(--t3); margin-top: 6px; font-weight: 600; }
+.swatch.on .sw-dot { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+.swatch.on .sw-name { color: var(--brand-txt); }
+
+.sync-code-row { display: flex; align-items: center; }
+.sync-code {
+  flex: 1; font-size: 24px; font-weight: 800; letter-spacing: 5px; text-align: center;
+  background: var(--input); border: 1px dashed var(--line-2); border-radius: 12px;
+  padding: 12px 8px; color: var(--brand-txt); font-variant-numeric: tabular-nums;
+  text-transform: uppercase; outline: none; min-width: 0;
+}
+.sync-mini-btn { margin-left: 8px; padding: 9px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; background: var(--card-2); border: 1px solid var(--line); color: var(--t2); flex-shrink: 0; }
+.sync-mini-btn:active { background: var(--brand-soft); color: var(--brand-txt); }
+
+.toggle-row { display: flex; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.toggle-row:last-child { border-bottom: 0; }
+.toggle-row .tr-txt { flex: 1; }
+.toggle-row .tr-name { font-size: 13.5px; font-weight: 600; }
+.toggle-row .tr-sub { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.switch {
+  width: 46px; height: 27px; border-radius: 999px; background: var(--card-2);
+  border: 1px solid var(--line-2); position: relative; flex-shrink: 0; margin-left: 10px;
+  transition: background 0.2s ease;
+}
+.switch i {
+  position: absolute; top: 2px; left: 2px; width: 21px; height: 21px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+.switch.on { background: var(--brand); border-color: var(--brand); }
+.switch.on i { transform: translateX(19px); }
+
+.list-row { display: flex; align-items: center; padding: 13px 2px; border-bottom: 1px solid var(--line); width: 100%; text-align: left; }
+.list-row:last-child { border-bottom: 0; }
+.list-row .lr-ico {
+  width: 34px; height: 34px; border-radius: 10px; margin-right: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--brand-soft); color: var(--brand-txt);
+}
+.list-row.danger .lr-ico { background: var(--mis-bg); color: var(--mis-txt); }
+.list-row .lr-txt { flex: 1; min-width: 0; }
+.list-row .lr-name { font-size: 14px; font-weight: 600; }
+.list-row .lr-sub { font-size: 11.5px; color: var(--t3); margin-top: 1px; }
+.list-row .lr-arr { color: var(--t3); display: flex; margin-left: 8px; }
+.list-row .lr-badge { font-size: 11px; color: var(--t3); margin-left: 8px; font-variant-numeric: tabular-nums; }
+.list-row .dot-new { width: 8px; height: 8px; border-radius: 50%; background: var(--u-coral); margin-left: 8px; flex-shrink: 0; animation: pulse 1.6s ease-in-out infinite; }
+
+.about-txt { font-size: 12px; color: var(--t3); line-height: 1.9; }
+.about-txt b { color: var(--t2); font-weight: 600; }
+
 /* ---------- 月历 ---------- */
 .cal-head { display: flex; align-items: center; margin-bottom: 14px; }
 .cal-title { flex: 1; text-align: center; font-size: 18px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
 .cal-nav {
   width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  background: var(--surface); border: 1px solid var(--line); color: var(--t2); font-size: 17px;
+  background: var(--card); border: 1px solid var(--line); color: var(--t2); font-size: 17px;
 }
-.cal-nav:active { background: var(--surface-2); }
-.cal-today-link { font-size: 12px; color: #A99BFF; padding: 8px 6px; margin-left: 8px; }
-
-.cal-week {
-  display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 6px;
-  font-size: 11px; color: var(--t3); text-align: center; letter-spacing: 1px;
-}
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 3px; }
+.cal-nav:active { background: var(--card-2); }
+.cal-today-link { font-size: 12px; color: var(--brand-txt); padding: 8px 6px; margin-left: 8px; }
+.cal-week { display: flex; margin-bottom: 6px; font-size: 11px; color: var(--t3); text-align: center; letter-spacing: 1px; }
+.cal-week span { flex: 1; }
+.cal-grid { display: flex; flex-wrap: wrap; margin-right: -3px; }
 .cal-cell {
-  position: relative; height: 40px;
+  width: calc((100% - 18px) / 7); margin-right: 3px; height: 40px;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   border-radius: 10px; font-size: 13px; color: var(--t1); font-variant-numeric: tabular-nums;
 }
 .cal-cell.dim { color: var(--t3); opacity: 0.42; }
-.cal-cell.today { box-shadow: inset 0 0 0 1.5px var(--brand-line); color: #B4A7FF; font-weight: 700; }
-.cal-cell.sel { background: linear-gradient(135deg, #7C6BFF, #9B8FFF); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(124, 107, 255, 0.35); }
-.cal-cell:active { background: var(--surface-2); }
+.cal-cell.today { box-shadow: inset 0 0 0 1.5px var(--brand-line); color: var(--brand-txt); font-weight: 700; }
+.cal-cell.sel { background: var(--btn-grad); color: #fff; font-weight: 700; box-shadow: 0 4px 12px var(--btn-shadow); }
+.cal-cell:active { background: var(--card-2); }
 .cal-dots { display: flex; margin-top: 3px; height: 4px; }
 .cal-dot { width: 4px; height: 4px; border-radius: 50%; margin: 0 1.5px; }
-
 .cal-day-head { display: flex; align-items: baseline; margin: 16px 2px 10px; }
 .cal-day-title { font-size: 15px; font-weight: 700; }
 .cal-day-cnt { font-size: 12px; color: var(--t3); margin-left: 8px; }
-.cal-row {
-  display: flex; align-items: center; background: var(--surface); border: 1px solid var(--line);
-  border-radius: 13px; padding: 12px 14px; margin-bottom: 9px;
-}
-.cal-row:active { background: var(--surface-2); }
+.cal-row { display: flex; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 13px; padding: 12px 14px; margin-bottom: 9px; }
+.cal-row:active { background: var(--card-2); }
 .cal-row-name { flex: 1; font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cal-row-due { font-size: 11.5px; color: var(--t2); font-variant-numeric: tabular-nums; margin-left: 10px; flex-shrink: 0; }
 
-/* ---------- 我的 ---------- */
-.form-row { display: flex; align-items: center; background: rgba(0, 0, 0, 0.22); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; padding: 0 13px; }
+/* ---------- 表单（画像 / 手动添加） ---------- */
+.form-row { display: flex; align-items: center; background: var(--input); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; padding: 0 13px; }
 .form-row .fr-label { width: 76px; flex-shrink: 0; font-size: 12.5px; color: var(--t2); }
 .form-row input, .form-row select {
-  flex: 1; background: none; border: 0; outline: none; padding: 12px 0; font-size: 14px;
+  flex: 1; background: none; border: 0; outline: none; padding: 12px 0; font-size: 14px; min-width: 0;
   -webkit-appearance: none; appearance: none;
 }
 .form-row select { color: var(--t1); }
 .form-row input::placeholder { color: var(--t3); }
-.form-row:focus-within { border-color: var(--brand-line); box-shadow: 0 0 0 3px rgba(139, 124, 255, 0.1); }
+.form-row:focus-within { border-color: var(--brand-line); box-shadow: 0 0 0 3px var(--brand-soft); }
+.form-col { background: var(--input); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 10px; padding: 10px 13px; }
+.form-col .fc-label { font-size: 12px; color: var(--t2); margin-bottom: 6px; }
+.form-col textarea { width: 100%; background: none; border: 0; outline: none; resize: vertical; font-size: 13.5px; line-height: 1.6; min-height: 56px; }
+.form-col textarea::placeholder { color: var(--t3); }
+.form-col input[type="text"] { width: 100%; background: none; border: 0; outline: none; font-size: 13.5px; padding: 2px 0; }
+.form-col input[type="text"]::placeholder { color: var(--t3); }
 
 .day-chips { display: flex; flex-wrap: wrap; margin-left: -5px; }
 .day-chip {
   padding: 7px 15px; margin: 0 5px 8px 0; border-radius: 999px; font-size: 12.5px; font-weight: 600;
-  background: var(--surface); border: 1px solid var(--line); color: var(--t2);
+  background: var(--card); border: 1px solid var(--line); color: var(--t2);
 }
-.day-chip.on { background: rgba(139, 124, 255, 0.13); border-color: var(--brand-line); color: #B4A7FF; }
+.day-chip.on { background: var(--brand-soft); border-color: var(--brand-line); color: var(--brand-txt); }
 .day-custom { display: flex; align-items: center; }
 .day-custom input {
   width: 60px; text-align: center; padding: 7px 0;
-  background: rgba(0, 0, 0, 0.22); border: 1px solid var(--line);
+  background: var(--input); border: 1px solid var(--line);
   border-radius: 999px; color: var(--t1); outline: none; font-size: 12.5px;
 }
 .day-custom .unit { font-size: 12px; color: var(--t3); margin-left: 6px; }
-
-.list-row {
-  display: flex; align-items: center; padding: 13px 2px;
-  border-bottom: 1px solid var(--line);
-}
-.list-row:last-child { border-bottom: 0; }
-.list-row .lr-ico {
-  width: 34px; height: 34px; border-radius: 10px; margin-right: 12px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--brand-soft); color: #B4A7FF;
-}
-.list-row.danger .lr-ico { background: rgba(255, 93, 93, 0.12); color: #FF8A80; }
-.list-row .lr-txt { flex: 1; }
-.list-row .lr-name { font-size: 14px; font-weight: 600; }
-.list-row .lr-sub { font-size: 11.5px; color: var(--t3); margin-top: 1px; }
-.list-row .lr-arr { color: var(--t3); display: flex; }
-
-.about-txt { font-size: 12px; color: var(--t3); line-height: 1.9; }
-.about-txt b { color: var(--t2); font-weight: 600; }
 
 /* ---------- 底部 Dock ---------- */
 .dock {
   position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
   width: calc(100% - 24px); max-width: 432px; z-index: 40;
   display: flex; padding: 7px 6px;
-  background: rgba(16, 19, 27, 0.94); border: 1px solid var(--line-2);
-  border-radius: 20px; box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
+  background: var(--dock-bg); border: 1px solid var(--line-2);
+  border-radius: 20px; box-shadow: 0 14px 44px rgba(0, 0, 0, 0.35);
 }
 @supports (bottom: max(12px, env(safe-area-inset-bottom))) {
   .dock { bottom: max(12px, env(safe-area-inset-bottom)); }
@@ -414,45 +684,72 @@ textarea#noticeText::placeholder { color: var(--t3); }
 }
 .dock-btn .db-ico { height: 21px; display: flex; }
 .dock-btn .db-label { font-size: 10px; font-weight: 600; margin-top: 2px; letter-spacing: 0.5px; }
-.dock-btn.on { color: #B4A7FF; background: rgba(139, 124, 255, 0.12); }
-.dock-btn.on .db-label {
-  background: linear-gradient(135deg, #9B8FFF, #5EEAD4);
-  -webkit-background-clip: text; background-clip: text;
-  -webkit-text-fill-color: transparent;
+.dock-btn.on { color: var(--brand-txt); background: var(--brand-soft); }
+.dock-btn .db-badge {
+  position: relative;
 }
+.dock-btn .db-badge .bdot {
+  position: absolute; top: -2px; right: -6px; min-width: 15px; height: 15px; padding: 0 4px;
+  border-radius: 999px; background: var(--u-coral); color: #fff; font-size: 9px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums;
+}
+.dock-btn.on .db-badge .bdot { background: var(--u-coral); }
 
-/* ---------- Toast / Modal ---------- */
+/* ---------- Toast / Modal / Sheet ---------- */
 .toast {
-  position: fixed; bottom: calc(var(--dock-h) + 40px); left: 50%; transform: translateX(-50%) translateY(8px);
+  position: fixed; bottom: calc(var(--dock-h, 60px) + 40px); left: 50%; transform: translateX(-50%) translateY(8px);
   z-index: 90; max-width: 82%;
-  background: rgba(28, 32, 43, 0.97); border: 1px solid var(--line-2);
+  background: var(--modal-bg); border: 1px solid var(--line-2);
   color: var(--t1); font-size: 13px; padding: 10px 18px; border-radius: 999px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
   text-align: center;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 .modal-mask {
-  position: fixed; inset: 0; z-index: 100; background: rgba(5, 6, 10, 0.72);
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 100;
+  background: rgba(5, 6, 10, 0.72);
   display: flex; align-items: center; justify-content: center; padding: 28px;
   animation: fadeIn 0.18s ease both;
 }
+html[data-theme="emerald"] .modal-mask, html[data-theme="solar"] .modal-mask,
+html[data-theme="sakura"] .modal-mask, html[data-theme="mono"] .modal-mask { background: rgba(30, 32, 38, 0.40); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .modal {
-  width: 100%; max-width: 340px; background: #141824; border: 1px solid var(--line-2);
+  width: 100%; max-width: 340px; background: var(--modal-bg); border: 1px solid var(--line-2);
   border-radius: 18px; padding: 20px 20px 14px;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
   animation: popIn 0.22s cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }
 @keyframes popIn { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: none; } }
 .modal-title { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
 .modal-body { font-size: 13px; color: var(--t2); line-height: 1.7; word-break: break-all; }
+.modal-body .upd-notes { font-size: 12.5px; color: var(--t2); line-height: 1.9; white-space: pre-line; }
 .modal-actions { display: flex; justify-content: flex-end; margin-top: 16px; margin-left: -8px; }
 .modal-actions button { padding: 8px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600; margin-left: 8px; }
 .modal-actions .m-cancel { color: var(--t2); }
-.modal-actions .m-ok { background: rgba(255, 93, 93, 0.15); color: #FF8A80; }
-.modal-actions .m-ok.brand { background: linear-gradient(135deg, #7C6BFF, #9B8FFF); color: #fff; }
+.modal-actions .m-ok { background: var(--mis-bg); color: var(--mis-txt); }
+.modal-actions .m-ok.brand { background: var(--btn-grad); color: #fff; box-shadow: 0 6px 18px var(--btn-shadow); }
+
+.sheet-mask {
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 100;
+  background: rgba(5, 6, 10, 0.60);
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: fadeIn 0.2s ease both;
+}
+html[data-theme="emerald"] .sheet-mask, html[data-theme="solar"] .sheet-mask,
+html[data-theme="sakura"] .sheet-mask, html[data-theme="mono"] .sheet-mask { background: rgba(30, 32, 38, 0.40); }
+.sheet {
+  width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto;
+  background: var(--modal-bg); border-top-left-radius: 22px; border-top-right-radius: 22px;
+  padding: 8px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.26s cubic-bezier(0.3, 1, 0.4, 1) both;
+}
+@keyframes slideUp { from { transform: translateY(60px); opacity: 0.5; } to { transform: none; opacity: 1; } }
+.sheet-grip { width: 38px; height: 4px; border-radius: 999px; background: var(--line-2); margin: 6px auto 14px; }
+.sheet-title { font-size: 17px; font-weight: 800; margin-bottom: 14px; }
 
 /* ---------- 其他 ---------- */
 .spin-ico { animation: rot 0.8s linear infinite; }
@@ -464,6 +761,7 @@ textarea#noticeText::placeholder { color: var(--t3); }
 }
 </style>
 </head>
+
 <body>
 <div id="app">
 
@@ -475,76 +773,156 @@ textarea#noticeText::placeholder { color: var(--t3); }
       </div>
       <div class="brand-text">倒计时</div>
     </div>
-    <button class="urgent-chip hidden" id="urgentChip"></button>
+    <div class="top-actions">
+      <button class="urgent-chip hidden" id="urgentChip"></button>
+    </div>
   </header>
 
   <main>
 
-    <!-- ============ 首页 · 倒计时 ============ -->
+    <!-- ============ 视图一：倒计时 ============ -->
     <section class="view on" id="view-home">
       <div class="page-head">
         <div>
           <div class="page-title">我的倒计时</div>
           <div class="page-sub" id="homeDate"></div>
         </div>
-        <button class="btn-ghost" id="btnGoParse">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          解析通知
-        </button>
+        <div class="head-btns">
+          <button class="icon-btn" id="btnCalToggle" title="月历视图">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+          </button>
+          <button class="icon-btn" id="btnAdd" title="手动添加">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
       </div>
 
-      <div class="urgent-banner hidden" id="urgentBanner"></div>
-
-      <div class="seg" id="homeSeg">
-        <button data-f="all" class="on">全部<span class="cnt" id="cntAll"></span></button>
-        <button data-f="near">临近<span class="cnt" id="cntNear"></span></button>
-        <button data-f="over">已过期<span class="cnt" id="cntOver"></span></button>
-        <button data-f="nodate">未注明<span class="cnt" id="cntNodate"></span></button>
+      <div id="homeCalWrap" class="hidden">
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="cal-title" id="calTitle"></div>
+          <button class="cal-nav" id="calNext">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div class="card pad">
+          <div class="cal-week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+          <div class="cal-grid" id="calGrid"></div>
+          <div style="text-align:center; margin-top:10px"><button class="cal-today-link" id="calTodayLink">回到今天</button></div>
+        </div>
+        <div id="calDayList"></div>
       </div>
 
-      <div class="searchbar" id="searchWrap">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="homeQuery" placeholder="搜索名称…" autocomplete="off">
-      </div>
+      <div id="homeListWrap">
+        <div class="urgent-banner hidden" id="urgentBanner"></div>
 
-      <div id="homeList"></div>
+        <div class="seg" id="homeSeg">
+          <button data-f="all" class="on">全部<span class="cnt" id="cntAll"></span></button>
+          <button data-f="near">临近<span class="cnt" id="cntNear"></span></button>
+          <button data-f="over">已过期<span class="cnt" id="cntOver"></span></button>
+          <button data-f="nodate">未注明<span class="cnt" id="cntNodate"></span></button>
+        </div>
 
-      <div class="empty hidden" id="homeEmpty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/><path d="M19 5l1.5 1.5"/><path d="M5 5 3.5 6.5"/></svg>
-        <div class="empty-title" id="emptyTitle">还没有任何倒计时</div>
-        <div class="empty-sub">把竞赛 / 评奖通知粘贴进来，AI 自动帮你<br>提取名称、截止时间与报名要求</div>
-        <button class="btn-primary" id="emptyGoParse">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/></svg>
-          解析第一条通知
-        </button>
+        <div class="searchbar" id="searchWrap">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="homeQuery" placeholder="搜索名称…" autocomplete="off">
+        </div>
+
+        <div id="homeList"></div>
+
+        <div class="empty hidden" id="homeEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/><path d="M19 5l1.5 1.5"/><path d="M5 5 3.5 6.5"/></svg>
+          <div class="empty-title" id="emptyTitle">还没有任何倒计时</div>
+          <div class="empty-sub" id="emptySub">把通知粘贴进来或拍张照，AI 自动提取<br>截止时间与材料清单；也可以手动添加</div>
+          <button class="btn-primary" id="emptyGoAdd">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            添加日程
+          </button>
+          <button class="btn-ghost" id="emptyGoParse" style="margin-top:10px">去智能解析</button>
+        </div>
       </div>
     </section>
 
-    <!-- ============ 解析页 ============ -->
+    <!-- ============ 视图二：待办 ============ -->
+    <section class="view" id="view-todo">
+      <div class="page-head">
+        <div>
+          <div class="page-title">待办清单</div>
+          <div class="page-sub" id="todoSub">随时添加，做完划掉</div>
+        </div>
+      </div>
+
+      <div class="add-bar">
+        <input id="todoInput" placeholder="输入待办事项，如：打印报名表…" autocomplete="off">
+        <button class="date-chip" id="todoDateChip">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+          <span id="todoDateTxt">日期</span>
+        </button>
+        <input type="date" id="todoDate" class="hidden">
+        <button class="add-btn" id="btnAddTodo">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+
+      <div class="seg" id="todoSeg">
+        <button data-f="open" class="on">待完成<span class="cnt" id="cntTodoOpen"></span></button>
+        <button data-f="done">已完成<span class="cnt" id="cntTodoDone"></span></button>
+        <button data-f="all">全部<span class="cnt" id="cntTodoAll"></span></button>
+      </div>
+
+      <div id="todoList"></div>
+
+      <div class="empty hidden" id="todoEmpty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.1 2.5 5.4.7.7 1 1.6 1 2.6h7c0-1 .3-1.9 1-2.6C17.8 13.1 19 11.4 19 9a7 7 0 0 0-7-7z"/><path d="M9 21h6"/><path d="M10 24h4"/></svg>
+        <div class="empty-title" id="todoEmptyTitle">还没有待办事项</div>
+        <div class="empty-sub">在上方输入框敲下第一件事<br>也可以在日程倒计时卡片里展开添加子待办</div>
+      </div>
+    </section>
+
+    <!-- ============ 视图三：智能解析 ============ -->
     <section class="view" id="view-parse">
       <div class="page-head">
         <div>
-          <div class="page-title">解析通知</div>
-          <div class="page-sub">粘贴原文，AI 自动提取关键信息</div>
+          <div class="page-title">智能解析</div>
+          <div class="page-sub">粘贴通知原文，或选一张通知截图</div>
         </div>
         <button class="mini-link" id="btnDemo">填入示例</button>
       </div>
 
       <div class="card pad">
-        <div class="field-label">通知原文（支持一次粘贴多条）</div>
-        <textarea id="noticeText" placeholder="把竞赛、评奖、奖学金、活动通知的全文粘贴到这里…&#10;&#10;例如：&#10;关于开展第十四届全国大学生电子商务“三创赛”校内选拔赛的通知…"></textarea>
-        <div class="ta-meta"><span id="taCount">0 字</span></div>
-      </div>
-
-      <div class="card pad mt">
-        <div class="field-label">解析引擎</div>
-        <div class="engine-pills" id="enginePills">
+        <div class="field-label">智能模式</div>
+        <div class="mode-pills" id="modePills">
+          <button class="mode-pill" data-mode="speed">
+            <span class="ep-name">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+              极速
+            </span>
+            <span class="ep-sub">追求速度</span>
+          </button>
+          <button class="mode-pill on" data-mode="balance">
+            <span class="ep-name">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/></svg>
+              均衡
+            </span>
+            <span class="ep-sub">推荐使用</span>
+          </button>
+          <button class="mode-pill" data-mode="deep">
+            <span class="ep-name">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>
+              深度
+            </span>
+            <span class="ep-sub">最细致</span>
+          </button>
+        </div>
+        <div class="engine-pills mt" id="enginePills" style="margin-top:10px">
           <button class="engine-pill on" data-engine="ai">
             <span class="ep-name">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/></svg>
               AI 智能
             </span>
-            <span class="ep-sub">agnes-2.5-flash</span>
+            <span class="ep-sub">支持文字与图片</span>
           </button>
           <button class="engine-pill" data-engine="local">
             <span class="ep-name">
@@ -554,6 +932,32 @@ textarea#noticeText::placeholder { color: var(--t3); }
             <span class="ep-sub">离线可用</span>
           </button>
         </div>
+      </div>
+
+      <div class="card pad mt">
+        <div class="field-label">通知原文（支持一次粘贴多条）</div>
+        <textarea id="noticeText" placeholder="把竞赛、评奖、奖学金、活动通知的全文粘贴到这里…&#10;&#10;例如：&#10;关于开展第十四届全国大学生电子商务“三创赛”校内选拔赛的通知…"></textarea>
+        <div class="ta-meta"><span id="taCount">0 字</span></div>
+      </div>
+
+      <div class="card pad mt">
+        <div class="field-label">通知截图 / 照片（可选）</div>
+        <div class="img-pick" id="imgPickBox">
+          <div class="img-thumb-box hidden" id="imgThumbBox">
+            <img id="imgThumb" alt="已选图片">
+            <button class="img-del" id="imgDel">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+          <button class="img-pick-btn" id="imgPickBtn">
+            <span class="ip-name">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L9 21"/></svg>
+              选择图片
+            </span>
+            <span class="ip-sub">截图或拍照的通知，AI 自动识别</span>
+          </button>
+        </div>
+        <input type="file" id="imgFile" accept="image/*" class="hidden">
       </div>
 
       <button class="btn-primary mt" id="btnParse">
@@ -574,38 +978,70 @@ textarea#noticeText::placeholder { color: var(--t3); }
       </div>
     </section>
 
-    <!-- ============ 月历页 ============ -->
-    <section class="view" id="view-cal">
-      <div class="cal-head">
-        <button class="cal-nav" id="calPrev">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-        <div class="cal-title" id="calTitle"></div>
-        <button class="cal-nav" id="calNext">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
+    <!-- ============ 视图四：统计 ============ -->
+    <section class="view" id="view-stats">
+      <div class="page-head">
+        <div>
+          <div class="page-title">统计</div>
+          <div class="page-sub" id="statsSub"></div>
+        </div>
       </div>
 
-      <div class="card pad">
-        <div class="cal-week"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
-        <div class="cal-grid" id="calGrid"></div>
-        <div style="text-align:center; margin-top:10px"><button class="cal-today-link" id="calTodayLink">回到今天</button></div>
+      <div class="stat-tiles">
+        <div class="stat-tile"><div class="stat-num" id="stEvents">0</div><div class="stat-lb">日程总数</div></div>
+        <div class="stat-tile"><div class="stat-num" id="stToday" style="color:var(--u-coral)">0</div><div class="stat-lb">今日截止</div></div>
+        <div class="stat-tile"><div class="stat-num" id="stNear" style="color:var(--u-amber)">0</div><div class="stat-lb">临近提醒</div></div>
+        <div class="stat-tile"><div class="stat-num" id="stOver" style="color:var(--u-red)">0</div><div class="stat-lb">已过期</div></div>
       </div>
 
-      <div id="calDayList"></div>
+      <div class="card pad mt">
+        <div class="field-label">待办完成度</div>
+        <div class="stat-big">
+          <div class="ring-box">
+            <svg width="84" height="84" viewBox="0 0 84 84">
+              <circle class="ring-bg" cx="42" cy="42" r="36" fill="none" stroke-width="7"/>
+              <circle class="ring-fg" id="todoRing" cx="42" cy="42" r="36" fill="none" stroke-width="7"
+                stroke="var(--brand)" stroke-linecap="round" stroke-dasharray="226.2" stroke-dashoffset="226.2"/>
+            </svg>
+            <div class="ring-mid"><div class="ring-num" id="todoRate">–</div><div class="ring-unit">完成率</div></div>
+          </div>
+          <div class="sb-main">
+            <div class="sb-row"><span class="dot" style="background:var(--brand)"></span>待完成<b id="sbPending">0</b></div>
+            <div class="sb-row"><span class="dot" style="background:var(--t3)"></span>已完成<b id="sbDone">0</b></div>
+            <div class="sb-row"><span class="dot" style="background:var(--u-coral)"></span>已逾期<b id="sbOverdue">0</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card pad mt" id="subtaskStatsCard">
+        <div class="field-label">日程子待办进度</div>
+        <div id="subtaskStats"></div>
+      </div>
+
+      <div class="card pad mt">
+        <div class="field-label">即将到期</div>
+        <div id="upcomingStats"></div>
+      </div>
+
+      <div class="card pad mt">
+        <div class="field-label">最近完成</div>
+        <div id="recentStats"></div>
+      </div>
+
+      <div class="desk-note">统计视图 · 数据来自本机与云端同步后的合并结果</div>
     </section>
 
-    <!-- ============ 我的页 ============ -->
+    <!-- ============ 视图五：我的 ============ -->
     <section class="view" id="view-me">
       <div class="page-head">
         <div>
           <div class="page-title">我的</div>
-          <div class="page-sub">画像用于匹配打标，数据仅存本机</div>
+          <div class="page-sub">画像 · 外观 · 同步 · 更新</div>
         </div>
       </div>
 
       <div class="card pad">
-        <div class="field-label">我的画像</div>
+        <div class="field-label">我的画像（用于通知匹配打标）</div>
         <div class="form-row"><div class="fr-label">姓名</div><input id="pfName" placeholder="选填"></div>
         <div class="form-row"><div class="fr-label">学院</div><input id="pfCollege" placeholder="如：经济管理学院"></div>
         <div class="form-row"><div class="fr-label">年级</div>
@@ -615,7 +1051,6 @@ textarea#noticeText::placeholder { color: var(--t3); }
           </select>
         </div>
         <div class="form-row"><div class="fr-label">专业</div><input id="pfMajor" placeholder="如：知识产权"></div>
-
         <div class="field-label" style="margin-top:14px">临近截止提醒</div>
         <div class="day-chips" id="dayChips">
           <button class="day-chip" data-d="1">提前 1 天</button>
@@ -624,8 +1059,66 @@ textarea#noticeText::placeholder { color: var(--t3); }
           <button class="day-chip" data-d="7">提前 7 天</button>
           <span class="day-custom"><input id="pfDays" type="number" min="1" max="30" placeholder="自定义"><span class="unit">天</span></span>
         </div>
-
         <button class="btn-primary mt" id="btnSaveProfile" disabled>保存画像</button>
+      </div>
+
+      <div class="card pad">
+        <div class="field-label">界面风格</div>
+        <div class="theme-swatches" id="themeSwatches">
+          <button class="swatch" data-theme="night">
+            <span class="sw-dot" style="background:#0B0D13"><i style="background:linear-gradient(135deg,#7C6BFF,#5EEAD4)"></i></span>
+            <span class="sw-name">星夜</span>
+          </button>
+          <button class="swatch" data-theme="emerald">
+            <span class="sw-dot" style="background:#EFF7F2"><i style="background:linear-gradient(135deg,#0FA971,#34D399)"></i></span>
+            <span class="sw-name">翡翠</span>
+          </button>
+          <button class="swatch" data-theme="solar">
+            <span class="sw-dot" style="background:#FDF6EE"><i style="background:linear-gradient(135deg,#F97316,#FBBF24)"></i></span>
+            <span class="sw-name">暖阳</span>
+          </button>
+          <button class="swatch" data-theme="sakura">
+            <span class="sw-dot" style="background:#FDF2F6"><i style="background:linear-gradient(135deg,#EC4899,#F9A8D4)"></i></span>
+            <span class="sw-name">樱粉</span>
+          </button>
+          <button class="swatch" data-theme="mono">
+            <span class="sw-dot" style="background:#FAFAF8"><i style="background:linear-gradient(135deg,#27272A,#52525B)"></i></span>
+            <span class="sw-name">素墨</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <div class="field-label">云同步（多端同步日程与待办）</div>
+        <div class="sync-code-row">
+          <input class="sync-code" id="syncCode" placeholder="同步码" maxlength="8" autocomplete="off" spellcheck="false">
+          <button class="sync-mini-btn" id="btnGenCode">生成</button>
+        </div>
+        <div class="about-txt" style="margin:10px 0 4px">
+          在网页版 / 其他设备「我的 → 云同步」输入<b>同一个同步码</b>，即可互相同步。<br>
+          <span id="syncState">未开启</span>
+        </div>
+        <div class="toggle-row">
+          <div class="tr-txt">
+            <div class="tr-name">自动同步</div>
+            <div class="tr-sub">数据变化后自动上传云端，打开 App 时自动拉取</div>
+          </div>
+          <button class="switch" id="syncAuto"><i></i></button>
+        </div>
+        <button class="btn-primary mt" id="btnSyncNow">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-8.9-7.6"/><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 8.9 7.6"/><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/></svg>
+          立即同步
+        </button>
+      </div>
+
+      <div class="card pad">
+        <div class="field-label">版本与更新</div>
+        <button class="list-row" id="btnCheckUpdate">
+          <span class="lr-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-8.9-7.6"/><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 8.9 7.6"/><path d="M21 3v6h-6"/><path d="M3 21v-6h6"/></svg></span>
+          <span class="lr-txt"><span class="lr-name">检查更新</span><span class="lr-sub" style="display:block" id="updateState">当前版本 3.0.0</span></span>
+          <span class="dot-new hidden" id="updateDot"></span>
+          <span class="lr-arr"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+        </button>
       </div>
 
       <div class="card pad">
@@ -637,12 +1130,12 @@ textarea#noticeText::placeholder { color: var(--t3); }
         </button>
         <button class="list-row" id="btnImport">
           <span class="lr-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
-          <span class="lr-txt"><span class="lr-name">导入恢复</span><span class="lr-sub" style="display:block">从备份 JSON 恢复画像与记录</span></span>
+          <span class="lr-txt"><span class="lr-name">导入恢复</span><span class="lr-sub" style="display:block">从备份 JSON 恢复画像、日程与待办</span></span>
           <span class="lr-arr"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
         </button>
         <button class="list-row danger" id="btnClear">
           <span class="lr-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></span>
-          <span class="lr-txt"><span class="lr-name" style="color:#FF8A80">清空所有数据</span><span class="lr-sub" style="display:block">删除画像与全部记录，不可恢复</span></span>
+          <span class="lr-txt"><span class="lr-name" style="color:var(--danger-txt)">清空所有数据</span><span class="lr-sub" style="display:block">删除画像、日程、待办与云端快照，不可恢复</span></span>
           <span class="lr-arr"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
         </button>
       </div>
@@ -650,14 +1143,14 @@ textarea#noticeText::placeholder { color: var(--t3); }
       <div class="card pad">
         <div class="field-label">关于</div>
         <div class="about-txt">
-          <b>倒计时</b> v2.0.0 · 竞赛通知 AI 解析与截止提醒<br>
-          AI 引擎：<b>agnes-2.5-flash</b>（解析失败自动切换本地规则）<br>
-          数据仅保存在本机 localStorage，不上传任何服务器<br>
-          兼容 v1「赛事管家」数据，覆盖安装后自动沿用
+          <b>倒计时</b> v<span id="verTxt">3.0.0</span> · 日程提醒 / 待办清单 / 智能解析<br>
+          智能解析支持<b>文字与图片</b>，网络不可用时自动切换本地规则<br>
+          数据保存在本机，开启云同步后经由你自己的同步码加密关联<br>
+          兼容 v1「赛事管家」/ v2「倒计时」数据，覆盖安装自动沿用
         </div>
       </div>
 
-      <div class="desk-note">倒计时 · 离线优先的赛事截止管理</div>
+      <div class="desk-note">倒计时 · 离线优先的日程与待办管理</div>
     </section>
 
   </main>
@@ -668,13 +1161,20 @@ textarea#noticeText::placeholder { color: var(--t3); }
       <span class="db-ico"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 13.5"/></svg></span>
       <span class="db-label">倒计时</span>
     </button>
+    <button class="dock-btn" data-tab="todo">
+      <span class="db-ico db-badge">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4.1 2.5 5.4.7.7 1 1.6 1 2.6h7c0-1 .3-1.9 1-2.6C17.8 13.1 19 11.4 19 9a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg>
+        <span class="bdot hidden" id="todoBadge"></span>
+      </span>
+      <span class="db-label">待办</span>
+    </button>
     <button class="dock-btn" data-tab="parse">
       <span class="db-ico"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/></svg></span>
       <span class="db-label">解析</span>
     </button>
-    <button class="dock-btn" data-tab="cal">
-      <span class="db-ico"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg></span>
-      <span class="db-label">月历</span>
+    <button class="dock-btn" data-tab="stats">
+      <span class="db-ico"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 15v-4"/><path d="M12 15V7"/><path d="M17 15v-7"/></svg></span>
+      <span class="db-label">统计</span>
     </button>
     <button class="dock-btn" data-tab="me">
       <span class="db-ico"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
@@ -684,7 +1184,7 @@ textarea#noticeText::placeholder { color: var(--t3); }
 
 </div>
 
-<!-- Toast / Modal / 文件导入 -->
+<!-- Toast / Modal / 表单 Sheet / 文件导入 -->
 <div class="toast" id="toast"></div>
 <div class="modal-mask hidden" id="modalMask">
   <div class="modal">
@@ -696,7 +1196,36 @@ textarea#noticeText::placeholder { color: var(--t3); }
     </div>
   </div>
 </div>
+<div class="sheet-mask hidden" id="sheetMask">
+  <div class="sheet">
+    <div class="sheet-grip"></div>
+    <div class="sheet-title" id="sheetTitle">添加日程</div>
+    <div class="form-col"><div class="fc-label">名称 *</div><input type="text" id="fName" placeholder="如：2026 年大学生英语竞赛"></div>
+    <div style="display:flex;margin-left:-5px">
+      <div class="form-row" style="flex:1;margin-left:5px"><div class="fr-label">截止日期</div><input type="date" id="fDate"></div>
+      <div class="form-row" style="flex:1;margin-left:5px"><div class="fr-label">时刻</div><input type="time" id="fTime" placeholder="23:59"></div>
+    </div>
+    <div class="form-col"><div class="fc-label">报名方式</div><input type="text" id="fMethod" placeholder="如：官网在线报名"></div>
+    <div class="form-col"><div class="fc-label">链接</div><input type="text" id="fLink" placeholder="https://…"></div>
+    <div class="form-col"><div class="fc-label">需要准备的材料（用、分隔）</div><input type="text" id="fMaterials" placeholder="如：报名表、学生证复印件"></div>
+    <div style="display:flex;margin-left:-5px">
+      <div class="form-row" style="flex:1;margin-left:5px"><div class="fr-label">年级限制</div>
+        <select id="fGrade">
+          <option value="">未注明</option>
+          <option>全体年级</option><option>大一</option><option>大二</option><option>大三</option><option>大四</option>
+          <option>大五</option><option>研究生</option><option>博士</option>
+        </select>
+      </div>
+      <div class="form-row" style="flex:1;margin-left:5px"><div class="fr-label">专业限制</div><input type="text" id="fMajor" placeholder="不限专业"></div>
+    </div>
+    <div class="form-col"><div class="fc-label">备注</div><textarea id="fNote" placeholder="其他要点…"></textarea></div>
+    <div class="form-col"><div class="fc-label">子待办（每行一个，可留空）</div><textarea id="fSubtasks" placeholder="如：&#10;打印报名表&#10;找辅导员签字"></textarea></div>
+    <button class="btn-primary" id="btnSaveForm">保存</button>
+    <button class="btn-ghost mt" id="btnCancelForm" style="width:100%">取消</button>
+  </div>
+</div>
 <input type="file" id="importFile" accept=".json,application/json" class="hidden">
+
 <script>
 "use strict";
 /* =========================================================================
@@ -1054,19 +1583,27 @@ var AWARD = (function () {
   };
 })();
 </script>
+
 <script>
 "use strict";
 /* =========================================================================
- * AI 解析引擎 —— agnes-2.5-flash（OpenAI 兼容 /chat/completions）
- * 失败自动回退本地规则（AWARD.analyze）
- * 兼容性：不用 AbortController / 可选链 / replaceAll
+ * AI 解析引擎 v3 —— 三档智能模式（极速 / 均衡 / 深度），支持文字 + 图片
+ * OpenAI 兼容 /chat/completions；失败由调用方回退本地规则（AWARD.analyze）
+ * 兼容性：不用 AbortController / 可选链 / replaceAll / 模板字符串
+ * 注：按产品要求，界面与状态提示中不出现具体模型名称
  * ========================================================================= */
 var AI_CFG = {
   baseUrl: "https://apihub.agnes-ai.com/v1",
   apiKey: "sk-kwMetsNJdo3vYZ56PfciEjbcWQMZVtyUdh4D2Po1XkbykRXE",
-  model: "agnes-2.5-flash",
-  timeoutMs: 45000,
+  timeoutMs: 60000,
   maxTokens: 4000
+};
+
+/* 三档智能模式（键名仅内部使用，界面只显示中文档位名） */
+var AI_MODES = {
+  speed:   { model: "agnes-2.5-flash", label: "极速" },
+  balance: { model: "agnes-3.0-flash", label: "均衡" },
+  deep:    { model: "agnes-2.5-pro",   label: "深度" }
 };
 
 var AI = (function () {
@@ -1079,24 +1616,27 @@ var AI = (function () {
 
   function buildSystemPrompt() {
     return [
-      '你是「倒计时」App 内置的通知解析引擎，负责从大学生竞赛/评奖/奖学金/活动通知文本中提取结构化信息。',
+      '你是「倒计时」App 内置的通知解析引擎，负责从大学生竞赛/评奖/奖学金/活动/待办类信息中提取结构化内容。信息可能以文字或图片形式给出。',
       '',
       '只输出一个 JSON 对象，禁止 markdown 代码块、禁止任何解释性文字。输出格式：',
-      '{"items":[{"name":"","deadline":"YYYY-MM-DD 或 null","time":"HH:MM 或 null","method":" 或 null","link":" 或 null","materials":[],"grade":" 或 null","major":" 或 null","note":" 或 null"}]}',
+      '{"items":[{"kind":"event 或 todo","name":"","deadline":"YYYY-MM-DD 或 null","time":"HH:MM 或 null","method":" 或 null","link":" 或 null","materials":[],"grade":" 或 null","major":" 或 null","note":" 或 null","subtasks":[]}]}',
       '',
       '提取规则：',
-      '1. 用户可能一次粘贴多条不同通知，每条提取为一个 item，顺序与原文一致',
-      '2. name：通知的正式名称/标题（去掉「关于」「的通知」等外壳字样）',
-      '3. deadline：报名或材料提交的截止日期。原文未写年份时，以今天（' + todayIso() + '）为基准推断最合理的将来日期；「本月底」「下周五」等相对表述换算为具体日期；确实没有截止日期填 null',
-      '4. time：截止时刻（24 小时制 HH:MM）。原文无时刻信息填 null',
-      '5. method：报名/提交方式的一句话概括，如「官网在线报名」「邮件报名至 xxx@xx.com」「扫码报名」「班级统一收集」',
-      '6. link：原文中出现的报名/详情链接 URL，没有填 null',
-      '7. materials：需要提交或准备的材料名称数组，没有填 []',
-      '8. grade：年级限制原文要点，如「大二、大三」「全体本科生」，未提及填 null',
-      '9. major：专业限制原文要点，如「限法学类专业」「不限专业」，未提及填 null',
-      '10. note：其他值得注意的要点（如「需学院盖章」「每个团队限 3-5 人」），没有填 null',
-      '11. 只提取原文明确出现或可直接换算的信息，绝不编造',
-      '12. 输出必须是严格合法的 JSON：字符串值内部如出现英文双引号必须用反斜杠转义，或改用中文引号“”；不要用 markdown 代码块包裹'
+      '1. 用户可能一次提供多条不同通知，每条提取为一个 item，顺序与原文一致',
+      '2. kind 判定：有明确截止日期，或属于赛事/评奖/奖学金/活动/申请等日程类 → "event"；没有明确截止日期的日常待办、打卡、提醒事项（如“记得交表”“周三开会带材料”）→ "todo"',
+      '3. name：通知的正式名称/标题，或待办事项的内容本身（去掉「关于」「的通知」等外壳字样）',
+      '4. deadline：报名或材料提交的截止日期；待办有明确日期时也填写。原文未写年份时，以今天（' + todayIso() + '）为基准推断最合理的将来日期；「本月底」「下周五」等相对表述换算为具体日期；确实没有填 null',
+      '5. time：截止或发生时刻（24 小时制 HH:MM）。原文无时刻信息填 null',
+      '6. method：报名/提交方式的一句话概括，如「官网在线报名」「邮件报名至 xxx@xx.com」，待办填 null',
+      '7. link：原文中出现的报名/详情链接 URL，没有填 null；图片中二维码无法识别时忽略',
+      '8. materials：需要提交或准备的材料名称数组，没有填 []',
+      '9. grade：年级限制原文要点，如「大二、大三」「全体本科生」，未提及填 null',
+      '10. major：专业限制原文要点，如「限法学类专业」，未提及填 null',
+      '11. note：其他值得注意的要点，没有填 null',
+      '12. subtasks：原文中明确列出的准备步骤或阶段性事项（如「先报名→再提交作品」拆成数组）；没有填 []',
+      '13. 图片信息同样按上述规则提取图片中的文字内容；若图片与通知无关，返回 {"items":[]}',
+      '14. 只提取原文明确出现或可直接换算的信息，绝不编造',
+      '15. 输出必须是严格合法的 JSON：字符串值内部如出现英文双引号必须用反斜杠转义，或改用中文引号“”；不要用 markdown 代码块包裹'
     ].join('\n');
   }
 
@@ -1141,8 +1681,22 @@ var AI = (function () {
   function validDate(s) { return /^\d{4}-\d{2}-\d{2}$/.test(String(s)); }
   function validTime(s) { return /^\d{1,2}:\d{2}$/.test(String(s)); }
 
+  function normSubtasks(v) {
+    var out = [];
+    if (Object.prototype.toString.call(v) === "[object Array]") {
+      v.forEach(function (s) {
+        var t = String(s || "").trim();
+        if (t && t.length <= 60) out.push(t.slice(0, 60));
+      });
+    } else if (typeof v === "string" && v.trim()) {
+      out = v.trim().split(/[\n、;；]+/).filter(function (x) { return x.trim(); });
+    }
+    return out.slice(0, 12);
+  }
+
   /* LLM item → 与本地解析器同构的 row（交由 AWARD.judge 打标） */
   function toItem(row) {
+    var isTodo = String(row.kind || "").toLowerCase() === "todo";
     var dl = validDate(row.deadline) ? row.deadline : null;
     var tm = validTime(row.time) ? row.time : null;
     var note = (row.note && String(row.note).trim()) || "";
@@ -1157,24 +1711,39 @@ var AI = (function () {
       mats = row.materials.trim().split(/[、;；,，]\s*/).filter(function (x) { return x; });
     }
     return {
+      kind: isTodo ? "todo" : "event",
       name: (row.name && String(row.name).trim()) || "",
       deadline: dl ? (dl + " " + (tm || "23:59")) : "未注明",
-      method: (row.method && String(row.method).trim()) || "未注明",
-      grade: (row.grade && String(row.grade).trim()) || "未注明",
-      majorLimit: (row.major && String(row.major).trim()) || "不限专业",
-      link: (row.link && String(row.link).trim()) || "",
-      materials: mats.join("、"),
-      note: note
+      method: isTodo ? "" : ((row.method && String(row.method).trim()) || "未注明"),
+      grade: isTodo ? "未注明" : ((row.grade && String(row.grade).trim()) || "未注明"),
+      majorLimit: isTodo ? "不限专业" : ((row.major && String(row.major).trim()) || "不限专业"),
+      link: isTodo ? "" : ((row.link && String(row.link).trim()) || ""),
+      materials: isTodo ? "" : mats.join("、"),
+      note: note,
+      subtasks: normSubtasks(row.subtasks)
     };
   }
 
-  /* 主入口：Promise<rows>（已 judge + 排序，失败 reject） */
-  function parse(text) {
+  /* 主入口：parse(text, imageDataUrl, mode) → Promise<rows>
+   * imageDataUrl：可选，data:image/...;base64,...（识图解析）
+   * 失败 reject；由调用方回退本地规则 */
+  function parse(text, imageDataUrl, mode) {
+    var conf = AI_MODES[mode] || AI_MODES.balance;
     return new Promise(function (resolve, reject) {
       var settled = false;
       var timer = setTimeout(function () {
         if (!settled) { settled = true; reject(new Error("timeout")); }
       }, AI_CFG.timeoutMs);
+
+      var userContent;
+      if (imageDataUrl) {
+        userContent = [
+          { type: "text", text: "请解析这条通知（图片" + (text ? "与文字" : "") + "），按系统要求的 JSON 格式输出。" + (text ? "\n补充文字：" + text : "") },
+          { type: "image_url", image_url: { url: imageDataUrl } }
+        ];
+      } else {
+        userContent = text;
+      }
 
       fetch(AI_CFG.baseUrl + "/chat/completions", {
         method: "POST",
@@ -1183,10 +1752,10 @@ var AI = (function () {
           "Authorization": "Bearer " + AI_CFG.apiKey
         },
         body: JSON.stringify({
-          model: AI_CFG.model,
+          model: conf.model,
           messages: [
             { role: "system", content: buildSystemPrompt() },
-            { role: "user", content: text }
+            { role: "user", content: userContent }
           ],
           temperature: 0,
           max_tokens: AI_CFG.maxTokens,
@@ -1213,14 +1782,24 @@ var AI = (function () {
     });
   }
 
-  return { parse: parse };
+  return { parse: parse, MODES: AI_MODES };
 })();
 </script>
+
 <script>
 "use strict";
 /* =========================================================================
- * 倒计时 v2 —— App 状态与首页（倒计时卡片 / 环形进度）
+ * 倒计时 v3 —— 应用核心：状态 / 持久化 / 倒计时视图 / 月历
  * ========================================================================= */
+
+/* ---------- 版本与服务器（应用内更新 / 云同步） ---------- */
+var APP_VERSION = "3.0.0";
+var SERVER = "https://dddl.space-z.ai";
+function serverBase() {
+  if (location.protocol === "http:" || location.protocol === "https:") return location.origin;
+  return SERVER;
+}
+var IS_ANDROID = !!(window.DaoUpdate && window.DaoUpdate.saveUpdate);
 
 /* ---------- 工具 ---------- */
 function $(id) { return document.getElementById(id); }
@@ -1231,12 +1810,23 @@ function esc(s) {
 }
 function pad2(n) { return (n < 10 ? "0" : "") + n; }
 function todayIso() { var d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+function uid(p) { return (p || "r") + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 var WEEK_CN = ["日", "一", "二", "三", "四", "五", "六"];
 function fmtMD(iso) {
   if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return "";
   var p = iso.split("-");
   var d = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
   return parseInt(p[1], 10) + "月" + parseInt(p[2], 10) + "日 周" + WEEK_CN[d.getDay()];
+}
+function fmtRel(ts) {
+  if (!ts) return "";
+  var day = 86400000;
+  var t = new Date(); var t0 = new Date(t.getFullYear(), t.getMonth(), t.getDate()).getTime();
+  var d = Math.floor((t0 - new Date(ts).setHours(0, 0, 0, 0)) / day);
+  if (d <= 0) return "今天";
+  if (d === 1) return "昨天";
+  if (d < 30) return d + " 天前";
+  return Math.floor(d / 30) + " 个月前";
 }
 
 /* ---------- Toast / Modal ---------- */
@@ -1264,45 +1854,128 @@ function closeModal() {
   modalCb = null;
 }
 
-/* ---------- 状态与持久化（沿用 v1 存储，数据无缝升级） ---------- */
-var STORE_KEY = "saishiguanja-v1";
+/* ---------- 状态与持久化（v3 全新结构，兼容迁移 v1/v2） ---------- */
+var STORE_KEY = "daojishi-v3";
+var OLD_KEY = "saishiguanja-v1";
 var S = {
-  tab: "home",
-  engine: "ai",
+  tab: "home", homeMode: "list",
+  engine: "ai", mode: "balance", theme: "night",
   profile: { name: "", college: "", grade: "大二", major: "", reminderDays: 3 },
-  records: [],
-  filter: "all", query: "",
-  parsedRows: null, parsedEngine: "", checked: {},
+  profileU: 0,
+  records: [],   /* {id,name,deadline,deadlineTime,method,link,materials,majorLimit,gradeLimit,fit,note,added,u,del,subtasks:[{id,text,done,doneAt,u}]} */
+  todos: [],     /* {id,text,note,due,done,createdAt,doneAt,u,del} */
+  filter: "all", query: "", todoFilter: "open", todoFoldDone: false,
+  parsedRows: null, checked: {},
   calY: new Date().getFullYear(), calM: new Date().getMonth() + 1,
   pickedDay: todayIso(), alertDismissed: false,
-  openIds: {}
+  openIds: {}, openTodos: {},
+  autoSync: false, syncCode: "", lastSyncAt: "", lastPromptVer: "",
+  formEditId: null, todoDraftDate: "",
+  imgDataUrl: ""
 };
+
+function nowU() { return Date.now(); }
 
 function persist() {
   try {
-    localStorage.setItem(STORE_KEY, JSON.stringify({ profile: S.profile, records: S.records, engine: S.engine }));
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      v: 3,
+      profile: S.profile, profileU: S.profileU,
+      records: S.records, todos: S.todos,
+      settings: {
+        engine: S.engine, mode: S.mode, theme: S.theme,
+        autoSync: S.autoSync, syncCode: S.syncCode,
+        lastSyncAt: S.lastSyncAt, lastPromptVer: S.lastPromptVer
+      },
+      savedAt: new Date().toISOString()
+    }));
   } catch (e) { }
+  if (typeof scheduleAutoSync === "function") scheduleAutoSync();
 }
+
+function ensureRecord(r) {
+  if (!r.id) r.id = uid("r");
+  if (!r.u) r.u = nowU();
+  if (!r.subtasks) r.subtasks = [];
+  r.subtasks.forEach(function (s) {
+    if (!s.id) s.id = uid("s");
+    if (!s.u) s.u = r.u;
+  });
+  if (!r.fit) r.fit = "待确认";
+  if (!r.method) r.method = "未注明";
+  if (!r.gradeLimit) r.gradeLimit = "未注明";
+  if (!r.majorLimit) r.majorLimit = "不限专业";
+  return r;
+}
+
+function ensureTodo(t) {
+  if (!t.id) t.id = uid("t");
+  if (!t.u) t.u = nowU();
+  if (typeof t.done !== "boolean") t.done = false;
+  return t;
+}
+
 function loadStore() {
   try {
     var raw = localStorage.getItem(STORE_KEY);
-    if (!raw) return;
-    var obj = JSON.parse(raw);
-    if (obj && obj.profile) {
-      ["name", "college", "grade", "major"].forEach(function (k) {
-        if (typeof obj.profile[k] === "string") S.profile[k] = obj.profile[k];
-      });
-      var rd = parseInt(obj.profile.reminderDays, 10);
-      S.profile.reminderDays = (rd >= 1 && rd <= 30) ? rd : 3;
+    if (raw) {
+      var obj = JSON.parse(raw);
+      if (obj && obj.v === 3) {
+        if (obj.profile) {
+          ["name", "college", "grade", "major"].forEach(function (k) {
+            if (typeof obj.profile[k] === "string") S.profile[k] = obj.profile[k];
+          });
+          var rd = parseInt(obj.profile.reminderDays, 10);
+          S.profile.reminderDays = (rd >= 1 && rd <= 30) ? rd : 3;
+        }
+        S.profileU = obj.profileU || nowU();
+        if (Object.prototype.toString.call(obj.records) === "[object Array]") {
+          S.records = obj.records.filter(function (r) { return r && r.name; }).map(ensureRecord);
+        }
+        if (Object.prototype.toString.call(obj.todos) === "[object Array]") {
+          S.todos = obj.todos.filter(function (t) { return t && t.text; }).map(ensureTodo);
+        }
+        var st = obj.settings || {};
+        if (st.engine === "ai" || st.engine === "local") S.engine = st.engine;
+        if (st.mode === "speed" || st.mode === "balance" || st.mode === "deep") S.mode = st.mode;
+        if (st.theme) S.theme = st.theme;
+        if (typeof st.autoSync === "boolean") S.autoSync = st.autoSync;
+        if (st.syncCode) S.syncCode = String(st.syncCode).toUpperCase();
+        S.lastSyncAt = st.lastSyncAt || "";
+        S.lastPromptVer = st.lastPromptVer || "";
+        return;
+      }
     }
-    if (obj && Object.prototype.toString.call(obj.records) === "[object Array]") {
-      S.records = obj.records.filter(function (r) { return r && r.name; });
+    /* v2/v1 数据迁移（同名 key：saishiguanja-v1） */
+    var old = localStorage.getItem(OLD_KEY);
+    if (old) {
+      var o = JSON.parse(old);
+      if (o && o.profile) {
+        ["name", "college", "grade", "major"].forEach(function (k) {
+          if (typeof o.profile[k] === "string") S.profile[k] = o.profile[k];
+        });
+        var ord = parseInt(o.profile.reminderDays, 10);
+        S.profile.reminderDays = (ord >= 1 && ord <= 30) ? ord : 3;
+      }
+      S.profileU = nowU();
+      if (o && Object.prototype.toString.call(o.records) === "[object Array]") {
+        S.records = o.records.filter(function (r) { return r && r.name; }).map(ensureRecord);
+      }
+      if (o && (o.engine === "ai" || o.engine === "local")) S.engine = o.engine;
+      if (S.records.length) persist(); /* 迁移成功立即落盘 v3 结构 */
     }
-    if (obj && (obj.engine === "ai" || obj.engine === "local")) S.engine = obj.engine;
   } catch (e) { }
 }
 
-/* ---------- 倒计时/紧急度 ---------- */
+/* 清理删除超过 30 天的墓碑记录 */
+function purgeTombstones() {
+  var cut = nowU() - 30 * 86400000, dirty = false;
+  S.records = S.records.filter(function (r) { if (r.del && r.del < cut) { dirty = true; return false; } return true; });
+  S.todos = S.todos.filter(function (t) { if (t.del && t.del < cut) { dirty = true; return false; } return true; });
+  return dirty;
+}
+
+/* ---------- 倒计时 / 紧急度（主题化配色） ---------- */
 function daysLeft(rec) {
   if (!rec.deadline) return null;
   var cd = AWARD.countdown(rec.deadline);
@@ -1310,13 +1983,13 @@ function daysLeft(rec) {
 }
 function urgency(rec) {
   var d = daysLeft(rec);
-  if (d === null) return { cls: "urg-none", color: "rgba(255,255,255,0.30)", num: "—", unit: "无截止", frac: 0, dashed: true };
-  if (d < 0) return { cls: "urg-red", color: "#FF5D5D", num: String(-d), unit: "天前", frac: 1 };
-  if (d === 0) return { cls: "urg-coral", color: "#FF7A6B", num: "今", unit: "天截止", frac: 1 };
-  if (d <= 3) return { cls: "urg-coral", color: "#FF7A6B", num: String(d), unit: "天截止", frac: d / 60 };
-  if (d <= 7) return { cls: "urg-amber", color: "#FFC24B", num: String(d), unit: "天截止", frac: d / 60 };
-  if (d <= 15) return { cls: "urg-violet", color: "#8B7CFF", num: String(d), unit: "天截止", frac: d / 60 };
-  return { cls: "urg-teal", color: "#5EEAD4", num: String(d), unit: "天截止", frac: d / 60 };
+  if (d === null) return { cls: "urg-none", color: "var(--t3)", num: "—", unit: "无截止", frac: 0, dashed: true };
+  if (d < 0) return { cls: "urg-red", color: "var(--u-red)", num: String(-d), unit: "天前", frac: 1 };
+  if (d === 0) return { cls: "urg-coral", color: "var(--u-coral)", num: "今", unit: "天截止", frac: 1 };
+  if (d <= 3) return { cls: "urg-coral", color: "var(--u-coral)", num: String(d), unit: "天截止", frac: d / 60 };
+  if (d <= 7) return { cls: "urg-amber", color: "var(--u-amber)", num: String(d), unit: "天截止", frac: d / 60 };
+  if (d <= 15) return { cls: "urg-violet", color: "var(--u-violet)", num: String(d), unit: "天截止", frac: d / 60 };
+  return { cls: "urg-teal", color: "var(--u-teal)", num: String(d), unit: "天截止", frac: d / 60 };
 }
 var RING_C = 169.65;
 
@@ -1325,12 +1998,40 @@ function fitChipCls(fit) {
   if (fit === "年级不符") return "mismatch";
   return "unsure";
 }
+function subStat(rec) {
+  var total = rec.subtasks.length, done = 0;
+  rec.subtasks.forEach(function (s) { if (s.done) done++; });
+  return { total: total, done: done };
+}
 
 /* ---------- 首页渲染 ---------- */
+function subtaskBox(rec) {
+  var st = subStat(rec);
+  var pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+  var rows = "";
+  rec.subtasks.forEach(function (s) {
+    rows += '<div class="sub-row' + (s.done ? " done" : "") + '" data-sid="' + esc(s.id) + '">' +
+      '<button class="tcb sm' + (s.done ? " on" : "") + '" data-sid="' + esc(s.id) + '" data-act="sub-toggle">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>' +
+      '<span class="sub-text">' + esc(s.text) + "</span>" +
+      '<button class="sub-del" data-sid="' + esc(s.id) + '" data-act="sub-del">' +
+      '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>' +
+      "</div>";
+  });
+  return '<div class="sub-box">' +
+    '<div class="sub-head">子待办<span class="cnt">' + st.done + "/" + st.total + "</span>" +
+    '<span class="sub-bar"><i style="width:' + pct + '%"></i></span></div>' +
+    (rows || '<div class="t-note" style="margin:2px 0 8px">还没有子待办</div>') +
+    '<div class="sub-add"><input placeholder="添加子待办，回车确认" data-sub-input="' + esc(rec.id) + '">' +
+    '<button data-sub-add="' + esc(rec.id) + '">添加</button></div>' +
+    "</div>";
+}
+
 function recordCard(rec, idx) {
   var u = urgency(rec);
   var d = daysLeft(rec);
   var open = S.openIds[rec.id] ? " open" : "";
+  var st = subStat(rec);
   var dueTxt;
   if (rec.deadline) {
     if (d < 0) dueTxt = "已于 " + fmtMD(rec.deadline) + " 截止";
@@ -1346,6 +2047,7 @@ function recordCard(rec, idx) {
     chips += '<span class="chip">' + esc(rec.gradeLimit.length > 12 ? rec.gradeLimit.slice(0, 12) + "…" : rec.gradeLimit) + "</span>";
   }
   if (rec.materials) chips += '<span class="chip brand">材料 ' + rec.materials.split(/[、;；,，]/).filter(function (x) { return x.trim(); }).length + " 项</span>";
+  if (st.total) chips += '<span class="chip brand">子待办 ' + st.done + "/" + st.total + "</span>";
   if (rec.link) chips += '<span class="chip link">有链接</span>';
 
   var dots = u.dashed ? ' stroke-dasharray="3 6"' : "";
@@ -1353,7 +2055,7 @@ function recordCard(rec, idx) {
     '<div class="ring-box">' +
     '<svg width="64" height="64" viewBox="0 0 64 64">' +
     '<circle class="ring-bg" cx="32" cy="32" r="27" fill="none" stroke-width="5"' + dots + "/>" +
-    '<circle class="ring-fg" cx="32" cy="32" r="27" fill="none" stroke-width="5" stroke="' + u.color +
+    '<circle class="ring-fg" cx="32" cy="32" r="27" fill="none" stroke-width="5" style="stroke:' + u.color +
     '" stroke-linecap="round" stroke-dasharray="169.65" stroke-dashoffset="169.65" data-off="' + (RING_C * (1 - Math.max(0.04, Math.min(1, u.frac)))).toFixed(1) + '"/>' +
     "</svg>" +
     '<div class="ring-mid"><div class="ring-num" style="color:' + u.color + '">' + u.num + '</div><div class="ring-unit">' + u.unit + "</div></div>" +
@@ -1379,11 +2081,15 @@ function recordCard(rec, idx) {
     '<div class="chips">' + chips + "</div>" +
     '<div class="rcard-detail">' +
     (detail || '<div class="drow"><div class="v" style="color:var(--t3)">暂无更多细节</div></div>') +
+    subtaskBox(rec) +
     '<div class="rcard-actions">' +
     '<span class="added-at">入库于 ' + esc(rec.added || "") + "</span>" +
+    "<span>" +
+    '<button class="mini-link" data-act="edit" data-id="' + esc(rec.id) + '">编辑</button>' +
     '<button class="btn-danger-txt del-btn" data-id="' + esc(rec.id) + '">' +
     '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
     "删除</button>" +
+    "</span>" +
     "</div></div>" +
     "</div></div>";
 }
@@ -1396,6 +2102,7 @@ function renderHome() {
   var q = S.query.trim().toLowerCase();
   var near = [], over = [], nodate = [], up = [];
   S.records.forEach(function (r) {
+    if (r.del) return;
     if (q && r.name.toLowerCase().indexOf(q) < 0) return;
     var d = daysLeft(r);
     if (d === null) nodate.push(r);
@@ -1431,7 +2138,6 @@ function renderHome() {
     $("searchWrap").style.display = "";
   }
 
-  /* 环形进度动画（插入后下一帧设置目标偏移） */
   setTimeout(function () {
     var fgs = document.querySelectorAll("#homeList .ring-fg");
     for (var i = 0; i < fgs.length; i++) {
@@ -1467,187 +2173,39 @@ function renderUrgent(near, up) {
 
 function deleteRecord(id) {
   var rec = null;
-  S.records = S.records.filter(function (r) { if (r.id === id) { rec = r; return false; } return true; });
+  S.records.forEach(function (r) { if (r.id === id) rec = r; });
+  if (!rec) return;
+  rec.del = nowU(); rec.u = nowU();
+  if (!S.autoSync) { /* 墓碑仅同步时需要 */ }
   persist();
-  renderHome();
-  renderCal();
-  if (rec) toast("已删除「" + esc(rec.name.slice(0, 16)) + "」");
+  renderHome(); renderCal(); renderStats(); renderTodoBadge();
+  toast("已删除「" + esc(rec.name.slice(0, 16)) + "」");
 }
 
-function rejudgeAll() {
-  if (!S.records.length) return 0;
-  var items = S.records.map(function (r) {
-    return { name: r.name, deadline: "", method: "", grade: r.gradeLimit || "未注明", majorLimit: r.majorLimit || "不限专业", link: "", materials: "", note: "" };
+/* ---------- 月历（日程 + 待办到期） ---------- */
+function calItemsByDate() {
+  var byDate = {};
+  S.records.forEach(function (r) {
+    if (r.del || !r.deadline) return;
+    if (!byDate[r.deadline]) byDate[r.deadline] = [];
+    byDate[r.deadline].push({ kind: "event", name: r.name, time: r.deadlineTime || "23:59", left: daysLeft(r), color: urgency(r).color });
   });
-  var judged = AWARD.judge(items, S.profile);
-  S.records.forEach(function (r, i) { r.fit = judged[i].fit; });
-  return S.records.length;
-}
-</script>
-<script>
-"use strict";
-/* =========================================================================
- * 倒计时 v2 —— 解析流程 / 月历 / 我的 / 路由与初始化
- * ========================================================================= */
-
-/* ---------- Tab 路由 ---------- */
-function switchTab(tab) {
-  S.tab = tab;
-  ["home", "parse", "cal", "me"].forEach(function (t) {
-    $("view-" + t).classList.toggle("on", t === tab);
+  S.todos.forEach(function (t) {
+    if (t.del || !t.due || t.done) return;
+    if (!byDate[t.due]) byDate[t.due] = [];
+    byDate[t.due].push({ kind: "todo", name: t.text, time: "", left: AWARD.countdown(t.due) ? AWARD.countdown(t.due).left : null, color: "var(--u-violet)" });
   });
-  var btns = document.querySelectorAll("#dock .dock-btn");
-  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-tab") === tab);
-  window.scrollTo(0, 0);
-  if (tab === "cal") renderCal();
+  return byDate;
 }
 
-/* ---------- 解析流程 ---------- */
-function localParse(text) {
-  return AWARD.analyze(text, S.profile);
-}
-
-function finishParse(rows, engineLabel) {
-  S.parsedRows = rows;
-  S.parsedEngine = engineLabel;
-  S.checked = {};
-  rows.forEach(function (r, i) { S.checked["p" + i] = true; });
-  $("engineBadge").classList.remove("hidden");
-  $("engineBadge").innerHTML =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/></svg>' +
-    "已解析出 <b>" + rows.length + "</b> 条 · 引擎：<b>" + esc(engineLabel) + "</b>";
-  renderParseResults();
-}
-
-function renderParseResults() {
-  var rows = S.parsedRows || [];
-  var html = "";
-  rows.forEach(function (r, i) {
-    var key = "p" + i;
-    var on = S.checked[key] ? " checked" : "";
-    var due;
-    if (r.deadline && r.deadline !== "未注明") {
-      var cd = AWARD.countdown(r.deadline.slice(0, 10));
-      due = fmtMD(r.deadline.slice(0, 10)) + " " + (r.deadline.length >= 16 ? r.deadline.slice(11, 16) : "23:59") + " 截止";
-      if (cd) due += " · " + cd.span;
-    } else due = "截止时间未注明";
-
-    function prow(k, v) { return v ? '<div class="drow"><div class="k">' + k + '</div><div class="v">' + v + "</div></div>" : ""; }
-    var grid = "";
-    grid += prow("截止", esc(due));
-    grid += prow("方式", esc(r.method));
-    grid += prow("材料", esc(r.materials));
-    grid += prow("年级", esc(r.grade));
-    grid += prow("专业", esc(r.majorLimit));
-    grid += prow("链接", r.link ? '<a href="' + esc(r.link) + '" target="_blank" rel="noopener">' + esc(r.link) + "</a>" : "");
-    grid += prow("备注", esc(r.note));
-
-    html += '<div class="pcard' + on + '" data-key="' + key + '">' +
-      '<div class="pcard-head">' +
-      '<span class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>' +
-      '<div style="flex:1;min-width:0">' +
-      '<div class="pcard-name">' + esc(r.name) + "</div>" +
-      '<div class="pcard-due">' + esc(due) + "</div>" +
-      "</div></div>" +
-      '<div class="chips"><span class="chip ' + fitChipCls(r.fit) + '">' + esc(r.fit) + '</span><span class="chip">' + esc(r.majorTag || "") + "</span></div>" +
-      '<div class="pcard-grid">' + grid + "</div>" +
-      "</div>";
-  });
-  $("parseResults").innerHTML = html;
-  updateSaveBar();
-}
-
-function updateSaveBar() {
-  var rows = S.parsedRows || [];
-  var n = 0;
-  rows.forEach(function (r, i) { if (S.checked["p" + i]) n++; });
-  var bar = $("parseAction");
-  if (!rows.length) { bar.classList.add("hidden"); return; }
-  bar.classList.remove("hidden");
-  $("btnSaveTxt").textContent = "入库所选 (" + n + ")";
-  $("btnCheckAll").textContent = (n === rows.length && n > 0) ? "取消全选" : "全选";
-  $("btnSave").disabled = n === 0;
-}
-
-function runParse() {
-  var text = $("noticeText").value.trim();
-  if (!text) { toast("先粘贴通知原文，或点「填入示例」"); return; }
-  if (S.engine === "local") {
-    finishParse(localParse(text), "本地规则");
-    return;
-  }
-  var btn = $("btnParse"), txt = $("btnParseTxt"), st = $("parseStatus");
-  btn.disabled = true;
-  btn.classList.add("loading");
-  txt.textContent = "AI 解析中…";
-  st.classList.remove("hidden");
-  st.innerHTML = '<span class="spin"></span>agnes-2.5-flash 正在阅读通知…';
-  $("engineBadge").classList.add("hidden");
-
-  var done = false;
-  AI.parse(text).then(function (items) {
-    if (done) return; done = true;
-    var rows = AWARD.judge(items, S.profile);
-    rows.sort(function (a, b) {
-      var O = { "符合": 0, "待确认": 1, "年级不符": 2 };
-      return (O[a.fit] !== undefined ? O[a.fit] : 3) - (O[b.fit] !== undefined ? O[b.fit] : 3);
-    });
-    resetParseUi();
-    finishParse(rows, "AI · agnes-2.5-flash");
-  }).catch(function () {
-    if (done) return; done = true;
-    resetParseUi();
-    finishParse(localParse(text), "本地规则（AI 不可用）");
-    toast("AI 暂时不可用，已用本地规则解析");
-  });
-}
-
-function resetParseUi() {
-  var btn = $("btnParse");
-  btn.disabled = false;
-  btn.classList.remove("loading");
-  $("btnParseTxt").textContent = "开始解析";
-  $("parseStatus").classList.add("hidden");
-}
-
-function saveChecked() {
-  var rows = S.parsedRows || [];
-  var picked = [];
-  rows.forEach(function (r, i) { if (S.checked["p" + i]) picked.push(r); });
-  if (!picked.length) { toast("先勾选要入库的条目"); return; }
-  var recs = AWARD.rowsToRecords(picked);
-  var added = 0, skipped = 0;
-  recs.forEach(function (r) {
-    var dup = S.records.some(function (x) { return x.name === r.name && x.deadline === r.deadline; });
-    if (dup) { skipped++; return; }
-    S.records.push(r); added++;
-  });
-  persist();
-  S.parsedRows = null; S.checked = {};
-  $("parseResults").innerHTML = "";
-  $("parseAction").classList.add("hidden");
-  $("engineBadge").classList.add("hidden");
-  renderHome();
-  renderCal();
-  switchTab("home");
-  toast("已入库 " + added + " 项" + (skipped ? "，跳过重复 " + skipped + " 项" : ""));
-}
-
-/* ---------- 月历 ---------- */
 function renderCal() {
   $("calTitle").textContent = S.calY + "年" + S.calM + "月";
   var first = new Date(S.calY, S.calM - 1, 1);
-  var offset = (first.getDay() + 6) % 7; /* 周一开头 */
+  var offset = (first.getDay() + 6) % 7;
   var daysIn = new Date(S.calY, S.calM, 0).getDate();
   var daysPrev = new Date(S.calY, S.calM - 1, 0).getDate();
   var tIso = todayIso();
-
-  var byDate = {};
-  S.records.forEach(function (r) {
-    if (!r.deadline) return;
-    if (!byDate[r.deadline]) byDate[r.deadline] = [];
-    byDate[r.deadline].push(r);
-  });
+  var byDate = calItemsByDate();
 
   var html = "";
   for (var i = 0; i < 42; i++) {
@@ -1668,8 +2226,7 @@ function renderCal() {
     if (cellIso && byDate[cellIso]) {
       var recs = byDate[cellIso].slice(0, 3);
       for (var j = 0; j < recs.length; j++) {
-        var u = urgency(recs[j]);
-        dots += '<span class="cal-dot" style="background:' + u.color + '"></span>';
+        dots += '<span class="cal-dot" style="background:' + recs[j].color + '"></span>';
       }
     }
     html += '<button class="' + cls + '"' + (cellIso ? ' data-iso="' + cellIso + '"' : " disabled") + ">" +
@@ -1681,12 +2238,11 @@ function renderCal() {
   if (S.pickedDay && byDate[S.pickedDay]) {
     var list = byDate[S.pickedDay];
     var rows = "";
-    list.forEach(function (r) {
-      var u = urgency(r);
-      var d = daysLeft(r);
-      var due = (r.deadlineTime || "23:59") + " · " + (d === null ? "" : d < 0 ? "已过 " + (-d) + " 天" : d === 0 ? "今天截止" : "剩 " + d + " 天");
-      rows += '<div class="cal-row"><span class="cal-row-name">' + esc(r.name) + "</span>" +
-        '<span class="cal-row-due" style="color:' + u.color + '">' + due + "</span></div>";
+    list.forEach(function (it) {
+      var due = (it.kind === "todo" ? "待办 · " : it.time + " · ") +
+        (it.left === null ? "" : it.left < 0 ? "已过 " + (-it.left) + " 天" : it.left === 0 ? "今天截止" : "剩 " + it.left + " 天");
+      rows += '<div class="cal-row"><span class="cal-row-name">' + (it.kind === "todo" ? "☑ " : "") + esc(it.name) + "</span>" +
+        '<span class="cal-row-due" style="color:' + it.color + '">' + due + "</span></div>";
     });
     dl.innerHTML = '<div class="cal-day-head"><span class="cal-day-title">' + fmtMD(S.pickedDay) + "</span>" +
       '<span class="cal-day-cnt">' + list.length + " 项</span></div>" + rows;
@@ -1706,8 +2262,883 @@ function calShift(n) {
   S.pickedDay = (S.calY + "-" + pad2(S.calM)).indexOf(tIso.slice(0, 7)) === 0 ? tIso : null;
   renderCal();
 }
+</script>
 
-/* ---------- 我的 ---------- */
+<script>
+"use strict";
+/* =========================================================================
+ * 倒计时 v3 —— 待办视图 / 统计视图
+ * ========================================================================= */
+
+/* ---------- 待办 ---------- */
+function todoOverdue(t) {
+  if (!t.due || t.done) return false;
+  var cd = AWARD.countdown(t.due);
+  return cd && cd.left < 0;
+}
+
+function addTodo(text, due) {
+  text = String(text || "").trim();
+  if (!text) return false;
+  var t = {
+    id: uid("t"), text: text.slice(0, 80), note: "", due: due || "",
+    done: false, createdAt: todayIso(), doneAt: "", u: nowU()
+  };
+  S.todos.push(ensureTodo(t));
+  persist();
+  renderTodos(); renderStats(); renderCal(); renderTodoBadge();
+  return true;
+}
+
+function toggleTodo(id) {
+  S.todos.forEach(function (t) {
+    if (t.id === id) {
+      t.done = !t.done;
+      t.doneAt = t.done ? nowU() : "";
+      t.u = nowU();
+    }
+  });
+  persist();
+  renderTodos(); renderStats(); renderCal(); renderTodoBadge();
+}
+
+function deleteTodo(id) {
+  S.todos.forEach(function (t) { if (t.id === id) { t.del = nowU(); t.u = nowU(); } });
+  persist();
+  renderTodos(); renderStats(); renderCal(); renderTodoBadge();
+}
+
+function todoRow(t, idx) {
+  var open = S.openTodos[t.id] ? " open" : "";
+  var tags = "";
+  if (t.due) {
+    var od = todoOverdue(t);
+    tags += '<span class="t-tag ' + (od ? "overdue" : "due") + '">' + fmtMD(t.due) + (od ? " · 已逾期" : "") + "</span>";
+  }
+  var created = t.createdAt ? "创建于 " + t.createdAt : "";
+  var doneAt = t.done && t.doneAt ? "完成于 " + fmtRel(t.doneAt) : "";
+  var time = doneAt || created;
+
+  return '<div class="todo' + (t.done ? " done" : "") + open + '" data-id="' + esc(t.id) + '" style="animation-delay:' + Math.min(idx * 35, 280) + 'ms">' +
+    '<button class="tcb' + (t.done ? " on" : "") + '" data-act="todo-toggle" data-id="' + esc(t.id) + '">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>' +
+    '<div class="t-main">' +
+    '<div class="t-text">' + esc(t.text) + "</div>" +
+    (tags ? '<div class="t-meta">' + tags + "</div>" : "") +
+    '<div class="t-detail">' +
+    '<div class="t-note">' + (t.note ? esc(t.note) : '<span style="color:var(--t3)">没有备注</span>') + "</div>" +
+    '<div class="t-edit-row"><span class="lb">备注</span><input type="text" id="tn-' + esc(t.id) + '" value="' + esc(t.note) + '" placeholder="补充说明…"></div>' +
+    '<div class="t-edit-row"><span class="lb">日期</span><input type="date" id="td-' + esc(t.id) + '" value="' + esc(t.due) + '"></div>' +
+    '<div class="t-foot"><span class="t-time">' + esc(time) + "</span>" +
+    '<button class="btn-danger-txt" data-act="todo-del" data-id="' + esc(t.id) + '">' +
+    '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>删除</button></div>' +
+    "</div></div>" +
+    '<button class="t-chev" data-act="todo-chev" data-id="' + esc(t.id) + '">' +
+    '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>' +
+    "</div>";
+}
+
+function renderTodos() {
+  var open = [], done = [];
+  S.todos.forEach(function (t) {
+    if (t.del) return;
+    if (t.done) done.push(t); else open.push(t);
+  });
+  /* 待完成：逾期在前，再按日期、创建顺序 */
+  open.sort(function (a, b) {
+    var ao = todoOverdue(a) ? 0 : 1, bo = todoOverdue(b) ? 0 : 1;
+    if (ao !== bo) return ao - bo;
+    if (a.due && b.due) return a.due < b.due ? -1 : a.due > b.due ? 1 : 0;
+    if (a.due) return -1;
+    if (b.due) return 1;
+    return 0;
+  });
+  done.sort(function (a, b) { return (b.doneAt || 0) - (a.doneAt || 0); });
+
+  $("cntTodoOpen").textContent = open.length ? "(" + open.length + ")" : "";
+  $("cntTodoDone").textContent = done.length ? "(" + done.length + ")" : "";
+  $("cntTodoAll").textContent = (open.length + done.length) ? "(" + (open.length + done.length) + ")" : "";
+  $("todoSub").textContent = open.length ? open.length + " 项待完成 · " + done.length + " 项已完成" : (done.length ? "全部完成，太棒了" : "随时添加，做完划掉");
+
+  var html = "";
+  if (S.todoFilter === "open" || S.todoFilter === "all") {
+    if (S.todoFilter === "all" && open.length) {
+      html += '<div class="todo-group-head"><span>待完成（' + open.length + "）</span></div>";
+    }
+    open.forEach(function (t, i) { html += todoRow(t, i); });
+  }
+  if (S.todoFilter === "done" || S.todoFilter === "all") {
+    var foldBtn = S.todoFoldDone ? "展开" : "收起";
+    if (S.todoFilter === "all" && done.length) {
+      html += '<div class="todo-group-head"><span>已完成（' + done.length + '）</span><button class="fold" data-act="todo-fold">' + foldBtn + "</button></div>";
+    }
+    if (!S.todoFoldDone || S.todoFilter === "done") {
+      done.forEach(function (t, i) { html += todoRow(t, i); });
+    }
+  }
+  $("todoList").innerHTML = html;
+
+  var empty = $("todoEmpty");
+  var none = !html;
+  if (none) {
+    empty.classList.remove("hidden");
+    $("todoEmptyTitle").textContent = S.todos.length ? "这里空空如也" : "还没有待办事项";
+  } else {
+    empty.classList.add("hidden");
+  }
+  renderTodoBadge();
+}
+
+function renderTodoBadge() {
+  var n = 0;
+  S.todos.forEach(function (t) { if (!t.del && !t.done) n++; });
+  var b = $("todoBadge");
+  if (n > 0) { b.textContent = n > 99 ? "99+" : String(n); b.classList.remove("hidden"); }
+  else b.classList.add("hidden");
+}
+
+/* ---------- 统计 ---------- */
+function renderStats() {
+  var tIso = todayIso();
+  var total = 0, today = 0, near = 0, over = 0;
+  var upcoming = [];
+  S.records.forEach(function (r) {
+    if (r.del) return;
+    total++;
+    var d = daysLeft(r);
+    if (d === null) return;
+    if (d === 0) today++;
+    if (d >= 0 && d <= S.profile.reminderDays) near++;
+    if (d < 0) over++;
+    if (d >= 0) upcoming.push({ r: r, d: d });
+  });
+  upcoming.sort(function (a, b) { return a.d - b.d; });
+
+  $("stEvents").textContent = total;
+  $("stToday").textContent = today;
+  $("stNear").textContent = near;
+  $("stOver").textContent = over;
+  $("statsSub").textContent = "共 " + total + " 项日程 · " + (total - over) + " 项有效";
+
+  /* 待办完成度 */
+  var tOpen = 0, tDone = 0, tOverdue = 0;
+  S.todos.forEach(function (t) {
+    if (t.del) return;
+    if (t.done) tDone++;
+    else { tOpen++; if (todoOverdue(t)) tOverdue++; }
+  });
+  var tTotal = tOpen + tDone;
+  $("sbPending").textContent = tOpen;
+  $("sbDone").textContent = tDone;
+  $("sbOverdue").textContent = tOverdue;
+  var rate = tTotal ? Math.round(tDone / tTotal * 100) : 0;
+  $("todoRate").textContent = tTotal ? rate + "%" : "–";
+  var ring = $("todoRing");
+  var C = 226.2;
+  ring.style.strokeDashoffset = (C * (1 - rate / 100)).toFixed(1);
+
+  /* 子待办进度 */
+  var subHtml = "";
+  var subCount = 0;
+  S.records.forEach(function (r) {
+    if (r.del || !r.subtasks.length) return;
+    var st = subStat(r);
+    var pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+    subCount++;
+    subHtml += '<div class="stat-progress-row"><div class="spr-name"><span class="n">' + esc(r.name) + "</span>" +
+      '<span class="v">' + st.done + "/" + st.total + " · " + pct + "%</span></div>" +
+      '<div class="spr-bar"><i style="width:' + pct + '%"></i></div></div>';
+  });
+  if (!subCount) {
+    subHtml = '<div class="t-note" style="color:var(--t3)">在倒计时卡片里展开添加子待办后，这里会显示进度</div>';
+    $("subtaskStatsCard").classList.add("hidden");
+  } else {
+    $("subtaskStatsCard").classList.remove("hidden");
+  }
+  $("subtaskStats").innerHTML = subHtml;
+
+  /* 即将到期 Top5 */
+  var upHtml = "";
+  var upList = upcoming.slice(0, 5);
+  if (upList.length) {
+    upList.forEach(function (x) {
+      var u = urgency(x.r);
+      upHtml += '<div class="stat-list-row"><div class="slr-main"><div class="slr-name">' + esc(x.r.name) + '</div>' +
+        '<div class="slr-sub">' + fmtMD(x.r.deadline) + " " + esc(x.r.deadlineTime || "23:59") + "</div></div>" +
+        '<span class="slr-num" style="color:' + u.color + '">' + (x.d === 0 ? "今天" : x.d + "天") + "</span></div>";
+    });
+  } else {
+    upHtml = '<div class="t-note" style="color:var(--t3)">暂无即将到期的日程</div>';
+  }
+  $("upcomingStats").innerHTML = upHtml;
+
+  /* 最近完成 */
+  var recent = S.todos.filter(function (t) { return !t.del && t.done && t.doneAt; })
+    .sort(function (a, b) { return (b.doneAt || 0) - (a.doneAt || 0); }).slice(0, 5);
+  var rcHtml = "";
+  if (recent.length) {
+    recent.forEach(function (t) {
+      rcHtml += '<div class="stat-list-row"><div class="slr-main"><div class="slr-name" style="color:var(--t2);text-decoration:line-through">' + esc(t.text) + "</div>" +
+        '<div class="slr-sub">完成于 ' + fmtRel(t.doneAt) + "</div></div>" +
+        '<span class="t-tag due">' + fmtRel(t.doneAt) + "</span></div>";
+    });
+  } else {
+    rcHtml = '<div class="t-note" style="color:var(--t3)">完成的待办会出现在这里</div>';
+  }
+  $("recentStats").innerHTML = rcHtml;
+}
+</script>
+
+<script>
+"use strict";
+/* =========================================================================
+ * 倒计时 v3 —— 解析流程 / 图片识图 / 手动添加与编辑
+ * ========================================================================= */
+
+/* ---------- 本地解析 ---------- */
+function localParse(text) {
+  var rows = AWARD.analyze(text, S.profile);
+  rows.forEach(function (r) { r.kind = "event"; r.subtasks = []; });
+  return rows;
+}
+
+/* ---------- 解析结果展示 ---------- */
+function finishParse(rows, engineLabel) {
+  S.parsedRows = rows;
+  S.checked = {};
+  rows.forEach(function (r, i) { S.checked["p" + i] = true; });
+  $("engineBadge").classList.remove("hidden");
+  $("engineBadge").innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/></svg>' +
+    "已解析出 <b>" + rows.length + "</b> 条 · <b>" + esc(engineLabel) + "</b>";
+  renderParseResults();
+}
+
+function renderParseResults() {
+  var rows = S.parsedRows || [];
+  var html = "";
+  rows.forEach(function (r, i) {
+    var key = "p" + i;
+    var on = S.checked[key] ? " checked" : "";
+    var isTodo = r.kind === "todo";
+    var due;
+    if (r.deadline && r.deadline !== "未注明") {
+      var cd = AWARD.countdown(r.deadline.slice(0, 10));
+      due = fmtMD(r.deadline.slice(0, 10)) + " " + (r.deadline.length >= 16 ? r.deadline.slice(11, 16) : "23:59") + " 截止";
+      if (cd) due += " · " + cd.span;
+    } else due = isTodo ? "无日期待办" : "截止时间未注明";
+
+    function prow(k, v) { return v ? '<div class="drow"><div class="k">' + k + '</div><div class="v">' + v + "</div></div>" : ""; }
+    var grid = "";
+    grid += prow("截止", esc(due));
+    grid += prow("方式", esc(r.method));
+    grid += prow("材料", esc(r.materials));
+    grid += prow("年级", esc(r.grade));
+    grid += prow("专业", esc(r.majorLimit));
+    grid += prow("链接", r.link ? '<a href="' + esc(r.link) + '" target="_blank" rel="noopener">' + esc(r.link) + "</a>" : "");
+    grid += prow("子待办", r.subtasks && r.subtasks.length ? esc(r.subtasks.join("、")) : "");
+    grid += prow("备注", esc(r.note));
+
+    var kindChip = isTodo
+      ? '<span class="chip todo">待办</span>'
+      : '<span class="chip brand">日程</span>';
+    var kindBtn = isTodo ? "转为日程" : "转为待办";
+
+    html += '<div class="pcard' + on + '" data-key="' + key + '">' +
+      '<div class="pcard-head">' +
+      '<span class="cb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>' +
+      '<div style="flex:1;min-width:0">' +
+      '<div class="pcard-name">' + esc(r.name) + "</div>" +
+      '<div class="pcard-due">' + esc(due) + "</div>" +
+      "</div>" +
+      '<button class="kind-toggle" data-kind="' + key + '">' + kindBtn + "</button>" +
+      "</div>" +
+      '<div class="chips">' + kindChip +
+      (isTodo ? "" : '<span class="chip ' + fitChipCls(r.fit) + '">' + esc(r.fit) + "</span>") +
+      (r.subtasks && r.subtasks.length ? '<span class="chip brand">含 ' + r.subtasks.length + " 条子待办</span>" : "") +
+      "</div>" +
+      '<div class="pcard-grid">' + grid + "</div>" +
+      "</div>";
+  });
+  $("parseResults").innerHTML = html;
+  updateSaveBar();
+}
+
+function updateSaveBar() {
+  var rows = S.parsedRows || [];
+  var n = 0;
+  rows.forEach(function (r, i) { if (S.checked["p" + i]) n++; });
+  var bar = $("parseAction");
+  if (!rows.length) { bar.classList.add("hidden"); return; }
+  bar.classList.remove("hidden");
+  $("btnSaveTxt").textContent = "入库所选 (" + n + ")";
+  $("btnCheckAll").textContent = (n === rows.length && n > 0) ? "取消全选" : "全选";
+  $("btnSave").disabled = n === 0;
+}
+
+/* ---------- 图片选择与压缩 ---------- */
+function compressImage(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function () {
+    var dataUrl = String(reader.result || "");
+    if (dataUrl.length < 900000) { cb(dataUrl); return; } /* 已经足够小 */
+    var img = new Image();
+    img.onload = function () {
+      try {
+        var maxDim = 1568;
+        var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        var cv = document.createElement("canvas");
+        cv.width = Math.max(1, Math.round(img.width * scale));
+        cv.height = Math.max(1, Math.round(img.height * scale));
+        var ctx = cv.getContext("2d");
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, cv.width, cv.height);
+        ctx.drawImage(img, 0, 0, cv.width, cv.height);
+        cb(cv.toDataURL("image/jpeg", 0.85));
+      } catch (e) { cb(dataUrl); }
+    };
+    img.onerror = function () { cb(dataUrl); };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function setImage(dataUrl) {
+  S.imgDataUrl = dataUrl;
+  if (dataUrl) {
+    $("imgThumb").src = dataUrl;
+    $("imgThumbBox").classList.remove("hidden");
+    $("imgPickBtn").classList.add("hidden");
+  } else {
+    $("imgThumb").src = "";
+    $("imgThumbBox").classList.add("hidden");
+    $("imgPickBtn").classList.remove("hidden");
+  }
+}
+
+/* ---------- 解析主流程 ---------- */
+function runParse() {
+  var text = $("noticeText").value.trim();
+  var hasImg = !!S.imgDataUrl;
+  if (!text && !hasImg) { toast("先粘贴通知原文，或选择一张通知截图"); return; }
+  if (S.engine === "local") {
+    if (hasImg) { toast("本地规则不支持图片，请切换 AI 智能"); return; }
+    finishParse(localParse(text), "本地规则");
+    return;
+  }
+  var btn = $("btnParse"), txt = $("btnParseTxt"), st = $("parseStatus");
+  btn.disabled = true;
+  btn.classList.add("loading");
+  txt.textContent = "解析中…";
+  st.classList.remove("hidden");
+  var modeLabel = (AI_MODES[S.mode] || AI_MODES.balance).label;
+  st.innerHTML = '<span class="spin"></span>' + (hasImg ? "正在识别图片中的通知…" : "AI 正在阅读通知（" + modeLabel + "模式）…");
+  $("engineBadge").classList.add("hidden");
+
+  var done = false;
+  AI.parse(text, hasImg ? S.imgDataUrl : "", S.mode).then(function (items) {
+    if (done) return; done = true;
+    var rows = AWARD.judge(items, S.profile);
+    rows.sort(function (a, b) {
+      var O = { "符合": 0, "待确认": 1, "年级不符": 2 };
+      return (O[a.fit] !== undefined ? O[a.fit] : 3) - (O[b.fit] !== undefined ? O[b.fit] : 3);
+    });
+    resetParseUi();
+    finishParse(rows, "AI · " + modeLabel + "模式");
+  }).catch(function () {
+    if (done) return; done = true;
+    resetParseUi();
+    if (hasImg && !text) {
+      toast("图片识别暂时不可用，请稍后再试或改用文字");
+      return;
+    }
+    finishParse(localParse(text), "本地规则（AI 不可用）");
+    toast("AI 暂时不可用，已用本地规则解析");
+  });
+}
+
+function resetParseUi() {
+  var btn = $("btnParse");
+  btn.disabled = false;
+  btn.classList.remove("loading");
+  $("btnParseTxt").textContent = "开始解析";
+  $("parseStatus").classList.add("hidden");
+}
+
+/* ---------- 入库 ---------- */
+function saveChecked() {
+  var rows = S.parsedRows || [];
+  var picked = [];
+  rows.forEach(function (r, i) { if (S.checked["p" + i]) picked.push(r); });
+  if (!picked.length) { toast("先勾选要入库的条目"); return; }
+  var addEv = 0, addTd = 0, skipped = 0;
+  picked.forEach(function (r) {
+    if (r.kind === "todo") {
+      var dupTd = S.todos.some(function (x) { return !x.del && x.text === r.name && (x.due || "") === (r.deadline && r.deadline !== "未注明" ? r.deadline.slice(0, 10) : ""); });
+      if (dupTd) { skipped++; return; }
+      S.todos.push(ensureTodo({
+        id: uid("t"), text: r.name.slice(0, 80),
+        note: [r.note, r.materials].filter(function (x) { return x; }).join("；"),
+        due: r.deadline && r.deadline !== "未注明" ? r.deadline.slice(0, 10) : "",
+        done: false, createdAt: todayIso(), doneAt: "", u: nowU()
+      }));
+      addTd++;
+      return;
+    }
+    var rec = AWARD.rowsToRecords([r])[0];
+    var dup = S.records.some(function (x) { return !x.del && x.name === rec.name && x.deadline === rec.deadline; });
+    if (dup) { skipped++; return; }
+    var subs = [];
+    if (r.subtasks && r.subtasks.length) {
+      r.subtasks.forEach(function (st) {
+        subs.push({ id: uid("s"), text: st, done: false, doneAt: "", u: nowU() });
+      });
+    }
+    rec.subtasks = subs;
+    rec.u = nowU();
+    S.records.push(ensureRecord(rec));
+    addEv++;
+  });
+  persist();
+  S.parsedRows = null; S.checked = {};
+  $("parseResults").innerHTML = "";
+  $("parseAction").classList.add("hidden");
+  $("engineBadge").classList.add("hidden");
+  setImage("");
+  $("noticeText").value = "";
+  $("taCount").textContent = "0 字";
+  renderHome(); renderCal(); renderStats(); renderTodoBadge();
+  switchTab("home");
+  var parts = [];
+  if (addEv) parts.push("日程 " + addEv + " 项");
+  if (addTd) parts.push("待办 " + addTd + " 项");
+  toast("已入库 " + parts.join(" + ") + (skipped ? "，跳过重复 " + skipped + " 项" : ""));
+}
+
+/* ---------- 手动添加 / 编辑 ---------- */
+function openForm(editId) {
+  S.formEditId = editId || null;
+  if (editId) {
+    var rec = null;
+    S.records.forEach(function (r) { if (r.id === editId) rec = r; });
+    if (!rec) return;
+    $("sheetTitle").textContent = "编辑日程";
+    $("fName").value = rec.name;
+    $("fDate").value = rec.deadline || "";
+    $("fTime").value = rec.deadlineTime || "";
+    $("fMethod").value = rec.method === "未注明" ? "" : rec.method;
+    $("fLink").value = rec.link || "";
+    $("fMaterials").value = rec.materials || "";
+    $("fGrade").value = (rec.gradeLimit === "未注明" || rec.gradeLimit === "不限专业") ? "" : rec.gradeLimit;
+    $("fMajor").value = rec.majorLimit === "不限专业" ? "" : rec.majorLimit;
+    $("fNote").value = rec.note || "";
+    $("fSubtasks").value = rec.subtasks.map(function (s) { return s.text; }).join("\n");
+  } else {
+    $("sheetTitle").textContent = "添加日程";
+    ["fName", "fDate", "fTime", "fMethod", "fLink", "fMaterials", "fMajor", "fNote", "fSubtasks"].forEach(function (id) { $(id).value = ""; });
+    $("fGrade").value = "";
+  }
+  $("sheetMask").classList.remove("hidden");
+  setTimeout(function () { try { $("fName").focus(); } catch (e) { } }, 250);
+}
+
+function closeForm() {
+  $("sheetMask").classList.add("hidden");
+  S.formEditId = null;
+}
+
+function saveForm() {
+  var name = $("fName").value.trim();
+  if (!name) { toast("名称不能为空"); return; }
+  var date = $("fDate").value;
+  var time = $("fTime").value || "23:59";
+  if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) { toast("截止日期格式不正确"); return; }
+
+  /* 子待办行列表（编辑时保留同文本的完成状态） */
+  var lines = $("fSubtasks").value.split("\n").map(function (x) { return x.trim(); }).filter(function (x) { return x; });
+  var oldRec = null;
+  if (S.formEditId) S.records.forEach(function (r) { if (r.id === S.formEditId) oldRec = r; });
+  var subs = [];
+  lines.forEach(function (ln) {
+    var keep = null;
+    if (oldRec) oldRec.subtasks.forEach(function (s) { if (!keep && s.text === ln) keep = s; });
+    subs.push(keep || { id: uid("s"), text: ln.slice(0, 60), done: false, doneAt: "", u: nowU() });
+  });
+
+  var grade = $("fGrade").value || "未注明";
+  var major = $("fMajor").value.trim() || "不限专业";
+
+  if (oldRec) {
+    oldRec.name = name.slice(0, 60);
+    oldRec.deadline = date || "";
+    oldRec.deadlineTime = date ? time : "";
+    oldRec.method = $("fMethod").value.trim() || "未注明";
+    oldRec.link = $("fLink").value.trim();
+    oldRec.materials = $("fMaterials").value.trim();
+    oldRec.gradeLimit = grade;
+    oldRec.majorLimit = major;
+    oldRec.note = $("fNote").value.trim();
+    oldRec.subtasks = subs;
+    oldRec.u = nowU();
+    /* 画像变化不影响手动条目，重新打标一次 */
+    var judged = AWARD.judge([{ name: oldRec.name, deadline: "", method: "", grade: grade, majorLimit: major, link: "", materials: "", note: "" }], S.profile);
+    oldRec.fit = judged[0].fit;
+  } else {
+    var judged2 = AWARD.judge([{ name: name, deadline: "", method: "", grade: grade, majorLimit: major, link: "", materials: "", note: "" }], S.profile);
+    var rec = {
+      id: uid("r"), name: name.slice(0, 60),
+      deadline: date || "", deadlineTime: date ? time : "",
+      method: $("fMethod").value.trim() || "未注明",
+      link: $("fLink").value.trim(),
+      materials: $("fMaterials").value.trim(),
+      gradeLimit: grade, majorLimit: major,
+      fit: judged2[0].fit,
+      note: $("fNote").value.trim(),
+      added: todayIso(), u: nowU(), subtasks: subs
+    };
+    S.records.push(ensureRecord(rec));
+  }
+  persist();
+  closeForm();
+  renderHome(); renderCal(); renderStats();
+  if (!oldRec) switchTab("home");
+  toast(oldRec ? "已保存修改" : "已添加「" + esc(name.slice(0, 14)) + "」");
+}
+
+/* ---------- 示例文本 ---------- */
+var DEMO_TEXT = [
+  "关于开展第十四届全国大学生电子商务“三创赛”校内选拔赛的通知",
+  "",
+  "各学院：为选拔优秀作品参加全国总决赛，现启动校级选拔。参赛对象为全日制在校本科生，大二、大三年级优先，不限专业。请于10月20日23:59前登录报名系统 https://sanchuang.example-edu.cn 完成报名，并提交项目计划书与报名表电子版。联系人：王老师 wang@edu.cn",
+  "",
+  "国家奖学金评选启动",
+  "",
+  "申请国家奖学金的学生须为二年级及以上年级，学习成绩与综合测评排名均位于前10%。请符合条件的大二、大三、大四同学于10月12日前将申请表、成绩单提交至辅导员处。",
+  "",
+  "“光影青春”大学生摄影作品征集",
+  "",
+  "面向全体学生征集摄影作品，主题不限，每人限投3幅。请将作品（JPG格式）与报名表打包发送至 photo@campus-art.cn，截止11月5日18:00。获奖作品将在校园文化节展出。"
+].join("\n");
+</script>
+
+<script>
+"use strict";
+/* =========================================================================
+ * 倒计时 v3 —— 主题 / 设置 / 云同步 / 应用内更新 / Android 引导
+ * ========================================================================= */
+
+/* ---------- 主题 ---------- */
+var THEMES = { night: "星夜", emerald: "翡翠", solar: "暖阳", sakura: "樱粉", mono: "素墨" };
+var THEME_BG = { night: "#0B0D13", emerald: "#EFF7F2", solar: "#FDF6EE", sakura: "#FDF2F6", mono: "#FAFAF8" };
+
+function applyTheme(name) {
+  if (!THEMES[name]) name = "night";
+  S.theme = name;
+  document.documentElement.setAttribute("data-theme", name);
+  var meta = $("metaThemeColor");
+  if (meta) meta.setAttribute("content", THEME_BG[name]);
+  var sw = document.querySelectorAll("#themeSwatches .swatch");
+  for (var i = 0; i < sw.length; i++) {
+    sw[i].classList.toggle("on", sw[i].getAttribute("data-theme") === name);
+  }
+}
+
+/* ---------- 通用 JSON 请求（带超时，不用 AbortController） ---------- */
+function fetchJson(url, opts, timeoutMs) {
+  return new Promise(function (resolve, reject) {
+    var settled = false;
+    var t = setTimeout(function () {
+      if (!settled) { settled = true; reject(new Error("timeout")); }
+    }, timeoutMs || 12000);
+    fetch(url, opts).then(function (r) {
+      return r.json();
+    }).then(function (j) {
+      if (!settled) { settled = true; clearTimeout(t); resolve(j); }
+    }).catch(function (e) {
+      if (!settled) { settled = true; clearTimeout(t); reject(e); }
+    });
+  });
+}
+
+/* ---------- 云同步 ---------- */
+var SYNC = { timer: null, busy: false };
+
+function scheduleAutoSync() {
+  if (!S.autoSync || !S.syncCode) return;
+  if (SYNC.timer) clearTimeout(SYNC.timer);
+  SYNC.timer = setTimeout(function () {
+    SYNC.timer = null;
+    syncNow(true);
+  }, 4000);
+}
+
+function syncSnapshot() {
+  return JSON.stringify({
+    v: 3,
+    profile: S.profile, profileU: S.profileU,
+    records: S.records, todos: S.todos,
+    savedAt: new Date().toISOString()
+  });
+}
+
+function mergeRemote(remote) {
+  var stat = { evAdd: 0, evUp: 0, tdAdd: 0, tdUp: 0, prof: false };
+  if (!remote || remote.v !== 3) return stat;
+  if (remote.profile && (remote.profileU || 0) > S.profileU) {
+    var p = remote.profile;
+    ["name", "college", "grade", "major"].forEach(function (k) {
+      if (typeof p[k] === "string") S.profile[k] = p[k];
+    });
+    var rd = parseInt(p.reminderDays, 10);
+    S.profile.reminderDays = (rd >= 1 && rd <= 30) ? rd : 3;
+    S.profileU = remote.profileU;
+    stat.prof = true;
+  }
+  var map = {};
+  S.records.forEach(function (r) { map[r.id] = r; });
+  (remote.records || []).forEach(function (rr) {
+    if (!rr || !rr.id || !rr.name) return;
+    var local = map[rr.id];
+    if (!local) {
+      if (!rr.del) { S.records.push(ensureRecord(rr)); stat.evAdd++; }
+      return;
+    }
+    if ((rr.u || 0) > (local.u || 0)) {
+      var idx = S.records.indexOf(local);
+      S.records[idx] = ensureRecord(rr);
+      stat.evUp++;
+    }
+  });
+  var tmap = {};
+  S.todos.forEach(function (t) { tmap[t.id] = t; });
+  (remote.todos || []).forEach(function (rt) {
+    if (!rt || !rt.id || !rt.text) return;
+    var local = tmap[rt.id];
+    if (!local) {
+      if (!rt.del) { S.todos.push(ensureTodo(rt)); stat.tdAdd++; }
+      return;
+    }
+    if ((rt.u || 0) > (local.u || 0)) {
+      var i2 = S.todos.indexOf(local);
+      S.todos[i2] = ensureTodo(rt);
+      stat.tdUp++;
+    }
+  });
+  return stat;
+}
+
+function syncNow(silent) {
+  if (!S.syncCode) { if (!silent) toast("请先输入或生成同步码"); return; }
+  if (SYNC.busy) return;
+  SYNC.busy = true;
+  var btn = $("btnSyncNow");
+  var old = btn ? btn.innerHTML : "";
+  if (btn) btn.innerHTML = "同步中…";
+  if (!silent) toast("正在与云端同步…");
+
+  fetchJson(serverBase() + "/api/sync?code=" + encodeURIComponent(S.syncCode), null, 12000)
+    .then(function (res) {
+      var stat = null;
+      if (res && res.ok && res.found && res.data) {
+        try { stat = mergeRemote(JSON.parse(res.data)); } catch (e) { /* 快照损坏，按空处理 */ }
+      }
+      if (stat) {
+        if (purgeTombstones()) { /* noop */ }
+        renderHome(); renderTodos(); renderStats(); renderCal(); renderTodoBadge(); fillProfileForm();
+      }
+      return fetchJson(serverBase() + "/api/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: S.syncCode, data: syncSnapshot() })
+      }, 15000).then(function (up) {
+        SYNC.busy = false;
+        if (btn) btn.innerHTML = old;
+        if (up && up.ok) {
+          S.lastSyncAt = new Date().toISOString();
+          persist();
+          renderSyncState();
+          var msg = "同步完成";
+          if (stat) {
+            var parts = [];
+            if (stat.evAdd) parts.push("新增日程 " + stat.evAdd + " 项");
+            if (stat.evUp) parts.push("更新日程 " + stat.evUp + " 项");
+            if (stat.tdAdd) parts.push("新增待办 " + stat.tdAdd + " 项");
+            if (stat.tdUp) parts.push("更新待办 " + stat.tdUp + " 项");
+            if (parts.length) msg += "：" + parts.join("，");
+          }
+          toast(msg);
+        } else {
+          toast("云端写入失败，请稍后再试");
+        }
+      });
+    })
+    .catch(function () {
+      SYNC.busy = false;
+      if (btn) btn.innerHTML = old;
+      toast("同步失败：无法连接服务器");
+    });
+}
+
+function renderSyncState() {
+  var el = $("syncState");
+  if (!el) return;
+  var txt;
+  if (!S.syncCode) txt = "未设置同步码";
+  else if (!S.lastSyncAt) txt = "同步码 <b>" + esc(S.syncCode) + "</b> · 尚未同步";
+  else txt = "同步码 <b>" + esc(S.syncCode) + "</b> · 上次同步 " + fmtRel(Date.parse(S.lastSyncAt)) +
+    (S.autoSync ? " · 自动同步已开启" : "");
+  el.innerHTML = txt;
+  var sw = $("syncAuto");
+  if (sw) sw.classList.toggle("on", !!S.autoSync);
+  var input = $("syncCode");
+  if (input && document.activeElement !== input) input.value = S.syncCode || "";
+}
+
+function genSyncCode() {
+  var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  var code = "";
+  for (var i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+  return code;
+}
+
+/* ---------- 应用内更新 ---------- */
+function verNum(v) {
+  var p = String(v || "").split(".");
+  return (parseInt(p[0], 10) || 0) * 10000 + (parseInt(p[1], 10) || 0) * 100 + (parseInt(p[2], 10) || 0);
+}
+
+function checkUpdate(manual) {
+  $("updateState").textContent = "当前版本 " + APP_VERSION;
+  fetchJson(serverBase() + "/api/version", null, 9000).then(function (res) {
+    if (!res || !res.ok) {
+      if (manual) toast("暂时无法获取版本信息");
+      return;
+    }
+    if (verNum(res.version) > verNum(APP_VERSION)) {
+      $("updateDot").classList.remove("hidden");
+      $("updateState").textContent = "新版本 " + res.version + " 可用";
+      if (manual || S.lastPromptVer !== res.version) {
+        S.lastPromptVer = res.version;
+        persist();
+        showUpdateModal(res);
+      }
+    } else {
+      $("updateDot").classList.add("hidden");
+      if (manual) toast("已是最新版本 " + APP_VERSION);
+    }
+  }).catch(function () {
+    if (manual) toast("暂时无法连接更新服务器");
+  });
+}
+
+function showUpdateModal(info) {
+  confirmModal("发现新版本 v" + esc(info.version),
+    '<div class="upd-notes">' + esc(info.notes || "问题修复与体验优化") + "</div>",
+    "立即更新", true, function () {
+      doApplyUpdate();
+      return true;
+    });
+}
+
+function doApplyUpdate() {
+  if (IS_ANDROID) {
+    toast("正在下载新版本…");
+    fetch(serverBase() + "/app.html").then(function (r) {
+      if (!r.ok) throw new Error("http");
+      return r.text();
+    }).then(function (html) {
+      if (!html || html.length < 10000) { toast("更新包异常，请稍后再试"); return; }
+      var ok = false;
+      try { ok = window.DaoUpdate.saveUpdate(html); } catch (e) { ok = false; }
+      if (ok) {
+        toast("更新完成，正在打开新版本…");
+        setTimeout(function () {
+          try { window.DaoUpdate.reload(); } catch (e) { location.reload(); }
+        }, 700);
+      } else {
+        toast("更新写入失败，可到 GitHub 下载新版 APK");
+      }
+    }).catch(function () {
+      toast("下载失败，请检查网络后重试");
+    });
+  } else if (location.protocol === "http:" || location.protocol === "https:") {
+    toast("正在刷新为最新版本…");
+    setTimeout(function () { location.reload(); }, 500);
+  } else {
+    confirmModal("使用网页版最新功能", "浏览器直接打开的单文件无法自动更新，<br>可以打开网页版继续使用（数据可用同步码互通）：", "打开网页版", true, function () {
+      window.open(serverBase() + "/app.html", "_blank");
+      return true;
+    });
+  }
+}
+
+/* ---------- Android 引导（asset 源 → filesDir 源，localStorage 跨源交接） ---------- */
+function androidBootstrap() {
+  if (!window.DaoUpdate) return false;
+  var href = location.href || "";
+  if (href.indexOf("/android_asset/") >= 0) {
+    /* v3 首次启动（asset 源）：先完成旧数据读取/迁移，再自安装到 filesDir 源 */
+    loadStore();
+    var raw = localStorage.getItem(STORE_KEY) || localStorage.getItem(OLD_KEY) || "";
+    var payload = "";
+    if (raw) {
+      var key = STORE_KEY;
+      try { if (JSON.parse(raw).v !== 3) key = OLD_KEY; } catch (e) { key = OLD_KEY; }
+      payload = JSON.stringify({ k: key, r: raw });
+    }
+    var ok = false;
+    try { ok = window.DaoUpdate.selfInstall(payload); } catch (e) { ok = false; }
+    if (ok) return true; /* Java 将切换到 filesDir 源并重新加载本页 */
+  } else {
+    /* filesDir 源：恢复交接数据（仅首次） */
+    if (!localStorage.getItem(STORE_KEY) && !localStorage.getItem(OLD_KEY)) {
+      var st = "";
+      try { st = window.DaoUpdate.unstashData(); } catch (e) { st = ""; }
+      if (st) {
+        try {
+          var o = JSON.parse(st);
+          if (o && o.k && o.r) localStorage.setItem(o.k, o.r);
+        } catch (e) { /* 忽略损坏的交接数据 */ }
+      }
+    }
+  }
+  return false;
+}
+</script>
+
+<script>
+"use strict";
+/* =========================================================================
+ * 倒计时 v3 —— 视图路由 / 事件绑定 / 备份 / 初始化
+ * ========================================================================= */
+
+/* ---------- Tab 路由 ---------- */
+function switchTab(tab) {
+  S.tab = tab;
+  ["home", "todo", "parse", "stats", "me"].forEach(function (t) {
+    $("view-" + t).classList.toggle("on", t === tab);
+  });
+  var btns = document.querySelectorAll("#dock .dock-btn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-tab") === tab);
+  window.scrollTo(0, 0);
+  if (tab === "cal") renderCal();
+  if (tab === "stats") renderStats();
+  if (tab === "todo") renderTodos();
+}
+
+/* ---------- 设置界面回填 ---------- */
+function renderSettingsUI() {
+  var mp = document.querySelectorAll("#modePills .mode-pill");
+  for (var i = 0; i < mp.length; i++) mp[i].classList.toggle("on", mp[i].getAttribute("data-mode") === S.mode);
+  var ep = document.querySelectorAll("#enginePills .engine-pill");
+  for (var j = 0; j < ep.length; j++) ep[j].classList.toggle("on", ep[j].getAttribute("data-engine") === S.engine);
+  $("verTxt").textContent = APP_VERSION;
+  $("updateState").textContent = "当前版本 " + APP_VERSION;
+  renderSyncState();
+  applyTheme(S.theme);
+}
+
+/* ---------- 画像表单 ---------- */
 function profileFromForm() {
   var rd = parseInt($("pfDays").value, 10);
   if (!(rd >= 1 && rd <= 30)) rd = S.profile.reminderDays || 3;
@@ -1731,8 +3162,22 @@ function fillProfileForm() {
   }
   $("btnSaveProfile").disabled = true;
 }
+function rejudgeAll() {
+  if (!S.records.length) return 0;
+  var items = S.records.map(function (r) {
+    return { name: r.name, deadline: "", method: "", grade: r.gradeLimit || "未注明", majorLimit: r.majorLimit || "不限专业", link: "", materials: "", note: "" };
+  });
+  var judged = AWARD.judge(items, S.profile);
+  S.records.forEach(function (r, i) { r.fit = judged[i].fit; });
+  return S.records.length;
+}
+
+/* ---------- 备份导出 / 导入 ---------- */
 function exportData() {
-  var data = JSON.stringify({ app: "daojishi", version: 2, exportedAt: new Date().toISOString(), profile: S.profile, records: S.records }, null, 2);
+  var data = JSON.stringify({
+    app: "daojishi", version: 3, exportedAt: new Date().toISOString(),
+    profile: S.profile, records: S.records, todos: S.todos
+  }, null, 2);
   var fname = "daojishi-backup-" + todayIso() + ".json";
   try {
     var blob = new Blob([data], { type: "application/json" });
@@ -1745,7 +3190,7 @@ function exportData() {
   } catch (e) { }
   confirmModal(
     "备份已生成",
-    "共 <b>" + S.records.length + "</b> 条记录 · 画像与设置已包含。<br>文件名：" + esc(fname) + "<br><br>也可以直接复制 JSON 文本留存：",
+    "共 <b>" + S.records.length + "</b> 条日程 · <b>" + S.todos.length + "</b> 条待办，画像与子待办已包含。<br>文件名：" + esc(fname) + "<br><br>也可以直接复制 JSON 文本留存：",
     "复制 JSON", true, function () {
       copyText(data);
       return true;
@@ -1776,34 +3221,53 @@ function importData(file) {
       var obj = JSON.parse(String(reader.result));
       var recs = obj && obj.records;
       if (Object.prototype.toString.call(recs) !== "[object Array]") throw new Error("bad");
-      confirmModal("导入备份", "将导入 <b>" + recs.length + "</b> 条记录" +
-        (obj.profile ? " 并覆盖画像" : "") + "，同名同截止的记录会自动跳过。", "导入", true, function () {
+      var tdCnt = obj && Object.prototype.toString.call(obj.todos) === "[object Array]" ? obj.todos.length : 0;
+      confirmModal("导入备份", "将导入 <b>" + recs.length + "</b> 条日程与 <b>" + tdCnt + "</b> 条待办" +
+        (obj.profile ? " 并覆盖画像" : "") + "，同名同截止的条目会自动跳过。", "导入", true, function () {
           if (obj.profile) {
             ["name", "college", "grade", "major"].forEach(function (k) {
               if (typeof obj.profile[k] === "string") S.profile[k] = obj.profile[k];
             });
             var rd = parseInt(obj.profile.reminderDays, 10);
             if (rd >= 1 && rd <= 30) S.profile.reminderDays = rd;
+            S.profileU = nowU();
           }
           var added = 0;
           recs.forEach(function (r) {
             if (!r || !r.name) return;
-            var dup = S.records.some(function (x) { return x.name === r.name && x.deadline === (r.deadline || ""); });
+            var dup = S.records.some(function (x) { return !x.del && x.name === r.name && x.deadline === (r.deadline || ""); });
             if (dup) return;
-            S.records.push({
-              id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+            var rr = {
+              id: uid("r"),
               name: r.name, deadline: r.deadline || "", deadlineTime: r.deadlineTime || "",
               method: r.method || "未注明", link: r.link || "", materials: r.materials || "",
               majorLimit: r.majorLimit || "不限专业", gradeLimit: r.gradeLimit || "未注明",
-              fit: r.fit || "待确认", note: r.note || "", added: r.added || todayIso()
-            });
+              fit: r.fit || "待确认", note: r.note || "", added: r.added || todayIso(),
+              u: nowU(), subtasks: (r.subtasks || []).map(function (s) {
+                return { id: uid("s"), text: String(s.text || s).slice(0, 60), done: !!s.done, doneAt: "", u: nowU() };
+              })
+            };
+            S.records.push(ensureRecord(rr));
             added++;
           });
+          var addedTd = 0;
+          if (obj.todos) {
+            obj.todos.forEach(function (t) {
+              if (!t || !t.text) return;
+              var dupTd = S.todos.some(function (x) { return !x.del && x.text === t.text && (x.due || "") === (t.due || ""); });
+              if (dupTd) return;
+              S.todos.push(ensureTodo({
+                id: uid("t"), text: String(t.text).slice(0, 80), note: t.note || "",
+                due: t.due || "", done: !!t.done, createdAt: t.createdAt || todayIso(),
+                doneAt: "", u: nowU()
+              }));
+              addedTd++;
+            });
+          }
           persist();
           fillProfileForm();
-          renderHome();
-          renderCal();
-          toast("已导入 " + added + " 条记录");
+          renderHome(); renderTodos(); renderStats(); renderCal(); renderTodoBadge();
+          toast("已导入 " + added + " 条日程" + (addedTd ? "、" + addedTd + " 条待办" : ""));
           return true;
         });
     } catch (e) {
@@ -1813,22 +3277,16 @@ function importData(file) {
   reader.readAsText(file);
 }
 
-/* ---------- 示例文本 ---------- */
-var DEMO_TEXT = [
-  "关于开展第十四届全国大学生电子商务“三创赛”校内选拔赛的通知",
-  "",
-  "各学院：为选拔优秀作品参加全国总决赛，现启动校级选拔。参赛对象为全日制在校本科生，大二、大三年级优先，不限专业。请于10月20日23:59前登录报名系统 https://sanchuang.example-edu.cn 完成报名，并提交项目计划书与报名表电子版。联系人：王老师 wang@edu.cn",
-  "",
-  "国家奖学金评选启动",
-  "",
-  "申请国家奖学金的学生须为二年级及以上年级，学习成绩与综合测评排名均位于前10%。请符合条件的大二、大三、大四同学于10月12日前将申请表、成绩单提交至辅导员处。",
-  "",
-  "“光影青春”大学生摄影作品征集",
-  "",
-  "面向全体学生征集摄影作品，主题不限，每人限投3幅。请将作品（JPG格式）与报名表打包发送至 photo@campus-art.cn，截止11月5日18:00。获奖作品将在校园文化节展出。"
-].join("\n");
+/* ---------- 事件绑定 ---------- */
+function closestEl(el, sel) {
+  while (el && el !== document) {
+    if (el.webkitMatchesSelector) { if (el.webkitMatchesSelector(sel)) return el; }
+    else if (el.msMatchesSelector) { if (el.msMatchesSelector(sel)) return el; }
+    el = el.parentNode;
+  }
+  return null;
+}
 
-/* ---------- 事件绑定与初始化 ---------- */
 function bindEvents() {
   /* Dock */
   var btns = document.querySelectorAll("#dock .dock-btn");
@@ -1838,9 +3296,17 @@ function bindEvents() {
     })(btns[i]);
   }
 
-  /* 首页 */
-  $("btnGoParse").onclick = function () { switchTab("parse"); };
+  /* ---- 首页 ---- */
+  $("btnAdd").onclick = function () { openForm(null); };
+  $("emptyGoAdd").onclick = function () { openForm(null); };
   $("emptyGoParse").onclick = function () { switchTab("parse"); };
+  $("btnCalToggle").onclick = function () {
+    S.homeMode = S.homeMode === "list" ? "cal" : "list";
+    $("homeCalWrap").classList.toggle("hidden", S.homeMode !== "cal");
+    $("homeListWrap").classList.toggle("hidden", S.homeMode === "cal");
+    $("btnCalToggle").classList.toggle("on", S.homeMode === "cal");
+    if (S.homeMode === "cal") renderCal();
+  };
   $("urgentChip").onclick = function () {
     S.filter = "near";
     var seg = document.querySelectorAll("#homeSeg button");
@@ -1860,9 +3326,50 @@ function bindEvents() {
   }
   $("homeQuery").oninput = function () { S.query = this.value; renderHome(); };
 
-  /* 卡片展开 / 删除（事件委托） */
+  /* 首页列表：展开 / 删除 / 编辑 / 子待办（事件委托） */
   $("homeList").onclick = function (ev) {
-    var del = ev.target.closest ? ev.target.closest(".del-btn") : null;
+    var t = ev.target;
+    var subToggle = closestEl(t, '[data-act="sub-toggle"]');
+    if (subToggle) {
+      var sid = subToggle.getAttribute("data-sid");
+      var rid = closestEl(subToggle, ".rcard").getAttribute("data-id");
+      S.records.forEach(function (r) {
+        if (r.id !== rid) return;
+        r.subtasks.forEach(function (sub) {
+          if (sub.id === sid) { sub.done = !sub.done; sub.doneAt = sub.done ? nowU() : ""; }
+        });
+        r.u = nowU();
+      });
+      persist(); renderHome(); renderStats();
+      return;
+    }
+    var subDel = closestEl(t, '[data-act="sub-del"]');
+    if (subDel) {
+      var sid2 = subDel.getAttribute("data-sid");
+      var rid2 = closestEl(subDel, ".rcard").getAttribute("data-id");
+      S.records.forEach(function (r) {
+        if (r.id !== rid2) return;
+        r.subtasks = r.subtasks.filter(function (sub) { return sub.id !== sid2; });
+        r.u = nowU();
+      });
+      persist(); renderHome(); renderStats();
+      return;
+    }
+    var subAdd = closestEl(t, "[data-sub-add]");
+    if (subAdd) {
+      var rid3 = subAdd.getAttribute("data-sub-add");
+      var input = document.querySelector('[data-sub-input="' + rid3 + '"]');
+      if (input && input.value.trim()) {
+        S.records.forEach(function (r) {
+          if (r.id !== rid3) return;
+          r.subtasks.push({ id: uid("s"), text: input.value.trim().slice(0, 60), done: false, doneAt: "", u: nowU() });
+          r.u = nowU();
+        });
+        persist(); renderHome(); renderStats();
+      }
+      return;
+    }
+    var del = closestEl(t, ".del-btn");
     if (del) {
       var id = del.getAttribute("data-id");
       var rec = null;
@@ -1873,17 +3380,125 @@ function bindEvents() {
       });
       return;
     }
-    var a = ev.target.closest ? ev.target.closest("a") : null;
-    if (a) return; /* 链接正常打开 */
-    var card = ev.target.closest ? ev.target.closest(".rcard") : null;
+    var edit = closestEl(t, '[data-act="edit"]');
+    if (edit) { openForm(edit.getAttribute("data-id")); return; }
+    var a = closestEl(t, "a");
+    if (a) return;
+    var card = closestEl(t, ".rcard");
     if (card && card.getAttribute("data-id")) {
       var cid = card.getAttribute("data-id");
       S.openIds[cid] = !S.openIds[cid];
       card.classList.toggle("open");
     }
   };
+  $("homeList").onkeydown = function (ev) {
+    var t = ev.target;
+    var input = closestEl(t, "[data-sub-input]");
+    if (input && (ev.keyCode === 13 || ev.key === "Enter")) {
+      ev.preventDefault();
+      if (input.value.trim()) {
+        var rid = input.getAttribute("data-sub-input");
+        S.records.forEach(function (r) {
+          if (r.id !== rid) return;
+          r.subtasks.push({ id: uid("s"), text: input.value.trim().slice(0, 60), done: false, doneAt: "", u: nowU() });
+          r.u = nowU();
+        });
+        persist(); renderHome(); renderStats();
+      }
+    }
+  };
 
-  /* 解析页 */
+  /* 月历 */
+  $("calPrev").onclick = function () { calShift(-1); };
+  $("calNext").onclick = function () { calShift(1); };
+  $("calTodayLink").onclick = function () {
+    var t = new Date();
+    S.calY = t.getFullYear(); S.calM = t.getMonth() + 1; S.pickedDay = todayIso();
+    renderCal();
+  };
+  $("calGrid").onclick = function (ev) {
+    var cell = closestEl(ev.target, ".cal-cell");
+    if (!cell || cell.disabled) return;
+    var iso = cell.getAttribute("data-iso");
+    if (!iso) return;
+    S.pickedDay = iso;
+    renderCal();
+  };
+
+  /* ---- 待办 ---- */
+  $("btnAddTodo").onclick = function () {
+    if (addTodo($("todoInput").value, S.todoDraftDate)) {
+      $("todoInput").value = "";
+      S.todoDraftDate = "";
+      $("todoDate").value = "";
+      updateTodoDateChip();
+    } else toast("先输入待办内容");
+  };
+  $("todoInput").onkeydown = function (ev) {
+    if (ev.keyCode === 13 || ev.key === "Enter") { ev.preventDefault(); $("btnAddTodo").onclick(); }
+  };
+  $("todoDateChip").onclick = function () { $("todoDate").click(); };
+  $("todoDate").onchange = function () {
+    S.todoDraftDate = this.value || "";
+    updateTodoDateChip();
+  };
+  var tSeg = document.querySelectorAll("#todoSeg button");
+  for (var q = 0; q < tSeg.length; q++) {
+    (function (b) {
+      b.onclick = function () {
+        S.todoFilter = b.getAttribute("data-f");
+        for (var j = 0; j < tSeg.length; j++) tSeg[j].classList.toggle("on", tSeg[j] === b);
+        renderTodos();
+      };
+    })(tSeg[q]);
+  }
+  $("todoList").onclick = function (ev) {
+    var t = ev.target;
+    var fold = closestEl(t, '[data-act="todo-fold"]');
+    if (fold) { S.todoFoldDone = !S.todoFoldDone; renderTodos(); return; }
+    var del = closestEl(t, '[data-act="todo-del"]');
+    if (del) {
+      var id = del.getAttribute("data-id");
+      confirmModal("删除待办", "确定删除这条待办？", "删除", false, function () {
+        deleteTodo(id);
+        return true;
+      });
+      return;
+    }
+    var chev = closestEl(t, '[data-act="todo-chev"]');
+    var toggle = closestEl(t, '[data-act="todo-toggle"]');
+    if (toggle) {
+      toggleTodo(toggle.getAttribute("data-id"));
+      return;
+    }
+    if (chev) {
+      var tid = chev.getAttribute("data-id");
+      S.openTodos[tid] = !S.openTodos[tid];
+      var rowEl = closestEl(chev, ".todo");
+      if (rowEl) rowEl.classList.toggle("open");
+      return;
+    }
+    var row = closestEl(t, ".todo");
+    if (row) {
+      var rid = row.getAttribute("data-id");
+      S.openTodos[rid] = !S.openTodos[rid];
+      row.classList.toggle("open");
+    }
+  };
+  $("todoList").onchange = function (ev) {
+    var t = ev.target;
+    if (t.id && t.id.indexOf("tn-") === 0) {
+      var id = t.id.slice(3);
+      S.todos.forEach(function (x) { if (x.id === id) { x.note = t.value.slice(0, 200); x.u = nowU(); } });
+      persist();
+    } else if (t.id && t.id.indexOf("td-") === 0) {
+      var id2 = t.id.slice(3);
+      S.todos.forEach(function (x) { if (x.id === id2) { x.due = t.value || ""; x.u = nowU(); } });
+      persist(); renderTodos(); renderStats(); renderCal();
+    }
+  };
+
+  /* ---- 解析页 ---- */
   $("noticeText").oninput = function () {
     $("taCount").textContent = this.value.length + " 字";
   };
@@ -1892,6 +3507,16 @@ function bindEvents() {
     $("taCount").textContent = DEMO_TEXT.length + " 字";
     toast("已填入 3 条示例通知，点「开始解析」试试");
   };
+  var mp2 = document.querySelectorAll("#modePills .mode-pill");
+  for (var m = 0; m < mp2.length; m++) {
+    (function (b) {
+      b.onclick = function () {
+        S.mode = b.getAttribute("data-mode");
+        for (var j = 0; j < mp2.length; j++) mp2[j].classList.toggle("on", mp2[j] === b);
+        persist();
+      };
+    })(mp2[m]);
+  }
   var pills = document.querySelectorAll("#enginePills .engine-pill");
   for (var p = 0; p < pills.length; p++) {
     (function (b) {
@@ -1902,12 +3527,33 @@ function bindEvents() {
       };
     })(pills[p]);
   }
+  $("imgPickBtn").onclick = function () { $("imgFile").click(); };
+  $("imgFile").onchange = function () {
+    if (this.files && this.files[0]) {
+      var f = this.files[0];
+      if (f.size > 15 * 1024 * 1024) { toast("图片太大（超过 15MB），请换一张"); this.value = ""; return; }
+      compressImage(f, function (dataUrl) { setImage(dataUrl); });
+    }
+    this.value = "";
+  };
+  $("imgDel").onclick = function () { setImage(""); };
   $("btnParse").onclick = runParse;
   $("parseResults").onclick = function (ev) {
-    var card = ev.target.closest ? ev.target.closest(".pcard") : null;
+    var kindBtn = closestEl(ev.target, ".kind-toggle");
+    if (kindBtn) {
+      var key = kindBtn.getAttribute("data-kind");
+      var idx = parseInt(key.slice(1), 10);
+      var rows = S.parsedRows || [];
+      if (rows[idx]) {
+        rows[idx].kind = rows[idx].kind === "todo" ? "event" : "todo";
+        renderParseResults();
+      }
+      return;
+    }
+    var card = closestEl(ev.target, ".pcard");
     if (!card) return;
-    var key = card.getAttribute("data-key");
-    S.checked[key] = !S.checked[key];
+    var key2 = card.getAttribute("data-key");
+    S.checked[key2] = !S.checked[key2];
     card.classList.toggle("checked");
     updateSaveBar();
   };
@@ -1920,24 +3566,7 @@ function bindEvents() {
   };
   $("btnSave").onclick = saveChecked;
 
-  /* 月历 */
-  $("calPrev").onclick = function () { calShift(-1); };
-  $("calNext").onclick = function () { calShift(1); };
-  $("calTodayLink").onclick = function () {
-    var t = new Date();
-    S.calY = t.getFullYear(); S.calM = t.getMonth() + 1; S.pickedDay = todayIso();
-    renderCal();
-  };
-  $("calGrid").onclick = function (ev) {
-    var cell = ev.target.closest ? ev.target.closest(".cal-cell") : null;
-    if (!cell || cell.disabled) return;
-    var iso = cell.getAttribute("data-iso");
-    if (!iso) return;
-    S.pickedDay = iso;
-    renderCal();
-  };
-
-  /* 我的 */
+  /* ---- 我的 ---- */
   ["pfName", "pfCollege", "pfGrade", "pfMajor", "pfDays"].forEach(function (id) {
     $(id).oninput = function () { $("btnSaveProfile").disabled = false; };
     $(id).onchange = function () { $("btnSaveProfile").disabled = false; };
@@ -1954,6 +3583,7 @@ function bindEvents() {
   }
   $("btnSaveProfile").onclick = function () {
     S.profile = profileFromForm();
+    S.profileU = nowU();
     persist();
     var n = rejudgeAll();
     persist();
@@ -1962,6 +3592,44 @@ function bindEvents() {
     $("btnSaveProfile").disabled = true;
     toast("画像已保存" + (n ? "，" + n + " 条记录已重新打标" : ""));
   };
+
+  var swatches = document.querySelectorAll("#themeSwatches .swatch");
+  for (var w = 0; w < swatches.length; w++) {
+    (function (b) {
+      b.onclick = function () {
+        applyTheme(b.getAttribute("data-theme"));
+        persist();
+        toast("已切换到「" + THEMES[S.theme] + "」风格");
+      };
+    })(swatches[w]);
+  }
+
+  $("syncCode").oninput = function () {
+    var v = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+    if (v !== this.value) this.value = v;
+    S.syncCode = v;
+  };
+  $("syncCode").onchange = function () {
+    if (S.syncCode && S.syncCode.length < 4) { toast("同步码至少 4 位"); return; }
+    persist(); renderSyncState();
+    if (S.syncCode) toast("同步码已保存，其他设备输入同一同步码即可互通");
+  };
+  $("btnGenCode").onclick = function () {
+    S.syncCode = genSyncCode();
+    $("syncCode").value = S.syncCode;
+    persist(); renderSyncState();
+    toast("已生成同步码：" + S.syncCode);
+  };
+  $("syncAuto").onclick = function () {
+    S.autoSync = !S.autoSync;
+    persist(); renderSyncState();
+    if (S.autoSync && S.syncCode) { toast("自动同步已开启"); scheduleAutoSync(); }
+    else toast(S.autoSync ? "自动同步已开启（需先设置同步码）" : "自动同步已关闭");
+  };
+  $("btnSyncNow").onclick = function () { syncNow(false); };
+
+  $("btnCheckUpdate").onclick = function () { checkUpdate(true); };
+
   $("btnExport").onclick = exportData;
   $("btnImport").onclick = function () { $("importFile").click(); };
   $("importFile").onchange = function () {
@@ -1969,37 +3637,78 @@ function bindEvents() {
     this.value = "";
   };
   $("btnClear").onclick = function () {
-    confirmModal("清空所有数据", "将删除画像与全部 <b>" + S.records.length + "</b> 条记录，此操作不可恢复。", "全部删除", false, function () {
+    confirmModal("清空所有数据", "将删除画像、全部 <b>" + S.records.length + "</b> 条日程与 <b>" + S.todos.length + "</b> 条待办（含云端快照），此操作不可恢复。", "全部删除", false, function () {
       S.records = [];
+      S.todos = [];
       S.profile = { name: "", college: "", grade: "大二", major: "", reminderDays: 3 };
-      S.openIds = {};
-      try { localStorage.removeItem(STORE_KEY); } catch (e) { }
+      S.profileU = nowU();
+      S.openIds = {}; S.openTodos = {};
+      try {
+        localStorage.removeItem(STORE_KEY);
+        localStorage.removeItem(OLD_KEY);
+      } catch (e) { }
       persist();
+      if (S.syncCode) {
+        fetchJson(serverBase() + "/api/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: S.syncCode, data: syncSnapshot() })
+        }, 12000).catch(function () { });
+      }
       fillProfileForm();
-      renderHome();
-      renderCal();
+      renderHome(); renderTodos(); renderStats(); renderCal(); renderTodoBadge();
       toast("已清空所有数据");
       return true;
     });
   };
 
-  /* Modal */
+  /* ---- Modal / Sheet ---- */
   $("modalCancel").onclick = closeModal;
   $("modalMask").onclick = function (ev) { if (ev.target === this) closeModal(); };
   $("modalOk").onclick = function () {
     var keep = modalCb ? modalCb() : true;
     if (keep !== false) closeModal();
   };
+  $("btnSaveForm").onclick = saveForm;
+  $("btnCancelForm").onclick = closeForm;
+  $("sheetMask").onclick = function (ev) { if (ev.target === this) closeForm(); };
 }
 
+function updateTodoDateChip() {
+  var chip = $("todoDateChip");
+  var txt = $("todoDateTxt");
+  if (S.todoDraftDate) {
+    var p = S.todoDraftDate.split("-");
+    txt.textContent = parseInt(p[1], 10) + "/" + parseInt(p[2], 10);
+    chip.classList.add("has");
+  } else {
+    txt.textContent = "日期";
+    chip.classList.remove("has");
+  }
+}
+
+/* ---------- 初始化 ---------- */
 function init() {
+  if (androidBootstrap()) return; /* Android 首启自安装后由 Java 重载 */
   loadStore();
+  if (purgeTombstones()) persist();
+  applyTheme(S.theme);
   fillProfileForm();
   bindEvents();
   renderHome();
+  renderTodos();
+  renderStats();
   renderCal();
+  renderSettingsUI();
+  updateTodoDateChip();
+  setTimeout(function () {
+    if (navigator.onLine === false) return;
+    checkUpdate(false);
+    if (S.autoSync && S.syncCode) syncNow(true);
+  }, 1600);
 }
 init();
 </script>
 </body>
 </html>
+
