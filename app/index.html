@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#059669">
+<title>赛事管家 · 竞赛通知解析与截止提醒</title>
+<style>
+:root{
+  --em:#059669; --em-d:#047857; --em-l:#d1fae5; --em-bg:#ecfdf5; --em-br:#a7f3d0;
+  --am:#d97706; --am-l:#fef3c7; --am-br:#fcd34d;
+  --rd:#dc2626; --am5:#f59e0b;
+  --z9:#18181b; --z7:#3f3f46; --z6:#52525b; --z5:#71717a; --z4:#a1a1aa; --z3:#d4d4d8; --z2:#e4e4e7; --z1:#f4f4f5; --z0:#fafafa;
+  --card:#ffffff; --line:#e4e4e7;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:-apple-system,"PingFang SC","HarmonyOS Sans SC","MiSans","Microsoft YaHei",system-ui,sans-serif;color:var(--z9);background:#f7f7f8;line-height:1.6}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+a{color:var(--em-d)}
+.wrap{max-width:768px;margin:0 auto;padding:0 16px}
+
+/* ---------- 顶栏 ---------- */
+header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--z2)}
+.hd-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 8px}
+.hd-id{display:flex;align-items:center;gap:10px;min-width:0}
+.hd-logo{flex:none;width:38px;height:38px;border-radius:12px;background:var(--em);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(5,150,105,.35)}
+.hd-t{min-width:0}
+.hd-t h1{margin:0;font-size:17px;line-height:1.25;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd-t p{margin:0;font-size:11px;color:var(--z4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hd-badge{flex:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--am-br);background:var(--am-l);color:#b45309;padding:5px 10px;border-radius:99px;font-size:12px;font-weight:600}
+.hd-badge:active{background:#fde68a}
+nav{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding-bottom:8px}
+.tabbtn{display:flex;min-height:44px;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:transparent;border-radius:10px;padding:6px 4px;font-size:12px;font-weight:600;color:var(--z5);transition:background .15s}
+.tabbtn:active{background:var(--z1)}
+.tabbtn.on{background:var(--em);color:#fff;box-shadow:0 2px 8px rgba(5,150,105,.25)}
+@media(min-width:480px){.tabbtn{flex-direction:row;gap:7px}}
+
+/* ---------- 布局 ---------- */
+main{padding:16px 0 20px}
+footer{margin-top:auto;border-top:1px solid var(--z2);background:#fff}
+footer p{max-width:768px;margin:0 auto;padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));text-align:center;font-size:11px;color:var(--z4)}
+#app{min-height:100vh;display:flex;flex-direction:column}
+
+/* ---------- 卡片 / 徽章 / 按钮 ---------- */
+.card{background:var(--card);border:1px solid var(--z2);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:14px}
+.card.dash{border-style:dashed;background:var(--z0)}
+.card h3{margin:0 0 10px;font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--z7)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:99px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.b-fit{background:var(--em-l);color:#047857;border-color:var(--em-br)}
+.b-wait{background:var(--am-l);color:#b45309;border-color:var(--am-br)}
+.b-mis{background:var(--z1);color:var(--z5);border-color:var(--z3)}
+.b-plain{border-color:var(--z3);color:var(--z5)}
+.b-today{background:var(--rd);color:#fff}
+.b-soon{background:var(--am5);color:#fff}
+.b-exp{background:var(--z2);color:var(--z5)}
+.b-dl{background:var(--em-bg);color:#047857;border-color:var(--em-br)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid transparent;border-radius:10px;padding:8px 16px;font-size:14px;font-weight:600;background:var(--em);color:#fff;transition:filter .15s}
+.btn:active{filter:brightness(.92)}
+.btn:disabled{opacity:.45}
+.btn.ghost{background:transparent;border-color:var(--z3);color:var(--z5)}
+.btn.ghost:active{background:var(--z1)}
+.btn.danger{background:var(--rd)}
+.btn.blk{width:100%;padding:14px;font-size:16px;box-shadow:0 8px 20px rgba(5,150,105,.25)}
+.btn.sm{padding:5px 12px;font-size:12.5px;border-radius:8px}
+textarea{width:100%;min-height:150px;border:1px solid var(--z3);border-radius:10px;padding:12px;font-size:14px;line-height:1.7;color:var(--z9);background:#fff;resize:vertical;max-height:46vh}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--em-br);border-color:var(--em)}
+
+/* ---------- 解析结果 ---------- */
+.prow{display:flex;gap:12px;align-items:flex-start}
+.pchk{margin-top:4px;flex:none;width:20px;height:20px;accent-color:var(--em)}
+.pbody{min-width:0;flex:1}
+.ptitle{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.pname{font-size:15.5px;font-weight:700;line-height:1.45;word-break:break-all}
+.pdl{margin-top:7px;font-size:13.5px;color:var(--z6)}
+.pdl b{color:var(--z9);font-weight:600}
+.pnote{margin-left:6px;font-size:11.5px;color:var(--am)}
+.detail{margin-top:10px;display:grid;gap:6px;background:var(--z0);border-radius:10px;padding:12px;font-size:13px}
+.drow{display:flex;gap:8px}
+.drow .k{flex:none;color:var(--z4)}
+.drow .k::after{content:"："}
+.drow .v{min-width:0;word-break:break-word;color:var(--z7)}
+.drow .v a{color:var(--em-d);text-decoration:underline;text-decoration-color:var(--em-br);text-underline-offset:2px;word-break:break-all}
+.savebar{position:sticky;bottom:10px;z-index:10;margin-top:4px}
+.stats-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:12px}
+.stats-row .cnt{font-size:13.5px;font-weight:700;color:var(--z7)}
+.hint{font-size:11.5px;color:var(--z4);margin:0}
+.sticky-note{position:fixed;left:50%;transform:translateX(-50%);bottom:max(18px,env(safe-area-inset-bottom));z-index:80;background:var(--z9);color:#fff;border-radius:12px;padding:12px 18px;max-width:86%;box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .25s;font-size:13px}
+.sticky-note.show{opacity:1}
+.sticky-note b{display:block;font-size:13.5px}
+.sticky-note span{color:var(--z3);font-size:12px}
+
+/* ---------- 月历 ---------- */
+.mnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.mnav-l{display:flex;align-items:center;gap:6px}
+.icbtn{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--z3);background:#fff;border-radius:10px;color:var(--z6)}
+.icbtn:active{background:var(--z1)}
+.mnav-l h2{margin:0;min-width:112px;text-align:center;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.wd{text-align:center;font-size:11px;color:var(--z4);padding-bottom:6px;font-weight:600}
+.wd.we{color:#d97706}
+.cell{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;background:transparent;border-radius:10px;font-size:14px;font-variant-numeric:tabular-nums;color:var(--z5);padding:0}
+.cell:active{background:var(--z1)}
+.cell.has{background:var(--z1);color:var(--z9);font-weight:600}
+.cell.today{background:var(--em-bg);color:var(--em-d);font-weight:700;box-shadow:inset 0 0 0 1px var(--em-br)}
+.cell.picked{background:var(--em);color:#fff;font-weight:700}
+.cdot{margin-top:2px;min-width:15px;height:15px;border-radius:99px;background:var(--em);color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;line-height:1}
+.cdot.urgent{background:var(--rd)}
+.cell.picked .cdot{background:rgba(255,255,255,.25);color:#fff}
+.cal-legend{display:flex;justify-content:flex-end;gap:12px;margin-top:8px;font-size:11px;color:var(--z4)}
+.cal-legend i{display:inline-block;width:8px;height:8px;border-radius:99px;margin-right:4px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;color:var(--z7);margin:2px 0 10px;gap:8px}
+.sec-h .sp{color:var(--z4);font-weight:400;font-size:12.5px;background:none;border:0;padding:4px 8px}
+
+/* ---------- 记录列表 ---------- */
+.rec{background:var(--card);border:1px solid var(--z2);border-radius:14px;padding:15px;box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:12px}
+.rec-hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.rec-hd .lt{display:flex;flex-wrap:wrap;align-items:center;gap:7px;min-width:0}
+.rec-nm{font-size:15.5px;font-weight:700;line-height:1.45;word-break:break-all}
+.rec-dl{margin-top:6px;font-size:13.5px;color:var(--z6)}
+.rec-dl b{font-weight:600;color:var(--z9)}
+.rec-ft{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.rec-ft .ad{font-size:11px;color:var(--z4)}
+.delbtn{display:inline-flex;align-items:center;gap:4px;border:0;background:transparent;color:var(--z4);font-size:12.5px;padding:6px 8px;border-radius:8px}
+.delbtn:active{background:#fee2e2;color:var(--rd)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--z3);background:#fff;color:var(--z6);border-radius:99px;padding:6px 13px;font-size:12.5px;font-weight:600}
+.chip .n{color:var(--z4);font-variant-numeric:tabular-nums}
+.chip.on{background:var(--em);border-color:var(--em);color:#fff}
+.chip.on .n{color:var(--em-l)}
+.search{position:relative;margin-bottom:12px}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--z4)}
+.search input{width:100%;border:1px solid var(--z3);border-radius:10px;padding:9px 12px 9px 34px;font-size:14px;background:#fff}
+.empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 16px;text-align:center;color:var(--z4);font-size:13.5px}
+
+/* ---------- 画像表单 ---------- */
+.fgrid{display:grid;gap:16px}
+@media(min-width:520px){.fgrid{grid-template-columns:1fr 1fr}}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--z7);margin-bottom:6px}
+.field input,.field select{width:100%;border:1px solid var(--z3);border-radius:10px;padding:10px 12px;font-size:14.5px;background:#fff;color:var(--z9)}
+.days{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.daychip{width:52px;padding:7px 0;border:1px solid var(--z3);background:#fff;color:var(--z6);border-radius:99px;font-size:12.5px;font-weight:600;text-align:center}
+.daychip.on{background:var(--em);border-color:var(--em);color:#fff}
+.days input{width:64px;border:1px solid var(--z3);border-radius:99px;padding:7px 10px;font-size:12.5px;text-align:center;font-variant-numeric:tabular-nums}
+.sub-t{font-size:12px;color:var(--z4);margin:6px 0 0}
+
+/* ---------- 提醒条 / 弹窗 ---------- */
+.alert{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--am-br);background:var(--am-l);border-radius:12px;padding:12px;margin-bottom:14px;font-size:13.5px}
+.alert .ic{flex:none;color:#d97706;margin-top:2px}
+.alert .bd{min-width:0;flex:1}
+.alert .bd b{display:block;color:#92400e;font-size:13.5px}
+.alert .bd p{margin:3px 0 0;color:#b45309;word-break:break-all}
+.alert .bd button{margin:4px 0 0;padding:0;font-size:12px;font-weight:600;color:#b45309;background:none;border:0;text-decoration:underline;text-underline-offset:2px}
+.alert .x{flex:none;border:0;background:transparent;color:#fbbf24;padding:4px;border-radius:6px}
+.overlay{position:fixed;inset:0;z-index:90;background:rgba(24,24,27,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:16px;max-width:400px;width:100%;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.3);max-height:84vh;overflow:auto}
+.modal h3{margin:0 0 8px;font-size:16px;font-weight:700}
+.modal p{margin:0 0 16px;font-size:13.5px;color:var(--z5)}
+.modal .acts{display:flex;gap:10px;justify-content:flex-end}
+.modal textarea{min-height:130px;font-size:12px;font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1.5}
+.fade{animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.spinner{width:26px;height:26px;border:3px solid var(--em-br);border-top-color:var(--em);border-radius:99px;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:70px 0;color:var(--z4);font-size:13px}
+.tabpane{display:none}
+.tabpane.on{display:block;animation:fade .18s ease}
+.count-note{font-size:12.5px;color:var(--z4);text-align:center;margin:0 0 10px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="wrap">
+      <div class="hd-row">
+        <div class="hd-id">
+          <div class="hd-logo" id="logo-ic"></div>
+          <div class="hd-t"><h1>赛事管家</h1><p>竞赛通知解析 · 截止日程提醒</p></div>
+        </div>
+        <button class="hd-badge" id="hd-up" style="display:none"></button>
+      </div>
+      <nav id="tabs" aria-label="主导航"></nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <div id="alert-box"></div>
+    <div id="panes"></div>
+  </main>
+  <footer><p>画像只排序打标，不过滤条目 · 数据保存在本机</p></footer>
+</div>
+<div id="toast" class="sticky-note"></div>
+<div id="modal-root"></div>
+<script>
+"use strict";
+/* =========================================================================
+ * 解析引擎 —— 由 award_tracker.py → award-parser.ts 移植为纯 JS
+ * 兼容性目标：Chromium 60+（避免 lookbehind / ?. / ?? / matchAll / flatMap）
+ * ========================================================================= */
+var AWARD = (function () {
+
+  var GRADE_ORDER = { "大一": 1, "大二": 2, "大三": 3, "大四": 4, "大五": 5, "研究生": 6, "硕士": 6, "博士": 7 };
+
+  var MAJOR_GROUPS = [
+    ["影视传媒类", ["摄影", "摄像", "影视", "传媒", "新闻", "传播", "广告", "编导", "广播电视", "戏文", "戏剧", "动画", "数字媒体", "视觉传达"]],
+    ["艺术设计类", ["设计", "艺术", "美术", "视觉传达"]],
+    ["文法政法类", ["中文", "文学", "外语", "英语", "法学", "法律", "知识产权", "知产", "教育", "心理"]],
+    ["理工科类", ["计算机", "软件", "人工智能", "理工", "工科", "理科", "机械", "土木", "建筑", "电子", "自动化"]],
+    ["经管类", ["经管", "经济", "管理", "金融", "会计", "工商"]]
+  ];
+
+  var KW_SET = {};
+  MAJOR_GROUPS.forEach(function (g) { g[1].forEach(function (k) { KW_SET[k] = true; }); });
+  var MAJOR_KEYWORDS = Object.keys(KW_SET);
+
+  var FUZZY_TIME_WORDS = ["近期", "尽快", "另行通知", "额满即止", "招满即止", "择期", "待定"];
+
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+
+  /* ---------- 名称 ---------- */
+  function extractName(text) {
+    var body = text.trim().replace(/^\s*\d{1,2}[.、)）]\s*/, "");
+    var m = /关于[开展举办组织评选]{0,4}?(.{4,40}?)(?:的)?(?:通知|公告|邀请函)/.exec(body);
+    if (m) return m[1].trim();
+    m = /([\u4e00-\u9fa5A-Za-z0-9·\-]{2,30}(?:大赛|竞赛|比赛|挑战杯|杯赛|评选|奖学金|招募|征集|计划|活动|讲座|论坛|志愿者))/.exec(body);
+    if (m) {
+      var name = m[1].replace(/^(举办|开展|组织|参加|关于)/, "");
+      return name.slice(0, 40);
+    }
+    var lines = body.split("\n");
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim().replace(/^[【】\[\]「」\s]+/, "").replace(/[【】\[\]「」\s]+$/, "").replace(/^\d{1,2}[.、)）]\s*/, "");
+      if (line.length >= 4 && !/^(各位|同学|通知|大家好)/.test(line)) return line.slice(0, 30);
+    }
+    return "未注明";
+  }
+
+  /* ---------- 截止时间 ---------- */
+  function extractDeadline(text, now) {
+    now = now || new Date();
+    var m = /(20\d{2})[年\-/](\d{1,2})[月\-/](\d{1,2})[日号]?/.exec(text);
+    var yearInfer = false;
+    if (!m) { m = /(\d{1,2})[月\-/](\d{1,2})[日号]/.exec(text); yearInfer = true; }
+    if (!m) {
+      for (var i = 0; i < FUZZY_TIME_WORDS.length; i++) {
+        if (text.indexOf(FUZZY_TIME_WORDS[i]) >= 0) return { deadline: "未注明", note: "原文仅给出模糊时间（近期/尽快等）" };
+      }
+      return { deadline: "未注明", note: "" };
+    }
+    var year, month, day;
+    if (yearInfer) { year = now.getFullYear(); month = parseInt(m[1], 10); day = parseInt(m[2], 10); }
+    else { year = parseInt(m[1], 10); month = parseInt(m[2], 10); day = parseInt(m[3], 10); }
+
+    var dt = new Date(year, month - 1, day);
+    if (dt.getFullYear() !== year || dt.getMonth() !== month - 1 || dt.getDate() !== day) {
+      return { deadline: "未注明", note: "原文日期格式无法解析" };
+    }
+    if (yearInfer) {
+      var diff = now.getTime() - dt.getTime();
+      if (diff > 30 * 86400000) dt.setFullYear(year + 1);
+    }
+    var note = "";
+    var tm = /(\d{1,2})[:：](\d{2})/.exec(text) || /(\d{1,2})\s*点/.exec(text);
+    if (tm) {
+      var minute = tm[2] !== undefined ? parseInt(tm[2], 10) : 0;
+      dt.setHours(parseInt(tm[1], 10), minute, 0, 0);
+    } else {
+      dt.setHours(23, 59, 0, 0);
+      note = "原文未注明时刻，按当日 23:59 计";
+    }
+    return {
+      deadline: dt.getFullYear() + "-" + pad2(dt.getMonth() + 1) + "-" + pad2(dt.getDate()) + " " + pad2(dt.getHours()) + ":" + pad2(dt.getMinutes()),
+      note: note
+    };
+  }
+
+  /* ---------- 链接 / 材料 / 报名方式 ---------- */
+  function extractLink(text) {
+    var m = /https?:\/\/[^\s，。、）)\]】]+/.exec(text);
+    return m ? m[0] : "";
+  }
+
+  function extractMaterials(text) {
+    var patterns = [
+      /材料[需为]?[:：]?\s*([^。；\n]{2,40})/,
+      /需(?:提交|准备|提供)\s*([^。；\n]{2,40})/,
+      /提交[:：]\s*([^。；\n]{2,40})/
+    ];
+    for (var i = 0; i < patterns.length; i++) {
+      var m = patterns[i].exec(text);
+      if (m) return m[1].replace(/^[：:，,\s]+/, "").replace(/[：:，,\s]+$/, "");
+    }
+    return "";
+  }
+
+  function extractMethod(text) {
+    if (extractLink(text)) return "官网在线报名";
+    var mail = /[\w.\-]+@[\w.\-]+\.\w+/.exec(text);
+    if (mail) return "邮件报名：" + mail[0];
+    var kws1 = ["扫码", "二维码", "扫描"];
+    for (var i = 0; i < kws1.length; i++) if (text.indexOf(kws1[i]) >= 0) return "扫码报名（二维码见原文）";
+    var kws2 = ["进群", "加群", "群内", "群里"];
+    for (var j = 0; j < kws2.length; j++) if (text.indexOf(kws2[j]) >= 0) return "群内报名";
+    if (text.indexOf("私聊") >= 0) return "私聊联系人报名";
+    var kws3 = ["官网", "网站", "系统", "平台", "表单", "问卷"];
+    for (var k = 0; k < kws3.length; k++) if (text.indexOf(kws3[k]) >= 0) return "通过" + kws3[k] + "提交（原文未给具体地址）";
+    if (/(交|报)至|交给|提交给/.test(text)) {
+      var m = /(?:(?:交|报)至|交给|提交给)([^\s，。]{2,20})/.exec(text);
+      if (m) return "线下提交至：" + m[1];
+    }
+    return "未注明";
+  }
+
+  /* ---------- 年级 ---------- */
+  function extractGrade(text, now) {
+    now = now || new Date();
+    var ALL = ["全体年级", "全体学生", "全体在校生", "全校学生", "所有年级", "在校生"];
+    for (var a = 0; a < ALL.length; a++) if (text.indexOf(ALL[a]) >= 0) return "全体年级";
+
+    var found = [];
+    var grades = ["大一", "大二", "大三", "大四", "大五", "研究生", "硕士", "博士"];
+    for (var b = 0; b < grades.length; b++) if (text.indexOf(grades[b]) >= 0) found.push(grades[b]);
+
+    var cls = [], cm;
+    var clsRe = /(20\d{2})级/g;
+    while ((cm = clsRe.exec(text)) !== null) cls.push(cm[1]);
+    for (var c = 0; c < cls.length; c++) {
+      var n = now.getFullYear() - parseInt(cls[c], 10) + (now.getMonth() + 1 >= 9 ? 1 : 0);
+      var lab = { 1: "大一", 2: "大二", 3: "大三", 4: "大四", 5: "大五" }[n];
+      if (lab && found.indexOf(lab) < 0) found.push(lab);
+    }
+    if (text.indexOf("本科生") >= 0 && found.length === 0) return "本科生（未细分年级）";
+
+    var rng = /(大一|大二|大三|大四|大五)\s*(?:至|到|-|—|~)\s*(大一|大二|大三|大四|大五)/.exec(text);
+    if (rng) {
+      var lo = GRADE_ORDER[rng[1]], hi = GRADE_ORDER[rng[2]], tmp;
+      if (lo > hi) { tmp = lo; lo = hi; hi = tmp; }
+      var expanded = [];
+      var order5 = ["大一", "大二", "大三", "大四", "大五"];
+      for (var e = 0; e < order5.length; e++) {
+        var v = GRADE_ORDER[order5[e]];
+        if (lo <= v && v <= hi) expanded.push(order5[e]);
+      }
+      if (expanded.length > 0) return expanded.join("、");
+    }
+    if (found.length === 0) return "未注明";
+    if (/(及以上|以上|起)/.test(text) && found.length === 1) return found[0] + "及以上";
+    found.sort(function (x, y) { return GRADE_ORDER[x] - GRADE_ORDER[y]; });
+    return found.join("、");
+  }
+
+  /* ---------- 专业限制（避开 lookbehind：先匹配再检查前一个字符） ---------- */
+  function scanNoBu(text, re) {
+    var m, last = -1;
+    while ((m = re.exec(text)) !== null) {
+      if (m.index === 0 || text.charAt(m.index - 1) !== "不") return m[0];
+      if (re.lastIndex === m.index) re.lastIndex++;
+      last = re.lastIndex;
+      if (m.index === last) break;
+    }
+    return null;
+  }
+
+  function parseMajorLimit(text) {
+    var FREE = ["不限专业", "专业不限", "各专业", "所有专业"];
+    for (var i = 0; i < FREE.length; i++) if (text.indexOf(FREE[i]) >= 0) return "不限专业";
+    var m = scanNoBu(text, /限[^，。；\n]{0,20}专业/g);
+    if (m) return m.trim();
+    var simple = [/仅限[^，。；\n]{0,20}专业/, /面向[^，。；\n]{0,20}专业/, /要求[^，。；\n]{0,20}专业/, /[^，。；\n]{0,10}专业(?:学生|同学)?(?:可报|均可|优先)/];
+    for (var s = 0; s < simple.length; s++) {
+      var sm = simple[s].exec(text);
+      if (sm) return sm[0].trim();
+    }
+    var m2 = scanNoBu(text, /限[^，。；\n]{0,12}(?:类|科|方向)(?:专业|学生|同学)?/g);
+    if (m2) return m2.trim();
+    return "不限专业";
+  }
+
+  /* ---------- 分块 ---------- */
+  function isJunkBlock(block) {
+    if (block.trim().length < 20) return true;
+    if (!/截止|报名|参赛|招募|征集|评选|申请|20\d{2}|\d{1,2}月/.test(block)) return true;
+    return false;
+  }
+
+  function splitBlocks(text) {
+    var rough = text.split(/\n\s*\n+/);
+    var out = [];
+    rough.forEach(function (seg) {
+      var lookRe = /\d{1,2}[.、)）]\s*\S/g;
+      var cuts = [], m, lastCut = 0;
+      while ((m = lookRe.exec(seg)) !== null) {
+        if (m.index > 0) { cuts.push(m.index); lookRe.lastIndex = m.index + 1; }
+        else lookRe.lastIndex++;
+      }
+      for (var i = 0; i < cuts.length; i++) { out.push(seg.slice(lastCut, cuts[i])); lastCut = cuts[i]; }
+      out.push(seg.slice(lastCut));
+    });
+    return out;
+  }
+
+  function looksLikeTitle(block) {
+    var t = block.trim();
+    if (t.length < 6 || t.indexOf("\n") >= 0) return false;
+    return /通知|公告|邀请函|大赛|竞赛|比赛|挑战杯|杯赛|评选|奖学金|招募|征集|计划|讲座|论坛|志愿者/.test(t);
+  }
+
+  function mergeTitleBlocks(blocks) {
+    var merged = [];
+    blocks.forEach(function (raw) {
+      var b = raw.trim();
+      if (!b) return;
+      var prev = merged.length > 0 ? merged[merged.length - 1] : null;
+      if (prev && looksLikeTitle(prev) && !looksLikeTitle(b)) merged[merged.length - 1] = prev + "\n" + b;
+      else merged.push(b);
+    });
+    return merged;
+  }
+
+  function extractItems(text, now) {
+    now = now || new Date();
+    var blocks = mergeTitleBlocks(splitBlocks(text)).filter(function (b) { return b.length > 0 && !isJunkBlock(b); });
+    var effective = blocks.length > 0 ? blocks : [text.trim()];
+    var items = [];
+    var max = Math.min(effective.length, 10);
+    for (var i = 0; i < max; i++) {
+      var block = effective[i];
+      var dl = extractDeadline(block, now);
+      items.push({
+        name: extractName(block),
+        deadline: dl.deadline,
+        method: extractMethod(block),
+        grade: extractGrade(block, now),
+        majorLimit: parseMajorLimit(block),
+        link: extractLink(block),
+        materials: extractMaterials(block),
+        note: dl.note
+      });
+    }
+    return items;
+  }
+
+  /* ---------- 画像匹配 ---------- */
+  function matchGrade(cfgGrade, itemGrade) {
+    if (itemGrade === "未注明" || itemGrade === "") return "未知";
+    if (itemGrade.indexOf("全体年级") >= 0 || itemGrade.indexOf("不限") >= 0) return "匹配";
+    var base = GRADE_ORDER[String(cfgGrade).trim()];
+    if (base === undefined) return "未知";
+    if (itemGrade.indexOf("本科生") >= 0) return base <= 4 ? "匹配" : "不匹配";
+    var found = [];
+    var gs = ["大一", "大二", "大三", "大四", "大五", "研究生", "硕士", "博士"];
+    for (var i = 0; i < gs.length; i++) if (itemGrade.indexOf(gs[i]) >= 0) found.push(GRADE_ORDER[gs[i]]);
+    if (found.length === 0) return "未知";
+    var mn = Math.min.apply(null, found);
+    if (itemGrade.indexOf("及以上") >= 0) return base >= mn ? "匹配" : "不匹配";
+    return found.indexOf(base) >= 0 ? "匹配" : "不匹配";
+  }
+
+  function matchMajorLabel(cfgMajor, limit) {
+    if (!limit || limit === "不限专业") return "所有专业可报";
+    var mj = String(cfgMajor).trim();
+    if (mj && (limit.indexOf(mj) >= 0 || MAJOR_KEYWORDS.some(function (k) { return mj.indexOf(k) >= 0 && limit.indexOf(k) >= 0; }))) return "符合你的专业";
+    for (var i = 0; i < MAJOR_GROUPS.length; i++) {
+      var kws = MAJOR_GROUPS[i][1];
+      var inLimit = kws.some(function (k) { return limit.indexOf(k) >= 0; });
+      var inMajor = kws.some(function (k) { return mj.indexOf(k) >= 0; });
+      if (inLimit && inMajor) return "符合你的专业";
+    }
+    return "专业可能不符，请自行确认";
+  }
+
+  function judge(items, profile) {
+    var out = [];
+    items.forEach(function (it) {
+      var g = matchGrade(profile.grade || "", it.grade);
+      var m = matchMajorLabel(profile.major || "", it.majorLimit);
+      var verdict;
+      if (m === "专业可能不符，请自行确认") verdict = "待确认";
+      else if (g === "不匹配") verdict = "年级不符";
+      else if (g === "未知") verdict = "待确认";
+      else verdict = "符合";
+      var row = {};
+      Object.keys(it).forEach(function (k) { row[k] = it[k]; });
+      row.fit = verdict;
+      row.majorTag = m;
+      out.push(row);
+    });
+    return out;
+  }
+
+  var FIT_ORDER = { "符合": 0, "待确认": 1, "年级不符": 2 };
+
+  function analyze(text, profile, matchOnly) {
+    var rows = judge(extractItems(text), profile);
+    rows.sort(function (a, b) { return (FIT_ORDER[a.fit] !== undefined ? FIT_ORDER[a.fit] : 3) - (FIT_ORDER[b.fit] !== undefined ? FIT_ORDER[b.fit] : 3); });
+    if (matchOnly) {
+      var filtered = rows.filter(function (r) { return r.fit !== "年级不符"; });
+      if (filtered.length > 0) return filtered;
+    }
+    return rows;
+  }
+
+  function rowsToRecords(rows) {
+    var out = [];
+    rows.forEach(function (r) {
+      if (r.name === "未注明") return;
+      var known = r.deadline && r.deadline !== "未注明";
+      out.push({
+        id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        name: r.name,
+        deadline: known ? r.deadline.slice(0, 10) : "",
+        deadlineTime: known && r.deadline.length >= 16 ? r.deadline.slice(11, 16) : "",
+        method: r.method,
+        link: r.link,
+        materials: r.materials,
+        majorLimit: r.majorLimit === "" ? "不限专业" : r.majorLimit,
+        gradeLimit: r.grade === "" ? "未注明" : r.grade,
+        fit: r.fit,
+        note: r.note,
+        added: new Date().toISOString().slice(0, 10)
+      });
+    });
+    return out;
+  }
+
+  function countdown(deadline, today) {
+    if (!deadline) return null;
+    today = today || new Date();
+    var parts = deadline.split("-");
+    var y = parseInt(parts[0], 10), mo = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+    if (!y || !mo || !d) return null;
+    var dl = new Date(y, mo - 1, d);
+    var t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    var left = Math.round((dl.getTime() - t0.getTime()) / 86400000);
+    if (left < 0) return { left: left, span: "已过" + (-left) + "天", flag: "已过期" };
+    if (left === 0) return { left: left, span: "今天", flag: "今天截止" };
+    if (left <= 3) return { left: left, span: left + "天后", flag: "即将截止" };
+    return { left: left, span: left + "天后", flag: "" };
+  }
+
+  return {
+    GRADE_ORDER: GRADE_ORDER,
+    extractItems: extractItems,
+    analyze: analyze,
+    rowsToRecords: rowsToRecords,
+    countdown: countdown
+  };
+})();
+</script>
+<script>
+"use strict";
+/* =========================================================================
+ * App UI —— 图标 / 状态 / Toast / 弹窗 / 解析页
+ * ========================================================================= */
+
+/* ---------- 内联 SVG 图标（lucide 风格） ---------- */
+var ICONS = {
+  trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  clipboard: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M8 11h8"/><path d="M8 15h8"/>',
+  calendar: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+  list: '<path d="M3 5h7"/><path d="M3 12h7"/><path d="M3 19h7"/><path d="m11 5 2 2 4-4"/><path d="m11 12 2 2 4-4"/><path d="m11 19 2 2 4-4"/>',
+  user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  ext: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+  check: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  chevL: '<path d="m15 18-6-6 6-6"/>',
+  chevR: '<path d="m9 18 6-6-6-6"/>',
+  undo: '<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>',
+  inbox: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  spark: '<path d="M12 3l1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="3" y2="15"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>'
+};
+function icon(name, size) {
+  size = size || 18;
+  return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
+}
+
+/* ---------- 工具 ---------- */
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s === null || s === undefined ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function pad2(n) { return (n < 10 ? "0" : "") + n; }
+function todayIso() { var d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+
+/* ---------- 状态与持久化 ---------- */
+var STORE_KEY = "saishiguanja-v1";
+var S = {
+  tab: "parse",
+  profile: { name: "", college: "经济管理学院", grade: "大二", major: "知识产权", reminderDays: 3 },
+  records: [],
+  alertDismissed: false,
+  noticeText: "", parsedRows: null, checked: {},
+  calY: new Date().getFullYear(), calM: new Date().getMonth() + 1, pickedDay: null,
+  filter: "all", query: "",
+  form: null
+};
+
+function persist() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({ profile: S.profile, records: S.records }));
+  } catch (e) { /* 存储失败静默 */ }
+}
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    var d = JSON.parse(raw);
+    if (d && d.profile) {
+      Object.keys(S.profile).forEach(function (k) { if (d.profile[k] !== undefined) S.profile[k] = d.profile[k]; });
+    }
+    if (d && d.records && d.records.length) {
+      S.records = d.records.filter(function (r) { return r && r.id && r.name; });
+    }
+  } catch (e) { /* 损坏则重置 */ }
+}
+
+/* ---------- Toast ---------- */
+var toastTimer = null;
+function showToast(title, desc) {
+  var t = $("toast");
+  t.innerHTML = "<b>" + esc(title) + "</b>" + (desc ? "<span>" + esc(desc) + "</span>" : "");
+  t.classList.add("show");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { t.classList.remove("show"); }, 3200);
+}
+
+/* ---------- 弹窗 ---------- */
+function openModal(inner) {
+  $("modal-root").innerHTML =
+    '<div class="overlay" data-act="modal-bg"><div class="modal fade" role="dialog" aria-modal="true">' + inner + "</div></div>";
+}
+function closeModal() { $("modal-root").innerHTML = ""; }
+
+/* ---------- 徽章 ---------- */
+function fitBadge(fit) {
+  if (fit === "符合") return '<span class="badge b-fit">符合</span>';
+  if (fit === "待确认") return '<span class="badge b-wait">待确认</span>';
+  if (fit === "年级不符") return '<span class="badge b-mis">年级不符</span>';
+  return '<span class="badge b-plain">未评估</span>';
+}
+function dlBadge(deadline) {
+  var cd = AWARD.countdown(deadline);
+  if (!cd) return '<span class="badge b-plain">' + icon("clock", 12) + " 截止未注明</span>";
+  if (cd.flag === "今天截止") return '<span class="badge b-today">' + icon("clock", 12) + " 今天截止</span>";
+  if (cd.flag === "即将截止") return '<span class="badge b-soon">' + icon("clock", 12) + " " + esc(cd.span) + "</span>";
+  if (cd.flag === "已过期") return '<span class="badge b-exp">' + icon("clock", 12) + " " + esc(cd.span) + "</span>";
+  return '<span class="badge b-dl">' + icon("clock", 12) + " " + esc(cd.span) + "</span>";
+}
+
+/* ---------- 通用记录卡片（月程 / 记录页共用） ---------- */
+function drow(k, v, link) {
+  if (!v) return "";
+  if (link) return '<div class="drow"><span class="k">' + k + '</span><span class="v"><a href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">' + esc(v) + " " + icon("ext", 11) + "</a></span></div>";
+  return '<div class="drow"><span class="k">' + k + '</span><span class="v">' + esc(v) + "</span></div>";
+}
+function recordItemHTML(r, allowDelete) {
+  var cd = AWARD.countdown(r.deadline);
+  var dl = r.deadline || "未注明";
+  var tm = r.deadlineTime || "";
+  var detail =
+    drow("报名", r.method && r.method !== "未注明" ? r.method : "") +
+    drow("链接", r.link, r.link) +
+    drow("材料", r.materials) +
+    drow("专业", r.majorLimit) +
+    drow("年级", r.gradeLimit && r.gradeLimit !== "未注明" ? r.gradeLimit : "") +
+    drow("备注", r.note);
+  return '<article class="rec fade">' +
+    '<div class="rec-hd"><div class="lt">' + fitBadge(r.fit) + '<span class="rec-nm">' + esc(r.name) + "</span></div>" + dlBadge(r.deadline) + "</div>" +
+    '<div class="rec-dl">截止：<b>' + esc(dl) + " " + esc(tm) + "</b>" + (cd ? '<span style="color:var(--z4)">（' + esc(cd.span) + "）</span>" : "") + "</div>" +
+    (detail ? '<div class="detail">' + detail + "</div>" : "") +
+    '<div class="rec-ft"><span class="ad">记录于 ' + esc(r.added || "") + "</span>" +
+    (allowDelete ? '<button class="delbtn" data-act="ask-del" data-id="' + esc(r.id) + '">' + icon("trash", 13) + " 删除</button>" : "") +
+    "</div></article>";
+}
+
+/* ---------- 顶栏 / 提醒条 / Tabs ---------- */
+function upcomingList() {
+  var days = parseInt(S.profile.reminderDays, 10) || 3;
+  var out = [];
+  S.records.forEach(function (r) {
+    if (!r.deadline) return;
+    var cd = AWARD.countdown(r.deadline);
+    if (cd && cd.left >= 0 && cd.left <= days) out.push({ r: r, cd: cd });
+  });
+  out.sort(function (a, b) { return a.cd.left - b.cd.left; });
+  return out;
+}
+
+function renderHeader() {
+  var up = upcomingList();
+  var btn = $("hd-up");
+  if (up.length === 0) { btn.style.display = "none"; return; }
+  btn.style.display = "";
+  btn.innerHTML = icon("alert", 13) + " " + up.length + " 项临近截止";
+  btn.setAttribute("data-act", "goto-records");
+}
+
+function renderAlert() {
+  var box = $("alert-box");
+  if (S.alertDismissed) { box.innerHTML = ""; return; }
+  var up = upcomingList();
+  if (up.length === 0) { box.innerHTML = ""; return; }
+  var preview = up.slice(0, 2).map(function (u) {
+    return "「" + u.r.name + "」" + (u.cd.flag === "今天截止" ? "今天截止" : u.cd.span);
+  }).join("；") + (up.length > 2 ? "；等 " + up.length + " 项" : "");
+  box.innerHTML =
+    '<div class="alert fade"><span class="ic">' + icon("alert", 16) + '</span>' +
+    '<div class="bd"><b>临近截止提醒</b><p>' + esc(preview) + '</p><button data-act="goto-records">查看全部 →</button></div>' +
+    '<button class="x" data-act="dismiss-alert" aria-label="关闭提醒">' + icon("x", 15) + "</button></div>";
+}
+
+var TAB_DEFS = [
+  { key: "parse", label: "解析通知", ic: "clipboard" },
+  { key: "schedule", label: "月程日程", ic: "calendar" },
+  { key: "records", label: "全部记录", ic: "list" },
+  { key: "profile", label: "我的画像", ic: "user" }
+];
+function renderTabs() {
+  $("tabs").innerHTML = TAB_DEFS.map(function (t) {
+    return '<button class="tabbtn' + (S.tab === t.key ? " on" : "") + '" data-act="tab" data-tab="' + t.key + '" aria-current="' + (S.tab === t.key ? "page" : "false") + '">' + icon(t.ic, 17) + "<span>" + t.label + "</span></button>";
+  }).join("");
+}
+
+/* ---------- Tab：解析通知 ---------- */
+var SAMPLE = '关于举办第十二届全国大学生电子商务"创新、创意及创业"挑战赛校内选拔赛的通知\n\n各位同学：\n为培养大学生创新意识，现举办"三创赛"校内选拔赛。\n参赛对象：大二、大三学生，不限专业。\n报名截止：2026年10月20日 17:00\n报名方式：填写报名表发送至 chuangxin@univ.edu.cn\n需提交：团队信息表、商业计划书摘要\n官网：https://www.3chuang.net\n\n关于开展2026年国家奖学金评选工作的通知\n\n评选范围：全体在校生，面向知识产权等专业学生优先。\n申请截止 2026年10月12日，材料交至学院办公室李老师处。\n需提交：成绩单、获奖证明复印件。\n\n"外研社杯"全国英语演讲大赛招募选手\n\n近期报名，扫二维码进群，面向大一到大三学生。';
+
+var parseDebounce = null;
+function doParse() {
+  var text = S.noticeText;
+  if (!text || text.trim().length < 12) { S.parsedRows = null; S.checked = {}; renderParseResults(); return; }
+  S.parsedRows = AWARD.analyze(text, S.profile);
+  S.checked = {};
+  S.parsedRows.forEach(function (_, i) { S.checked[i] = true; });
+  renderParseResults();
+}
+
+function renderParsePane() {
+  $("panes").innerHTML =
+    '<div class="tabpane on fade" id="pane-parse">' +
+    '<div class="card">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">' +
+    '<span style="display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--z7)">' + icon("clipboard", 15) + ' 粘贴竞赛 / 评奖 / 志愿通知原文</span>' +
+    '<span style="display:flex;gap:4px"><button class="btn ghost sm" data-act="sample">' + icon("spark", 13) + ' 填充示例</button>' +
+    '<button class="btn ghost sm" data-act="clear-notice" style="color:var(--rd)">' + icon("trash", 13) + " 清空</button></span>" +
+    "</div>" +
+    '<textarea id="notice-input" placeholder="把辅导员发的通知直接粘贴到这里，支持一次粘贴多条（按空行或编号自动分块）。解析在本机完成，不联网。">' + esc(S.noticeText) + "</textarea>" +
+    '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px">' +
+    '<p class="hint" id="parse-status"></p>' +
+    '<button class="btn sm" data-act="parse-now">' + icon("check", 14) + " 立即解析</button>" +
+    "</div></div>" +
+    '<div id="parse-results"></div>' +
+    '<div class="card dash" style="background:var(--z0)"><h3>解析说明</h3><p class="hint" style="font-size:12px;line-height:1.8">自动提取名称、截止时间、报名方式、材料清单、年级与专业限制；缺少年份时按今年推断，早于当前 30 天以上则推到明年；未写时刻按当日 23:59 计。适配结论由「我的画像」中的年级 / 专业计算，只影响排序和标签，不会删减任何条目。</p></div>' +
+    "</div>";
+  var ta = $("notice-input");
+  ta.addEventListener("input", function () {
+    S.noticeText = ta.value;
+    if (parseDebounce) clearTimeout(parseDebounce);
+    parseDebounce = setTimeout(doParse, 450);
+  });
+  renderParseResults();
+}
+
+function renderParseResults() {
+  var host = $("parse-results");
+  if (!host) return;
+  var st = $("parse-status");
+  var n = S.noticeText.trim().length;
+  if (st) st.textContent = n === 0 ? "等待输入……" : (n < 12 ? "内容太短，继续粘贴吧" : n + " 字 · 已自动解析");
+  var rows = S.parsedRows;
+  if (!rows || rows.length === 0) {
+    host.innerHTML = rows && rows.length === 0
+      ? '<div class="card dash"><div class="empty">' + icon("inbox", 26) + "<p>未识别到竞赛 / 评奖信息，请检查粘贴的内容是否完整。</p></div></div>"
+      : "";
+    return;
+  }
+  var counts = { "符合": 0, "待确认": 0, "年级不符": 0 };
+  rows.forEach(function (r) { if (counts[r.fit] !== undefined) counts[r.fit]++; });
+  var picked = rows.filter(function (_, i) { return S.checked[i]; });
+
+  var html =
+    '<div class="stats-row"><span class="cnt">识别到 ' + rows.length + " 个事项</span>" +
+    '<span class="badge b-fit">符合 ' + counts["符合"] + "</span>" +
+    '<span class="badge b-wait">待确认 ' + counts["待确认"] + "</span>" +
+    '<span class="badge b-mis">年级不符 ' + counts["年级不符"] + "</span></div>";
+
+  rows.forEach(function (row, i) {
+    var cd = AWARD.countdown(row.deadline !== "未注明" ? row.deadline.slice(0, 10) : "");
+    var dlv = row.deadline === "未注明" ? "未注明" : row.deadline;
+    var badge = cd
+      ? (cd.flag === "今天截止" ? '<span class="badge b-today">' + icon("clock", 12) + " 今天截止</span>"
+        : cd.flag === "即将截止" ? '<span class="badge b-soon">' + icon("clock", 12) + " " + esc(cd.span) + "</span>"
+        : '<span class="badge b-dl">' + icon("clock", 12) + " " + esc(cd.span) + "</span>")
+      : '<span class="badge b-plain">截止未注明</span>';
+    var detail =
+      drow("报名", row.method && row.method !== "未注明" ? row.method : "") +
+      drow("链接", row.link, row.link) +
+      drow("材料", row.materials) +
+      '<div class="drow"><span class="k">专业</span><span class="v">' + esc(row.majorLimit) +
+      (row.majorTag !== "所有专业可报" ? '<span style="font-size:11px;color:var(--z4)">（' + esc(row.majorTag) + "）</span>" : "") + "</span></div>" +
+      drow("年级", row.grade && row.grade !== "未注明" ? row.grade : "");
+    html +=
+      '<div class="card fade"><div class="prow">' +
+      '<input type="checkbox" class="pchk" data-act="pick" data-i="' + i + '"' + (S.checked[i] ? " checked" : "") + ' aria-label="选择 ' + esc(row.name) + '">' +
+      '<div class="pbody">' +
+      '<div class="ptitle"><span class="pname">' + esc(row.name) + "</span>" +
+      (row.fit === "符合" ? '<span class="badge b-fit">符合</span>' : row.fit === "待确认" ? '<span class="badge b-wait">待确认</span>' : '<span class="badge b-mis">年级不符</span>') + badge + "</div>" +
+      '<div class="pdl">截止：<b>' + esc(dlv) + "</b>" + (row.note ? '<span class="pnote">' + esc(row.note) + "</span>" : "") + "</div>" +
+      (detail ? '<div class="detail">' + detail + "</div>" : "") +
+      "</div></div></div>";
+  });
+
+  html +=
+    '<div class="savebar"><button class="btn blk" data-act="save-records"' + (picked.length === 0 ? " disabled" : "") + ">" +
+    icon("check", 18) + " 记入日程（已选 " + picked.length + " / " + rows.length + " 条）</button></div>";
+  host.innerHTML = html;
+}
+
+function savePickedRecords() {
+  var rows = S.parsedRows || [];
+  var picked = rows.filter(function (_, i) { return S.checked[i]; });
+  var incoming = AWARD.rowsToRecords(picked);
+  if (incoming.length === 0) return;
+  var seen = {};
+  S.records.forEach(function (r) { seen[r.name + "|" + r.deadline] = true; });
+  var added = 0;
+  incoming.forEach(function (rec) {
+    var key = rec.name + "|" + rec.deadline;
+    if (seen[key]) return;
+    seen[key] = true;
+    S.records.push(rec);
+    added++;
+  });
+  persist();
+  renderHeader(); renderAlert();
+  showToast("已入库 " + added + " 条", incoming.length - added > 0 ? "另有 " + (incoming.length - added) + " 条与现有记录重复，已跳过" : "可在「月程日程」和「全部记录」中查看");
+  renderParseResults();
+}
+</script>
+<script>
+"use strict";
+/* =========================================================================
+ * Tab：月程日程 / 全部记录 / 我的画像 + 事件绑定与初始化
+ * ========================================================================= */
+
+/* ---------- Tab：月程日程 ---------- */
+function buildMonthGrid(year, month) {
+  var startWd = new Date(year, month - 1, 1).getDay();
+  var offset = (startWd + 6) % 7;
+  var days = new Date(year, month, 0).getDate();
+  var cells = [];
+  for (var e = 0; e < offset; e++) cells.push(null);
+  for (var d = 1; d <= days; d++) cells.push(year + "-" + pad2(month) + "-" + pad2(d));
+  while (cells.length % 7 !== 0) cells.push(null);
+  return cells;
+}
+
+function renderSchedulePane() {
+  var tIso = todayIso();
+  var prefix = S.calY + "-" + pad2(S.calM);
+  var byDay = {};
+  S.records.forEach(function (r) { if (r.deadline) { (byDay[r.deadline] = byDay[r.deadline] || []).push(r); } });
+
+  var wdRow = ["一", "二", "三", "四", "五", "六", "日"].map(function (w, i) {
+    return '<div class="wd' + (i >= 5 ? " we" : "") + '">' + w + "</div>";
+  }).join("");
+
+  var cells = buildMonthGrid(S.calY, S.calM);
+  var cellHtml = cells.map(function (iso) {
+    if (!iso) return "<div></div>";
+    var day = parseInt(iso.slice(8), 10);
+    var recs = byDay[iso] || [];
+    var urgent = false;
+    recs.forEach(function (r) { var cd = AWARD.countdown(r.deadline); if (cd && cd.left >= 0 && cd.left <= 3) urgent = true; });
+    var cls = "cell";
+    if (S.pickedDay === iso) cls += " picked";
+    else if (iso === tIso) cls += " today";
+    else if (recs.length > 0) cls += " has";
+    var dot = recs.length > 0 ? '<span class="cdot' + (urgent ? " urgent" : "") + '">' + recs.length + "</span>" : "";
+    return '<button class="' + cls + '" data-act="day" data-iso="' + iso + '" aria-label="' + iso + (recs.length ? "，" + recs.length + " 个截止事项" : "") + '">' + day + dot + "</button>";
+  }).join("");
+
+  var monthRecords = S.records.filter(function (r) { return r.deadline && r.deadline.indexOf(prefix) === 0; });
+  monthRecords.sort(function (a, b) { return a.deadline < b.deadline ? -1 : a.deadline > b.deadline ? 1 : 0; });
+  var visible = S.pickedDay ? monthRecords.filter(function (r) { return r.deadline === S.pickedDay; }) : monthRecords;
+
+  var listHtml = visible.length === 0
+    ? '<div class="card dash"><div class="empty">' + icon("calendar", 26) + "<p>" + (S.pickedDay ? "这一天没有已记录的截止事项" : S.calY + "年" + S.calM + "月没有已记录的截止事项") + "</p>" +
+      '<button class="btn ghost sm" data-act="go-parse" style="border-color:var(--em-br);color:var(--em-d)">去粘贴一条通知</button></div></div>'
+    : visible.map(function (r) { return recordItemHTML(r, true); }).join("");
+
+  $("panes").innerHTML =
+    '<div class="tabpane on fade">' +
+    '<div class="mnav"><div class="mnav-l">' +
+    '<button class="icbtn" data-act="month-prev" aria-label="上一个月">' + icon("chevL", 17) + "</button>" +
+    "<h2>" + S.calY + " 年 " + S.calM + " 月</h2>" +
+    '<button class="icbtn" data-act="month-next" aria-label="下一个月">' + icon("chevR", 17) + "</button></div>" +
+    '<button class="btn ghost sm" data-act="month-today">' + icon("undo", 13) + " 回到本月</button></div>" +
+    '<div class="card"><div class="cal">' + wdRow + cellHtml + "</div>" +
+    '<div class="cal-legend"><span><i style="background:var(--em)"></i>有截止事项</span><span><i style="background:var(--rd)"></i>3 天内截止</span></div></div>' +
+    '<div class="sec-h"><span style="display:flex;align-items:center;gap:6px">' + icon("calendar", 15) + " " +
+    (S.pickedDay ? S.pickedDay + " 的截止事项" : S.calY + "年" + S.calM + "月日程") + "</span>" +
+    (S.pickedDay ? '<button class="sp" data-act="show-month">显示全月</button>' : "") + "</div>" +
+    listHtml + "</div>";
+}
+
+function shiftMonth(delta) {
+  S.pickedDay = null;
+  S.calM += delta;
+  if (S.calM < 1) { S.calM = 12; S.calY--; }
+  if (S.calM > 12) { S.calM = 1; S.calY++; }
+  renderSchedulePane();
+}
+
+/* ---------- Tab：全部记录 ---------- */
+function renderRecordsPane() {
+  var days = parseInt(S.profile.reminderDays, 10) || 3;
+  var counts = { all: S.records.length, upcoming: 0, expired: 0, nodate: 0 };
+  var fitCounts = { "符合": 0, "待确认": 0, "年级不符": 0 };
+  S.records.forEach(function (r) {
+    if (r.fit && fitCounts[r.fit] !== undefined) fitCounts[r.fit]++;
+    if (!r.deadline) { counts.nodate++; return; }
+    var cd = AWARD.countdown(r.deadline);
+    if (!cd) counts.nodate++;
+    else if (cd.left < 0) counts.expired++;
+    else if (cd.left <= days) counts.upcoming++;
+  });
+
+  var chips = [
+    { key: "all", label: "全部" }, { key: "upcoming", label: "临近截止" },
+    { key: "expired", label: "已过期" }, { key: "nodate", label: "截止未注明" }
+  ].map(function (c) {
+    return '<button class="chip' + (S.filter === c.key ? " on" : "") + '" data-act="filter" data-filter="' + c.key + '">' + c.label + ' <span class="n">' + counts[c.key] + "</span></button>";
+  }).join("");
+
+  var q = S.query.trim().toLowerCase();
+  var visible = S.records.filter(function (r) {
+    if (q && r.name.toLowerCase().indexOf(q) < 0) return false;
+    if (S.filter === "all") return true;
+    if (S.filter === "nodate") return !r.deadline;
+    if (!r.deadline) return false;
+    var cd = AWARD.countdown(r.deadline);
+    if (!cd) return false;
+    if (S.filter === "expired") return cd.left < 0;
+    return cd.left >= 0 && cd.left <= days;
+  });
+
+  var sorted = visible.slice().sort(function (a, b) {
+    var ad = a.deadline || "9999", bd = b.deadline || "9999";
+    return ad < bd ? -1 : ad > bd ? 1 : 0;
+  });
+
+  var listHtml = sorted.length === 0
+    ? '<div class="card dash"><div class="empty">' + icon("inbox", 26) + "<p>" +
+      (S.records.length === 0 ? "还没有历史记录，粘贴一条通知就会自动记录" : "没有符合条件的记录") + "</p>" +
+      (S.records.length === 0 ? '<button class="btn ghost sm" data-act="go-parse" style="border-color:var(--em-br);color:var(--em-d)">去粘贴一条通知</button>' : "") +
+      "</div></div>"
+    : sorted.map(function (r) { return recordItemHTML(r, true); }).join("");
+
+  $("panes").innerHTML =
+    '<div class="tabpane on fade">' +
+    '<div class="stats-row" style="justify-content:space-between">' +
+    "<span>" +
+    '<span class="badge b-plain">共 ' + (fitCounts["符合"] + fitCounts["待确认"] + fitCounts["年级不符"]) + " 条</span> " +
+    '<span class="badge b-fit">符合 ' + fitCounts["符合"] + "</span> " +
+    '<span class="badge b-wait">待确认 ' + fitCounts["待确认"] + "</span> " +
+    '<span class="badge b-mis">年级不符 ' + fitCounts["年级不符"] + "</span></span></div>" +
+    '<div class="chips">' + chips + "</div>" +
+    '<div class="search">' + icon("search", 15) + '<input id="rec-search" type="search" placeholder="按名称搜索…" value="' + esc(S.query) + '" aria-label="搜索记录"></div>' +
+    listHtml + "</div>";
+
+  var si = $("rec-search");
+  si.addEventListener("input", function () { S.query = si.value; refreshRecordsListOnly(); });
+}
+
+function refreshRecordsListOnly() {
+  /* 搜索时只重渲染列表区域，保持输入焦点 */
+  var host = document.querySelector("#pane-none");
+  /* 简化处理：整页重渲染后恢复焦点与光标 */
+  renderRecordsPane();
+  var si = $("rec-search");
+  if (si) { si.focus(); si.setSelectionRange(si.value.length, si.value.length); }
+}
+
+/* ---------- Tab：我的画像 ---------- */
+var GRADE_OPTS = ["大一", "大二", "大三", "大四", "大五", "研究生", "硕士", "博士"];
+var DAY_OPTS = [1, 3, 5, 7, 14];
+
+function profileDirty() {
+  var f = S.form, p = S.profile;
+  return !!f && (f.name !== p.name || f.college !== p.college || f.grade !== p.grade || f.major !== p.major || parseInt(f.reminderDays, 10) !== parseInt(p.reminderDays, 10));
+}
+
+function renderProfilePane() {
+  if (!S.form) S.form = { name: S.profile.name, college: S.profile.college, grade: S.profile.grade, major: S.profile.major, reminderDays: S.profile.reminderDays };
+  var f = S.form;
+  var days = parseInt(f.reminderDays, 10) || 3;
+
+  var dayChips = DAY_OPTS.map(function (d) {
+    return '<button class="daychip' + (days === d ? " on" : "") + '" data-act="daychip" data-d="' + d + '">' + d + " 天</button>";
+  }).join("");
+
+  var gradeOpts = GRADE_OPTS.map(function (g) {
+    return '<option value="' + g + '"' + (f.grade === g ? " selected" : "") + ">" + g + "</option>";
+  }).join("");
+
+  $("panes").innerHTML =
+    '<div class="tabpane on fade">' +
+    '<div class="card"><h3>' + icon("user", 15) + ' 我的画像</h3>' +
+    '<p class="hint" style="margin:0 0 14px">画像只用于给解析结果排序、打标签，不会过滤掉任何条目。</p>' +
+    '<div class="fgrid">' +
+    '<div class="field"><label for="pf-name">姓名（选填）</label><input id="pf-name" value="' + esc(f.name) + '" placeholder="仅作记录用"></div>' +
+    '<div class="field"><label for="pf-college">学院</label><input id="pf-college" value="' + esc(f.college) + '" placeholder="如：经济管理学院"></div>' +
+    '<div class="field"><label for="pf-grade">年级</label><select id="pf-grade">' + gradeOpts + "</select></div>" +
+    '<div class="field"><label for="pf-major">专业</label><input id="pf-major" value="' + esc(f.major) + '" placeholder="如：知识产权 / 计算机 / 会计"></div>' +
+    "</div>" +
+    '<div class="field" style="margin-top:16px"><label>截止前提醒天数</label><div class="days">' + dayChips +
+    '<input id="pf-days" type="number" min="1" max="30" value="' + days + '" aria-label="自定义提醒天数"></div>' +
+    '<p class="sub-t">首页顶部和「临近截止」筛选都会按这个天数提示。</p></div>' +
+    '<button class="btn" id="pf-save" data-act="save-profile"' + (profileDirty() ? "" : " disabled") + ' style="margin-top:16px;padding:11px 30px">' + icon("save", 15) + " 保存画像</button></div>" +
+
+    '<div class="card dash" style="background:var(--z0)"><h3 style="color:var(--z5)">' + icon("check", 15) + " 适配规则</h3>" +
+    '<p class="hint" style="font-size:12px;line-height:1.8">年级：通知写明「全体 / 不限」视为匹配；「大二及以上」按区间判断；只写「本科生」时大一至大五匹配。专业：同大类（如文法政法类的法学与知识产权）视为符合；通知未提限制则标注「所有专业可报」。</p></div>' +
+
+    '<div class="card dash" style="background:var(--z0)"><h3 style="color:var(--z5)">' + icon("download", 15) + " 数据管理</h3>" +
+    '<p class="hint" style="margin:0 0 12px">数据保存在本机，卸载 App 会清空；换机或重装前建议先导出备份。</p>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+    '<button class="btn ghost sm" data-act="export-data" style="border-color:var(--em-br);color:var(--em-d)">' + icon("download", 14) + " 导出备份</button>" +
+    '<button class="btn ghost sm" data-act="import-data" style="border-color:var(--em-br);color:var(--em-d)">' + icon("upload", 14) + " 导入备份</button>" +
+    "</div></div></div>";
+
+  ["pf-name", "pf-college", "pf-major"].forEach(function (id) {
+    var el = $(id);
+    el.addEventListener("input", function () {
+      if (id === "pf-name") S.form.name = el.value;
+      if (id === "pf-college") S.form.college = el.value;
+      if (id === "pf-major") S.form.major = el.value;
+      updateSaveBtn();
+    });
+  });
+  $("pf-grade").addEventListener("change", function () { S.form.grade = this.value; updateSaveBtn(); });
+  $("pf-days").addEventListener("input", function () {
+    var v = parseInt(this.value, 10);
+    S.form.reminderDays = isNaN(v) ? 1 : Math.min(30, Math.max(1, v));
+    updateSaveBtn();
+    /* 同步高亮 chip */
+    var chips = document.querySelectorAll(".daychip");
+    var dd = S.form.reminderDays;
+    for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", parseInt(chips[i].getAttribute("data-d"), 10) === dd);
+  });
+}
+function updateSaveBtn() {
+  var b = $("pf-save");
+  if (b) b.disabled = !profileDirty();
+}
+
+/* ---------- 导出 / 导入 ---------- */
+function exportData() {
+  var json = JSON.stringify({ app: "赛事管家", version: 1, exportedAt: new Date().toISOString().slice(0, 10), profile: S.profile, records: S.records }, null, 2);
+  openModal(
+    '<h3>' + icon("download", 16) + " 导出备份</h3>" +
+    '<p style="margin-bottom:10px">共 ' + S.records.length + " 条记录 + 画像配置。长按或全选复制以下内容，存到备忘录 / 网盘即可。</p>" +
+    '<textarea id="exp-ta" readonly>' + esc(json) + "</textarea>" +
+    '<div class="acts" style="margin-top:14px">' +
+    '<button class="btn ghost sm" data-act="close-modal">关闭</button>' +
+    '<button class="btn sm" data-act="copy-export">' + icon("copy", 14) + " 复制全部</button></div>"
+  );
+  var ta = $("exp-ta");
+  ta.addEventListener("focus", function () { ta.select(); });
+}
+function copyExport() {
+  var ta = $("exp-ta");
+  if (!ta) return;
+  ta.focus(); ta.select();
+  var ok = false;
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  if (!ok && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(ta.value).then(function () { showToast("已复制到剪贴板"); }, function () { showToast("复制失败", "请长按文本手动复制"); });
+    return;
+  }
+  showToast(ok ? "已复制到剪贴板" : "复制失败", ok ? "" : "请长按文本手动复制");
+}
+function importData() {
+  openModal(
+    '<h3>' + icon("upload", 16) + " 导入备份</h3>" +
+    '<p style="margin-bottom:10px">选择之前导出的 .json 文件，或直接把内容粘贴到下面。</p>' +
+    '<input type="file" id="imp-file" accept=".json,application/json,text/plain" style="font-size:12.5px;margin-bottom:10px">' +
+    '<textarea id="imp-ta" placeholder="或把备份 JSON 粘贴到这里…"></textarea>' +
+    '<div class="acts" style="margin-top:14px">' +
+    '<button class="btn ghost sm" data-act="close-modal">取消</button>' +
+    '<button class="btn sm" data-act="do-import">' + icon("check", 14) + " 导入</button></div>"
+  );
+  $("imp-file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () { $("imp-ta").value = String(reader.result || ""); };
+    reader.readAsText(f, "utf-8");
+  });
+}
+function doImport() {
+  var raw = ($("imp-ta") && $("imp-ta").value || "").trim();
+  if (!raw) { showToast("请先选择文件或粘贴内容"); return; }
+  var d;
+  try { d = JSON.parse(raw); } catch (e) { showToast("格式错误", "不是有效的备份 JSON"); return; }
+  if (!d || (!d.records && !d.profile)) { showToast("格式错误", "备份里没有记录或画像"); return; }
+  var added = 0;
+  if (d.records && d.records.length) {
+    var seen = {};
+    S.records.forEach(function (r) { seen[r.name + "|" + r.deadline] = true; });
+    d.records.forEach(function (r) {
+      if (!r || !r.name) return;
+      var key = r.name + "|" + (r.deadline || "");
+      if (seen[key]) return;
+      seen[key] = true;
+      var rec = { id: "r" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) };
+      ["name", "deadline", "deadlineTime", "method", "link", "materials", "majorLimit", "gradeLimit", "fit", "note", "added"].forEach(function (k) { rec[k] = String(r[k] === undefined ? "" : r[k]); });
+      S.records.push(rec);
+      added++;
+    });
+  }
+  if (d.profile) {
+    ["name", "college", "grade", "major"].forEach(function (k) { if (d.profile[k] !== undefined) S.profile[k] = String(d.profile[k]); });
+    if (d.profile.reminderDays !== undefined) S.profile.reminderDays = Math.min(30, Math.max(1, parseInt(d.profile.reminderDays, 10) || 3));
+  }
+  persist();
+  S.form = null;
+  closeModal();
+  renderHeader(); renderAlert(); renderTabs(); renderPane();
+  showToast("导入完成", "新增 " + added + " 条记录" + (d.profile ? "，画像已更新" : ""));
+}
+
+/* ---------- 删除确认 ---------- */
+function askDelete(id) {
+  var r = null;
+  S.records.forEach(function (x) { if (x.id === id) r = x; });
+  if (!r) return;
+  openModal(
+    '<h3>删除这条记录？</h3>' +
+    '<p>「' + esc(r.name) + '」将从日程中移除，此操作不可撤销。</p>' +
+    '<div class="acts"><button class="btn ghost sm" data-act="close-modal">取消</button>' +
+    '<button class="btn danger sm" data-act="confirm-del" data-id="' + esc(id) + '">删除</button></div>'
+  );
+}
+function confirmDelete(id) {
+  S.records = S.records.filter(function (r) { return r.id !== id; });
+  persist();
+  closeModal();
+  renderHeader(); renderAlert(); renderPane();
+  showToast("已删除");
+}
+
+/* ---------- 渲染调度 ---------- */
+function renderPane() {
+  if (S.tab === "parse") renderParsePane();
+  else if (S.tab === "schedule") renderSchedulePane();
+  else if (S.tab === "records") renderRecordsPane();
+  else renderProfilePane();
+  window.scrollTo(0, 0);
+}
+function renderApp() { renderHeader(); renderAlert(); renderTabs(); renderPane(); }
+
+/* ---------- 事件委托 ---------- */
+document.addEventListener("click", function (ev) {
+  var el = ev.target;
+  while (el && el !== document.body) {
+    var act = el.getAttribute && el.getAttribute("data-act");
+    if (act) {
+      var stop = true;
+      switch (act) {
+        case "tab": S.tab = el.getAttribute("data-tab"); renderTabs(); renderPane(); break;
+        case "sample": S.noticeText = SAMPLE; doParse(); renderParsePane(); break;
+        case "clear-notice": S.noticeText = ""; S.parsedRows = null; S.checked = {}; renderParsePane(); break;
+        case "parse-now": doParse(); break;
+        case "pick": /* checkbox 由 change 处理 */ stop = false; break;
+        case "save-records": savePickedRecords(); break;
+        case "month-prev": shiftMonth(-1); break;
+        case "month-next": shiftMonth(1); break;
+        case "month-today": S.pickedDay = null; var n = new Date(); S.calY = n.getFullYear(); S.calM = n.getMonth() + 1; renderSchedulePane(); break;
+        case "day": S.pickedDay = (S.pickedDay === el.getAttribute("data-iso")) ? null : el.getAttribute("data-iso"); renderSchedulePane(); break;
+        case "show-month": S.pickedDay = null; renderSchedulePane(); break;
+        case "filter": S.filter = el.getAttribute("data-filter"); renderRecordsPane(); break;
+        case "ask-del": askDelete(el.getAttribute("data-id")); break;
+        case "confirm-del": confirmDelete(el.getAttribute("data-id")); break;
+        case "close-modal": closeModal(); break;
+        case "modal-bg": if (ev.target === el) closeModal(); break;
+        case "copy-export": copyExport(); break;
+        case "export-data": exportData(); break;
+        case "import-data": importData(); break;
+        case "do-import": doImport(); break;
+        case "daychip": S.form.reminderDays = parseInt(el.getAttribute("data-d"), 10); renderProfilePane(); break;
+        case "save-profile":
+          S.profile = { name: S.form.name, college: S.form.college, grade: S.form.grade, major: S.form.major, reminderDays: Math.min(30, Math.max(1, parseInt(S.form.reminderDays, 10) || 3)) };
+          S.form = null;
+          persist(); renderHeader(); renderAlert(); renderPane();
+          showToast("画像已保存", "之后解析的通知将按新画像排序打标");
+          break;
+        case "goto-records": S.filter = "upcoming"; S.tab = "records"; renderTabs(); renderPane(); break;
+        case "go-parse": S.tab = "parse"; renderTabs(); renderPane(); break;
+        case "dismiss-alert": S.alertDismissed = true; renderAlert(); break;
+        default: stop = false;
+      }
+      if (stop) { ev.preventDefault(); return; }
+    }
+    el = el.parentNode;
+  }
+});
+
+document.addEventListener("change", function (ev) {
+  var el = ev.target;
+  if (el.getAttribute && el.getAttribute("data-act") === "pick") {
+    var i = parseInt(el.getAttribute("data-i"), 10);
+    S.checked[i] = el.checked;
+    renderParseResults();
+  }
+});
+
+/* ---------- 初始化 ---------- */
+(function init() {
+  loadState();
+  $("logo-ic").innerHTML = icon("trophy", 21);
+  renderApp();
+})();
+</script>
+</body>
+</html>
