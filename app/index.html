@@ -68,12 +68,12 @@ svg { vertical-align: middle; }
 }
 
 /* ---------- 主区与视图 ---------- */
-main { flex: 1; padding: 14px 16px 96px; }
+main { flex: 1; padding: 14px 16px 112px; }
 .view { display: none; animation: viewIn .28s ease both; }
 .view.on { display: block; }
 @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-.page-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.page-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 13px; }
 .page-title { font-size: 21px; font-weight: 800; letter-spacing: .3px; }
 .page-sub { font-size: 12px; color: var(--t3); margin-top: 3px; }
 .head-btns { display: flex; gap: 8px; }
@@ -85,14 +85,32 @@ main { flex: 1; padding: 14px 16px 96px; }
   transition: all .18s;
 }
 .icon-btn:active { transform: scale(.92); }
-.icon-btn.acc { background: var(--brand-soft); border-color: var(--brand-line); color: var(--brand-txt); }
+.icon-btn.acc {
+  background: var(--btn-grad); background-size: 150% 150%;
+  border-color: transparent; color: #fff;
+  box-shadow: 0 4px 12px var(--btn-shadow);
+}
+
+/* ---------- 悬浮快捷添加按钮 ---------- */
+.fab {
+  position: fixed; right: 18px; bottom: calc(90px + env(safe-area-inset-bottom)); z-index: 60;
+  width: 54px; height: 54px; border-radius: 18px;
+  background: var(--btn-grad); background-size: 160% 160%; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10px 28px var(--btn-shadow), 0 2px 8px rgba(0,0,0,.25);
+  transition: transform .18s, box-shadow .18s;
+}
+.fab:active { transform: scale(.9) rotate(90deg); }
+@media (min-width: 560px) {
+  .fab { right: calc(50% - 260px + 18px); }
+}
 
 /* ---------- 底部导航 ---------- */
 .dock {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
   max-width: 520px; margin: 0 auto;
   display: flex;
-  padding: 7px 4px calc(7px + env(safe-area-inset-bottom));
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
   background: var(--dock-bg);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
   border-top: 1px solid var(--line);
@@ -174,7 +192,7 @@ main { flex: 1; padding: 14px 16px 96px; }
 .seg {
   display: flex; gap: 4px; padding: 4px;
   background: var(--card); border: 1px solid var(--line);
-  border-radius: 13px; margin-bottom: 12px;
+  border-radius: 13px; margin-bottom: 10px;
   overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
 }
 .seg::-webkit-scrollbar { display: none; }
@@ -190,20 +208,41 @@ main { flex: 1; padding: 14px 16px 96px; }
 .searchbar {
   display: flex; align-items: center; gap: 8px;
   background: var(--card); border: 1px solid var(--line);
-  border-radius: 13px; padding: 9px 13px; margin-bottom: 12px; color: var(--t3);
+  border-radius: 13px; padding: 8px 12px; margin-bottom: 10px; color: var(--t3);
 }
 .searchbar input { flex: 1; background: none; border: 0; outline: none; color: var(--t1); font-size: 14px; }
 
 /* 空状态 */
-.empty { text-align: center; padding: 42px 20px 30px; color: var(--t3); }
+.empty { text-align: center; padding: 38px 20px 30px; color: var(--t3); }
 .empty svg { opacity: .5; margin-bottom: 14px; }
 .empty-title { font-size: 15.5px; font-weight: 700; color: var(--t2); }
 .empty-sub { font-size: 12.5px; margin-top: 8px; line-height: 1.8; }
 .empty .btn-primary { margin-top: 18px; }
 
+/* Sheet 内大按钮菜单（快捷添加 / 照片来源） */
+.sheet-actions { display: flex; flex-direction: column; gap: 10px; padding-bottom: 8px; }
+.sa-item {
+  display: flex; align-items: center; gap: 14px; text-align: left;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 15px; padding: 14px 15px;
+  transition: transform .16s, border-color .16s, background .16s;
+}
+.sa-item:active { transform: scale(.97); border-color: var(--brand-line); background: var(--card-open); }
+.sa-item .sa-ic {
+  flex: none; width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+}
+.sa-item .sa-ic.grad { background: var(--btn-grad); background-size: 150% 150%; box-shadow: 0 4px 12px var(--btn-shadow); }
+.sa-item .sa-ic.soft { background: var(--brand-soft); color: var(--brand-txt); border: 1px solid var(--brand-line); }
+.sa-item .sa-main { flex: 1; min-width: 0; }
+.sa-item .sa-t { font-size: 15px; font-weight: 700; color: var(--t1); }
+.sa-item .sa-s { font-size: 11.5px; color: var(--t3); margin-top: 3px; line-height: 1.55; }
+.sa-item .sa-arrow { flex: none; color: var(--t3); }
+
 /* Toast */
 #toast {
-  position: fixed; left: 50%; bottom: 118px; transform: translateX(-50%) translateY(16px);
+  position: fixed; left: 50%; bottom: 124px; transform: translateX(-50%) translateY(16px);
   z-index: 300; max-width: 82%;
   background: var(--bar-bg); border: 1px solid var(--line-2);
   color: var(--t1); font-size: 13px; line-height: 1.55;
@@ -273,20 +312,20 @@ main { flex: 1; padding: 14px 16px 96px; }
 /* ---------- 倒计时卡片 ---------- */
 .rec {
   background: var(--card); border: 1px solid var(--line);
-  border-radius: 17px; padding: 15px 16px; margin-bottom: 11px;
+  border-radius: 17px; padding: 14px 15px; margin-bottom: 10px;
   animation: cardIn .3s ease both;
   transition: background .2s, border-color .2s;
 }
 @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .rec.open { background: var(--card-open); border-color: var(--brand-line); }
-.rec-head { display: flex; align-items: center; gap: 13px; }
+.rec-head { display: flex; align-items: center; gap: 12px; }
 .rec-days {
-  flex: none; width: 76px; text-align: center;
-  padding: 8px 4px; border-radius: 14px;
+  flex: none; width: 70px; min-width: 70px; text-align: center;
+  padding: 7px 2px; border-radius: 14px;
   background: var(--ring-bg); border: 1px solid var(--line);
 }
-.rec-days .n { font-size: 29px; font-weight: 800; line-height: 1.05; letter-spacing: -1px; }
-.rec-days .u { font-size: 10px; color: var(--t3); margin-top: 2px; }
+.rec-days .n { font-size: 26px; font-weight: 800; line-height: 1.05; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.rec-days .u { font-size: 10px; color: var(--t3); margin-top: 2px; white-space: nowrap; }
 .rec-days.hot .n { color: var(--u-red); }
 .rec-days.mid .n { color: var(--u-amber); }
 .rec-days.ok .n { color: var(--ok-txt); }
@@ -294,7 +333,7 @@ main { flex: 1; padding: 14px 16px 96px; }
 .rec-info { flex: 1; min-width: 0; }
 .rec-name { font-size: 15px; font-weight: 700; line-height: 1.4;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.rec-dl { font-size: 12px; color: var(--t2); margin-top: 4px; }
+.rec-dl { font-size: 11.5px; color: var(--t3); margin-top: 4px; }
 .rec-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
 .tag { font-size: 10.5px; padding: 3px 8px; border-radius: 6px; font-weight: 600; }
 .tag.fit { background: var(--fit-bg); color: var(--fit-txt); }
@@ -323,13 +362,13 @@ main { flex: 1; padding: 14px 16px 96px; }
 
 /* ---------- 待办 ---------- */
 .add-bar {
-  display: flex; gap: 7px; margin-bottom: 12px;
+  display: flex; gap: 6px; margin-bottom: 10px;
   background: var(--card); border: 1px solid var(--line);
-  border-radius: 14px; padding: 8px;
+  border-radius: 14px; padding: 7px;
 }
 .add-bar input[type="text"] {
   flex: 1; min-width: 0; background: var(--input); border: 1px solid var(--line);
-  border-radius: 10px; padding: 9px 12px; font-size: 13.5px; outline: none; color: var(--t1);
+  border-radius: 10px; padding: 8px 11px; font-size: 13.5px; outline: none; color: var(--t1);
 }
 .add-bar input[type="text"]:focus { border-color: var(--brand-line); box-shadow: 0 0 0 3px var(--brand-soft); }
 .date-chip, .pri-chip {
@@ -349,7 +388,7 @@ main { flex: 1; padding: 14px 16px 96px; }
 
 .todo {
   background: var(--card); border: 1px solid var(--line);
-  border-radius: 14px; padding: 11px 13px; margin-bottom: 9px;
+  border-radius: 14px; padding: 11px 13px; margin-bottom: 10px;
   animation: cardIn .26s ease both;
 }
 .todo.done { opacity: .62; }
@@ -454,17 +493,19 @@ main { flex: 1; padding: 14px 16px 96px; }
 
 /* ---------- 闹钟 ---------- */
 .alarm-next {
-  text-align: center; padding: 15px;
+  text-align: center; padding: 18px 15px 16px;
   background: var(--card); border: 1px solid var(--line); border-radius: 16px;
-  margin-bottom: 13px;
+  margin-bottom: 12px;
 }
 .alarm-next .an-lb { font-size: 11px; color: var(--t3); letter-spacing: 2px; }
-.alarm-next .an-t { font-size: 26px; font-weight: 800; margin-top: 5px; letter-spacing: 1px; }
-.alarm-next .an-sub { font-size: 11.5px; color: var(--t2); margin-top: 4px; }
+.alarm-next .an-t { font-size: 33px; font-weight: 800; margin-top: 6px; letter-spacing: 1px;
+  font-variant-numeric: tabular-nums; background: var(--btn-grad); background-size: 160% 160%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.alarm-next .an-sub { font-size: 11.5px; color: var(--t2); margin-top: 5px; }
 .alarm {
   display: flex; align-items: center; gap: 12px;
   background: var(--card); border: 1px solid var(--line);
-  border-radius: 15px; padding: 13px 15px; margin-bottom: 9px;
+  border-radius: 15px; padding: 13px 15px; margin-bottom: 10px;
   animation: cardIn .26s ease both;
 }
 .alarm.off { opacity: .55; }
@@ -479,6 +520,20 @@ main { flex: 1; padding: 14px 16px 96px; }
 .a-tag.rpt { background: var(--brand-soft); color: var(--brand-txt); }
 .a-tag.once { background: var(--unsure-bg); color: var(--unsure-txt); }
 .a-tag.snz { background: var(--card-2); color: var(--t3); }
+
+/* 系统提醒说明卡（闹钟列表下方） */
+.alarm-tip {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: var(--card); border: 1px dashed var(--line-2);
+  border-radius: 15px; padding: 14px 15px; margin-top: 4px;
+}
+.alarm-tip .at-ic {
+  flex: none; width: 36px; height: 36px; border-radius: 12px;
+  background: var(--brand-soft); color: var(--brand-txt);
+  display: flex; align-items: center; justify-content: center;
+}
+.alarm-tip .at-t { font-size: 12.5px; font-weight: 700; color: var(--t2); }
+.alarm-tip .at-s { font-size: 11.5px; color: var(--t3); margin-top: 3px; line-height: 1.7; }
 
 /* 开关 */
 .switch { flex: none; position: relative; width: 46px; height: 27px; }
@@ -857,6 +912,11 @@ html[data-theme="mono"] {
           <button class="btn-ghost" id="emptyGoParse" style="margin-top:10px">去智能解析</button>
         </div>
       </div>
+
+      <!-- 悬浮快捷添加（仅倒计时页显示） -->
+      <button class="fab" id="fabAdd" title="添加日程">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
     </section>
 
     <!-- ============ 日历 ============ -->
@@ -1035,11 +1095,12 @@ html[data-theme="mono"] {
             <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
             <div class="ip-txt">
               <div class="ip-t">添加通知截图 / 照片</div>
-              <div class="ip-s">识图提取截止日期与材料清单<br><span id="imgDel" class="hidden" style="color:var(--danger-txt); cursor:pointer">移除图片</span></div>
+              <div class="ip-s">可拍照或从相册选择，识图提取截止日期<br><span id="imgDel" class="hidden" style="color:var(--danger-txt); cursor:pointer">移除图片</span></div>
             </div>
             <img id="imgThumb" class="img-thumb hidden" alt="已选图片">
           </div>
           <input type="file" id="imgFile" accept="image/*" class="hidden">
+          <input type="file" id="imgFileCam" accept="image/*" capture="environment" class="hidden">
         </div>
         <div style="display:flex; align-items:center; justify-content:space-between; margin-top:13px">
           <div class="engine-badge" id="engineBadge"><i></i><span id="engineTxt">智能引擎就绪</span></div>
@@ -1141,7 +1202,7 @@ html[data-theme="mono"] {
  * 倒计时 v4 —— 应用核心：版本 / 状态 / 持久化 / 主题 / 通用 UI
  * ========================================================================= */
 
-var APP_VERSION = "4.0.0";
+var APP_VERSION = "4.1.0";
 var SERVER = "https://dddl.space-z.ai";
 var STORE_KEY = "daojishi.v4";
 var OLD_KEY = "daojishi.v3";
@@ -1460,17 +1521,20 @@ function closeModal() {
 }
 
 var FORM_CB = null;
-function openSheet(title, bodyHtml, saveText, cb) {
+function openSheet(title, bodyHtml, saveText, cb, opts) {
   $("formTitle").textContent = title;
   $("formBody").innerHTML = bodyHtml;
   $("formSave").textContent = saveText || "保存";
   FORM_CB = cb;
+  var noFoot = opts && opts.noFoot;
+  $("formFoot").classList.toggle("hidden", !!noFoot);
   $("sheetMask").classList.remove("hidden");
   $("formSheet").classList.remove("hidden");
 }
 function closeSheet() {
   $("sheetMask").classList.add("hidden");
   $("formSheet").classList.add("hidden");
+  $("formFoot").classList.remove("hidden");
   FORM_CB = null;
 }
 
@@ -1486,6 +1550,8 @@ function switchTab(tab) {
     var el = $("view-" + views[j]);
     if (el) el.classList.toggle("on", views[j] === tab);
   }
+  var fab = $("fabAdd");
+  if (fab) fab.classList.toggle("hidden", tab !== "home");
   if (tab === "home") renderHome();
   if (tab === "cal") renderCal();
   if (tab === "alarm") renderAlarms();
@@ -2199,6 +2265,8 @@ function renderHome() {
 
   $("homeList").innerHTML = list.map(recordCard).join("");
   $("homeEmpty").classList.toggle("hidden", list.length > 0);
+  var fabEl = $("fabAdd");
+  if (fabEl) fabEl.classList.toggle("hidden", liveRecords().length === 0);
   renderUrgent();
   if (typeof renderTodoBadge === "function") renderTodoBadge();
 }
@@ -2228,6 +2296,25 @@ function renderUrgent() {
   if (bd) bd.onclick = function () { S.alertDismissed = true; renderUrgent(); };
   chip.textContent = "临近 " + urgent.length + " 项";
   chip.classList.remove("hidden");
+}
+
+/* ---------- 快捷添加菜单（头部 + / 悬浮按钮均打开） ---------- */
+function openQuickAdd() {
+  var html = '<div class="sheet-actions">' +
+    '<button class="sa-item" id="qaParse">' +
+    '<span class="sa-ic grad"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.7a2 2 0 0 0 1.3 1.3L21 12l-5.8 2a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.7a2 2 0 0 0-1.3-1.3L3 12l5.8-2a2 2 0 0 0 1.3-1.3L12 3z"/></svg></span>' +
+    '<span class="sa-main"><span class="sa-t">智能解析</span><span class="sa-s">粘贴通知文字，或拍照 / 相册截图识别，AI 自动提取截止时间与材料</span></span>' +
+    '<span class="sa-arrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>' +
+    '</button>' +
+    '<button class="sa-item" id="qaManual">' +
+    '<span class="sa-ic soft"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></span>' +
+    '<span class="sa-main"><span class="sa-t">手动添加倒计时</span><span class="sa-s">逐项填写名称、截止日期、提交方式与所需材料</span></span>' +
+    '<span class="sa-arrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>' +
+    '</button>' +
+    '</div>';
+  openSheet("添加日程", html, "", null, { noFoot: true });
+  $("qaParse").onclick = function () { closeSheet(); switchTab("parse"); };
+  $("qaManual").onclick = function () { closeSheet(); openRecordForm(null); };
 }
 
 /* ---------- 手动添加 / 编辑倒计时 ---------- */
@@ -2350,7 +2437,9 @@ function bindHomeEvents() {
       }
     }
   };
-  $("btnAdd").onclick = function () { openRecordForm(null); };
+  $("btnAdd").onclick = openQuickAdd;
+  var fabEl = $("fabAdd");
+  if (fabEl) fabEl.onclick = openQuickAdd;
   $("emptyGoAdd").onclick = function () { openRecordForm(null); };
   $("emptyGoParse").onclick = function () { switchTab("parse"); };
   $("btnCalToggle").onclick = function () { switchTab("cal"); };
@@ -2804,6 +2893,9 @@ var SNOOZE_OPTS = [0, 5, 10, 15, 30];
 
 /* ---------- 原生闹钟排程（新 APK 的 DaoNotify 桥；旧壳自动降级为仅网页内响铃） ---------- */
 var NATIVE_SYNC_T = null;
+function nativeKeepScreen(on) {
+  try { if (window.DaoNotify && window.DaoNotify.keepScreen) window.DaoNotify.keepScreen(!!on); } catch (e) { }
+}
 function syncNativeAlarms() {
   if (!HAS_NATIVE_NOTIFY || !window.DaoNotify.scheduleAlarm) return;
   if (NATIVE_SYNC_T) clearTimeout(NATIVE_SYNC_T);
@@ -2905,7 +2997,15 @@ function nextOccurrence(a, fromMs) {
 /* ---------- 列表渲染 ---------- */
 function renderAlarms() {
   var list = liveAlarms();
-  $("alarmList").innerHTML = list.map(alarmRow).join("");
+  var rows = list.map(alarmRow).join("");
+  if (list.length <= 2) {
+    rows += '<div class="alarm-tip">' +
+      '<span class="at-ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>' +
+      '<span style="flex:1;min-width:0"><span class="at-t">系统级提醒已就绪</span>' +
+      '<span class="at-s">闹钟与日程提醒由系统在后台准时触发：通知显示在状态栏与锁屏，息屏时也会响铃；重启手机后自动恢复排程。无需保持 App 打开。</span></span>' +
+      '</div>';
+  }
+  $("alarmList").innerHTML = rows;
   $("alarmEmpty").classList.toggle("hidden", list.length > 0);
   var enabled = list.filter(function (a) { return a.enabled; });
   if (enabled.length) {
@@ -3231,6 +3331,7 @@ function ringStart(alarm, viaSnooze) {
   RING.ts = Date.now();
   sndStartLoop(alarm.sound, alarm.fadein);
   if (alarm.vibrate) vibrateStart();
+  nativeKeepScreen(true);
   var d = new Date();
   $("ringTime").textContent = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
   $("ringDate").textContent = d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日 · 周" + WEEK_CN[d.getDay()] + (viaSnooze ? " · 稍后提醒" : "");
@@ -3243,6 +3344,7 @@ function ringStart(alarm, viaSnooze) {
 }
 function ringStop(dismissedByUser) {
   sndStopLoop();
+  nativeKeepScreen(false);
   $("ringScreen").classList.add("hidden");
   var a = RING.alarm;
   RING.alarm = null;
@@ -3257,6 +3359,7 @@ function ringStop(dismissedByUser) {
 function ringSnoozeNow() {
   var a = RING.alarm;
   sndStopLoop();
+  nativeKeepScreen(false);
   $("ringScreen").classList.add("hidden");
   if (a && a.snooze > 0) {
     S.snoozes.push({ alarmId: a.id, at: Date.now() + a.snooze * 60000 });
@@ -4168,6 +4271,19 @@ function renderMe() {
     '<button class="btn-ghost" style="flex:none;padding:8px 13px" id="btnServerEdit">修改</button></div>' +
     "</div>";
 
+  /* 系统级提醒（仅 Android 壳） */
+  if (IS_ANDROID && window.DaoNotify) {
+    var permOk = false;
+    try { permOk = window.DaoNotify.notifPerm ? !!window.DaoNotify.notifPerm() : true; } catch (e) { permOk = true; }
+    html += '<div class="set-card"><div class="set-card-h">系统级提醒</div>' +
+      '<div class="set-row"><div class="sr-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>' +
+      '<div class="sr-main"><div class="sr-t">状态栏与锁屏提醒</div><div class="sr-s" id="sysRemindState">' +
+      (permOk ? "已开启：App 关闭后仍会准时提醒，息屏响铃" : "未开启，点击右侧按钮授权后才能在后台提醒") +
+      '</div></div>' +
+      '<button class="btn-ghost' + (permOk ? "" : " acc") + '" style="flex:none;padding:8px 13px" id="btnSysRemind">' + (permOk ? "已就绪" : "去开启") + '</button></div>' +
+      '</div>';
+  }
+
   /* 应用更新 */
   html += '<div class="set-card"><div class="set-card-h">应用更新</div>' +
     '<div class="set-row"><div class="sr-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg></div>' +
@@ -4269,6 +4385,19 @@ function bindMeEvents() {
       return true;
     });
   };
+  /* 系统级提醒 */
+  var btnSysRemind = $("btnSysRemind");
+  if (btnSysRemind) {
+    btnSysRemind.onclick = function () {
+      var ok = false;
+      try { if (window.DaoNotify && window.DaoNotify.ensureNotifPerm) ok = !!window.DaoNotify.ensureNotifPerm(); } catch (e) { }
+      if (ok) {
+        toast("已发出授权请求；若未弹出请到系统设置 → 应用 → 倒计时 → 通知中开启");
+      } else {
+        toast("请到系统设置 → 应用 → 倒计时 → 通知中开启");
+      }
+    };
+  }
   /* 更新 */
   $("btnCheckUpdate").onclick = function () { checkUpdate(true); };
   /* 资料 */
@@ -4502,6 +4631,35 @@ function setImage(dataUrl) {
   }
 }
 
+/* ---------- 照片来源：拍照 / 相册 ---------- */
+var PHOTO_SHEET_OPEN = false;
+function openPhotoSource() {
+  if (PHOTO_SHEET_OPEN) return;
+  PHOTO_SHEET_OPEN = true;
+  var isMobile = /Android|iPhone|iPad|HarmonyOS|Mobile/i.test(navigator.userAgent);
+  var html = '<div class="sheet-actions">' +
+    '<button class="sa-item" id="psCam">' +
+    '<span class="sa-ic grad"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.5"/></svg></span>' +
+    '<span class="sa-main"><span class="sa-t">拍照</span><span class="sa-s">直接打开相机拍摄通知 / 海报</span></span>' +
+    '</button>' +
+    '<button class="sa-item" id="psGal">' +
+    '<span class="sa-ic soft"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span>' +
+    '<span class="sa-main"><span class="sa-t">从相册选择</span><span class="sa-s">选取已保存的通知截图' + (isMobile ? "" : "或图片文件") + '</span></span>' +
+    '</button>' +
+    '</div>';
+  openSheet("添加照片", html, "", null, { noFoot: true });
+  var done = function () { PHOTO_SHEET_OPEN = false; };
+  $("psCam").onclick = function () { closeSheet(); done(); var el = $("imgFileCam"); if (el) el.click(); };
+  $("psGal").onclick = function () { closeSheet(); done(); var el = $("imgFile"); if (el) el.click(); };
+  var grip = document.querySelector("#formSheet .sheet-grip");
+  var onSheetClose = function () {
+    if (!$("formSheet").classList.contains("hidden")) return;
+    PHOTO_SHEET_OPEN = false;
+    document.removeEventListener("click", onSheetClose);
+  };
+  setTimeout(function () { document.addEventListener("click", onSheetClose); }, 50);
+}
+
 function runParse() {
   var text = $("noticeText").value.trim();
   var hasImg = !!S.imgDataUrl;
@@ -4612,15 +4770,17 @@ function bindParseEvents() {
       setImage("");
       return;
     }
-    $("imgFile").click();
+    openPhotoSource();
   };
-  $("imgFile").onchange = function () {
+  var onImgFile = function () {
     var f = this.files && this.files[0];
     if (!f) return;
     if (f.size > 12 * 1024 * 1024) { toast("图片太大（>12MB），请换一张"); return; }
     compressImage(f, function (dataUrl) { setImage(dataUrl); });
     this.value = "";
   };
+  $("imgFile").onchange = onImgFile;
+  $("imgFileCam").onchange = onImgFile;
   $("parseResults").onclick = function (ev) {
     var chk = closestEl(ev.target, "[data-check]");
     if (chk) {
@@ -4772,6 +4932,15 @@ function init() {
   startSyncPeriodic();
   checkUpdate(false);
   if (S.autoSync && S.syncCode) syncNow(true);
+  /* Android 13+：首次启动请求系统通知权限（用于后台闹钟/日程提醒） */
+  if (IS_ANDROID && window.DaoNotify) {
+    setTimeout(function () {
+      try {
+        var ok = window.DaoNotify.notifPerm ? !!window.DaoNotify.notifPerm() : true;
+        if (!ok && window.DaoNotify.ensureNotifPerm) window.DaoNotify.ensureNotifPerm();
+      } catch (e) { }
+    }, 1400);
+  }
   /* 每次回到应用补跑一次时钟 */
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState === "visible") {
