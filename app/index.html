@@ -39,6 +39,23 @@ svg { vertical-align: middle; }
   #app { box-shadow: 0 0 0 1px var(--line), 0 24px 80px rgba(0,0,0,.28); }
 }
 
+/* ---------- 自定义背景层（个性化） ---------- */
+#bgLayer {
+  position: fixed; inset: -48px; z-index: 0;
+  background-size: cover; background-position: center;
+  filter: blur(var(--bg-blur, 0px));
+  pointer-events: none;
+}
+#bgLayer::after {
+  content: ""; position: absolute; inset: 0;
+  background: var(--veil-c, #000); opacity: var(--bg-dim, .45);
+}
+body.has-bg #app { background: transparent; background-image: none; box-shadow: none; }
+html[data-theme="emerald"] #bgLayer::after,
+html[data-theme="solar"] #bgLayer::after,
+html[data-theme="sakura"] #bgLayer::after,
+html[data-theme="mono"] #bgLayer::after { background: #fff; }
+
 /* ---------- 顶栏 ---------- */
 .topbar {
   position: sticky; top: 0; z-index: 40;
@@ -340,6 +357,10 @@ main { flex: 1; padding: 14px 16px 112px; }
 .tag.unsure { background: var(--unsure-bg); color: var(--unsure-txt); }
 .tag.mis { background: var(--mis-bg); color: var(--mis-txt); }
 .tag.plain { background: var(--card-2); color: var(--t2); }
+/* 数据共通：来源徽标（倒计时 / 待办 / 日程） */
+.tag.src-rec { background: var(--brand-soft); color: var(--brand-txt); }
+.tag.src-todo { background: var(--unsure-bg); color: var(--unsure-txt); }
+.tag.src-evt { background: var(--fit-bg); color: var(--fit-txt); }
 .rec-chev { flex: none; color: var(--t3); transition: transform .25s; }
 .rec.open .rec-chev { transform: rotate(180deg); }
 .rec-detail { display: none; padding-top: 13px; margin-top: 13px; border-top: 1px dashed var(--line); }
@@ -680,6 +701,30 @@ main { flex: 1; padding: 14px 16px 112px; }
 .set-row .sr-s { font-size: 11px; color: var(--t3); margin-top: 2.5px; line-height: 1.5; }
 .set-row .sr-act { flex: none; }
 .theme-swatches { display: flex; gap: 9px; padding: 13px 15px; flex-wrap: wrap; }
+/* 个性化：自定义背景区 */
+.bg-sec { border-top: 1px solid var(--line); padding-top: 11px; }
+.bg-head { padding: 0 15px; }
+.bg-t { font-size: 13.5px; font-weight: 650; }
+.bg-s { font-size: 11px; color: var(--t3); margin-top: 2.5px; }
+.bg-row { display: flex; align-items: center; gap: 11px; padding: 11px 15px 4px; }
+.bg-thumb {
+  flex: none; width: 74px; height: 56px; border-radius: 12px;
+  background-size: cover; background-position: center;
+  border: 1px solid var(--line-2);
+  display: flex; align-items: center; justify-content: center; color: var(--t3);
+}
+.bg-thumb.empty { background: var(--input); border-style: dashed; }
+.bg-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.bg-btns .btn-ghost { padding: 8px 14px; }
+.bg-slider-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 15px 0;
+}
+.bg-slider-row .lb { flex: none; font-size: 11.5px; color: var(--t3); font-weight: 600; width: 26px; }
+.bg-slider-row input[type="range"] {
+  flex: 1; min-width: 0; height: 26px; accent-color: var(--brand);
+}
+.bg-slider-row .val { flex: none; font-size: 11px; color: var(--t2); font-weight: 650; width: 36px; text-align: right; }
 .sw {
   position: relative; width: 47px; height: 47px; border-radius: 14px; cursor: pointer;
   border: 2px solid var(--line-2); overflow: hidden; flex: none;
@@ -700,6 +745,18 @@ main { flex: 1; padding: 14px 16px 112px; }
 .sync-code-row .btn-ghost { flex: none; }
 .sync-state { font-size: 11.5px; color: var(--t3); line-height: 1.7; padding: 9px 15px 13px; }
 .upd-notes { font-size: 12.5px; line-height: 2; white-space: pre-line; }
+.upd-src {
+  margin-top: 10px; padding: 8px 11px; border-radius: 10px;
+  background: var(--brand-soft); border: 1px solid var(--brand-line);
+  font-size: 11px; color: var(--t2); line-height: 1.6;
+}
+.upd-src b { color: var(--brand-txt); margin-right: 6px; }
+.upd-links {
+  margin-top: 9px; font-size: 11.5px; color: var(--t3);
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px;
+}
+.upd-links a { color: var(--link-txt); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; padding: 2px 4px; }
+.upd-links i { font-style: normal; color: var(--t3); }
 
 /* ---------- 通用动效 / 桌面端 ---------- */
 .fade-in { animation: viewIn .25s ease; }
@@ -849,6 +906,8 @@ html[data-theme="mono"] {
 </style>
 </head>
 <body>
+<!-- 自定义背景层（个性化，JS 控制） -->
+<div id="bgLayer" class="hidden"></div>
 <div id="app">
 
   <!-- 顶栏 -->
@@ -898,13 +957,13 @@ html[data-theme="mono"] {
         </div>
         <div class="searchbar" id="searchWrap">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="homeQuery" placeholder="搜索名称…" autocomplete="off">
+          <input id="homeQuery" placeholder="搜索倒计时 / 待办 / 日程…" autocomplete="off">
         </div>
         <div id="homeList"></div>
         <div class="empty hidden" id="homeEmpty">
           <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/><path d="M19 5l1.5 1.5"/><path d="M5 5 3.5 6.5"/></svg>
-          <div class="empty-title">还没有任何倒计时</div>
-          <div class="empty-sub">把通知粘贴进来或拍张照，AI 自动提取<br>截止时间与材料清单；也可以手动添加</div>
+          <div class="empty-title">这里还没有任何日程</div>
+          <div class="empty-sub">倒计时、有期限的待办、日历日程会汇聚在这里<br>把通知粘贴进来或拍张照，AI 自动提取；也可以手动添加</div>
           <button class="btn-primary" id="emptyGoAdd">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
             添加日程
@@ -1202,7 +1261,7 @@ html[data-theme="mono"] {
  * 倒计时 v4 —— 应用核心：版本 / 状态 / 持久化 / 主题 / 通用 UI
  * ========================================================================= */
 
-var APP_VERSION = "4.1.0";
+var APP_VERSION = "4.2.0";
 var SERVER = "https://dddl.space-z.ai";
 var STORE_KEY = "daojishi.v4";
 var OLD_KEY = "daojishi.v3";
@@ -1283,7 +1342,9 @@ var S = {
   snoozes: [],   /* [{alarmId, at(ms)}] 稍后提醒的临时响铃点 */
   firedReminders: {}, /* "evtId|iso|idx" -> true，防止重复提醒 */
   firedAlarms: {},    /* "alarmId|yyyymmddHHMM" -> true */
-  nativeTags: []      /* 已排程的原生闹钟 tag（设备本地） */
+  nativeTags: [],     /* 已排程的原生闹钟 tag（设备本地） */
+  /* 个性化背景（本机，不进同步快照） */
+  bgData: "", bgDim: 45, bgBlur: 0
 };
 
 /* ---------- 数据规范化 ---------- */
@@ -1494,6 +1555,39 @@ function applyTheme() {
   document.documentElement.setAttribute("data-theme", t);
   var meta = $("metaThemeColor");
   if (meta) meta.setAttribute("content", THEME_BG[t]);
+}
+
+/* ---------- 自定义背景（本机存储，不参与云同步） ---------- */
+function bgOptsLoad() {
+  try {
+    var o = JSON.parse(localStorage.getItem("daojishi.bgOpt") || "null");
+    if (o && typeof o === "object") {
+      S.bgDim = (typeof o.dim === "number" && o.dim >= 0 && o.dim <= 85) ? o.dim : 45;
+      S.bgBlur = (typeof o.blur === "number" && o.blur >= 0 && o.blur <= 24) ? o.blur : 0;
+    }
+  } catch (e) { }
+  try { S.bgData = localStorage.getItem("daojishi.bg") || ""; } catch (e) { S.bgData = ""; }
+}
+function bgOptsSave() {
+  try { localStorage.setItem("daojishi.bgOpt", JSON.stringify({ dim: S.bgDim, blur: S.bgBlur })); } catch (e) { }
+  try {
+    if (S.bgData) localStorage.setItem("daojishi.bg", S.bgData);
+    else localStorage.removeItem("daojishi.bg");
+  } catch (e) { toast("背景保存失败：本机存储空间不足"); }
+}
+function applyBackground() {
+  var layer = $("bgLayer");
+  if (!layer) return;
+  var has = !!S.bgData;
+  document.body.classList.toggle("has-bg", has);
+  layer.classList.toggle("hidden", !has);
+  if (has) {
+    layer.style.backgroundImage = 'url("' + S.bgData + '")';
+    document.documentElement.style.setProperty("--bg-dim", String((S.bgDim || 0) / 100));
+    document.documentElement.style.setProperty("--bg-blur", (S.bgBlur || 0) + "px");
+  } else {
+    layer.style.backgroundImage = "";
+  }
 }
 
 /* ---------- Toast / 确认弹窗 / 表单 Sheet ---------- */
@@ -2202,7 +2296,7 @@ function recordCard(r, idx) {
     '<div class="rec-info">' +
     '<div class="rec-name">' + esc(r.name) + "</div>" +
     '<div class="rec-dl">' + esc(dl) + "</div>" +
-    '<div class="rec-tags">' + recFitTag(r) +
+    '<div class="rec-tags">' + srcTag("rec") + recFitTag(r) +
     (subs.length ? '<span class="tag plain">子项 ' + subDone + "/" + subs.length + "</span>" : "") +
     "</div></div>" +
     '<button class="rec-chev" data-act="rec-chev" data-id="' + esc(r.id) + '"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>' +
@@ -2231,17 +2325,128 @@ function liveRecords() {
   return S.records.filter(function (r) { return !r.del; });
 }
 
+/* ---------- 数据共通：首页聚合（倒计时 + 有期限的待办 + 日程） ----------
+ * 任一模块里带日期的项目都会汇聚到首页倒计时视图：
+ * 倒计时(records) + 未完成且设置了期限的待办(todos) + 未来 60 天内的日程(events)
+ */
+function homeItems() {
+  var items = [];
+  liveRecords().forEach(function (r) {
+    items.push({ k: "rec", id: r.id, date: r.deadline, time: r.deadlineTime || "", o: r });
+  });
+  liveTodos().forEach(function (t) {
+    if (!t.done && t.due) items.push({ k: "todo", id: t.id, date: t.due, time: t.dueTime || "", o: t });
+  });
+  liveEvents().forEach(function (e) {
+    var nxt = nextEventOccur(e);
+    if (nxt) items.push({ k: "evt", id: e.id, date: nxt, time: e.allDay ? "" : (e.start || ""), o: e });
+  });
+  return items;
+}
+
+function srcTag(k) {
+  if (k === "todo") return '<span class="tag src-todo">待办</span>';
+  if (k === "evt") return '<span class="tag src-evt">日程</span>';
+  return '<span class="tag src-rec">倒计时</span>';
+}
+
+var CHEV_SVG = '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
+/* 待办卡片（首页聚合视图，主编辑仍在待办页） */
+function todoHomeCard(it, idx) {
+  var t = it.o;
+  var u = urgency({ deadline: it.date });
+  var dl = fmtFull(it.date) + (it.time ? " " + it.time : "");
+  var subs = t.subtasks || [];
+  var subDone = subs.filter(function (x) { return x.done; }).length;
+  var open = S.openIds[t.id] ? " open" : "";
+  var left = daysLeft(it.date);
+
+  var detail = '<div class="rec-detail">' +
+    '<div class="kv"><span class="k">期限</span><span class="v">' + esc(dl) + "（" + esc(u.label.replace("截止", "到期")) + "）</span></div>" +
+    (t.priority ? '<div class="kv"><span class="k">优先级</span><span class="v">' + (t.priority === 2 ? "紧急" : "重要") + "</span></div>" : "") +
+    (t.note ? '<div class="kv"><span class="k">备注</span><span class="v">' + esc(t.note) + "</span></div>" : "") +
+    (subs.length ? '<div class="kv"><span class="k">子项</span><span class="v">' + subDone + " / " + subs.length + " 已完成</span></div>" : "") +
+    '<div class="kv"><span class="k">创建于</span><span class="v">' + esc(t.createdAt || "-") + "</span></div>" +
+    '<div class="rec-acts">' +
+    '<button class="btn-ghost acc" data-act="tu-done" data-id="' + esc(t.id) + '">✓ 完成待办</button>' +
+    '<button class="btn-ghost" data-act="tu-go" data-id="' + esc(t.id) + '">去待办页编辑</button>' +
+    "</div></div>";
+
+  return '<div class="rec' + open + '" data-id="' + esc(t.id) + '" data-kind="todo" style="animation-delay:' + Math.min(idx * 35, 280) + 'ms">' +
+    '<div class="rec-head">' +
+    '<div class="rec-days ' + u.cls + '">' +
+    '<div class="n">' + Math.abs(left) + '</div><div class="u">' + (left < 0 ? "天前到期" : "天后到期") + "</div></div>" +
+    '<div class="rec-info">' +
+    '<div class="rec-name">' + esc(t.text) + "</div>" +
+    '<div class="rec-dl">' + esc(dl) + "</div>" +
+    '<div class="rec-tags">' + srcTag("todo") +
+    (t.priority === 2 ? '<span class="tag mis">紧急</span>' : (t.priority === 1 ? '<span class="tag unsure">重要</span>' : "")) +
+    (subs.length ? '<span class="tag plain">子项 ' + subDone + "/" + subs.length + "</span>" : "") +
+    "</div></div>" +
+    '<button class="rec-chev" data-act="row-chev" data-id="' + esc(t.id) + '">' + CHEV_SVG + "</button>" +
+    "</div>" + detail + "</div>";
+}
+
+/* 日程卡片（首页聚合视图，下一次发生日期） */
+function evtHomeCard(it, idx) {
+  var e = it.o;
+  var u = urgency({ deadline: it.date });
+  var open = S.openIds[e.id] ? " open" : "";
+  var left = daysLeft(it.date);
+  var when = e.allDay ? "全天" : (e.start + (e.end ? " – " + e.end : ""));
+  var dl = fmtFull(it.date) + " 周" + fmtWeek(it.date) + (e.allDay ? " · 全天" : (e.start ? " · " + e.start : ""));
+
+  var detail = '<div class="rec-detail">' +
+    '<div class="kv"><span class="k">时间</span><span class="v">' + esc(when) + "（" + esc(left === 0 ? "今天" : (left + " 天后")) + "）</span></div>" +
+    (e.loc ? '<div class="kv"><span class="k">地点</span><span class="v">' + esc(e.loc) + "</span></div>" : "") +
+    (e.repeat.type !== "none" ? '<div class="kv"><span class="k">重复</span><span class="v">↻ ' + esc(repeatText(e)) + "</span></div>" : "") +
+    (e.reminders.length ? '<div class="kv"><span class="k">提醒</span><span class="v">' + esc(e.reminders.map(function (m) {
+      for (var i = 0; i < REMINDER_OPTS.length; i++) if (REMINDER_OPTS[i].v === m) return REMINDER_OPTS[i].l;
+      return m + "分钟";
+    }).join("、")) + "</span></div>" : "") +
+    (e.note ? '<div class="kv"><span class="k">备注</span><span class="v">' + esc(e.note) + "</span></div>" : "") +
+    '<div class="rec-acts">' +
+    '<button class="btn-ghost acc" data-act="ev-edit" data-id="' + esc(e.id) + '">编辑日程</button>' +
+    '<button class="btn-ghost" data-act="ev-cal" data-id="' + esc(e.id) + '" data-date="' + esc(it.date) + '">在日历查看</button>' +
+    "</div></div>";
+
+  return '<div class="rec' + open + '" data-id="' + esc(e.id) + '" data-kind="evt" style="animation-delay:' + Math.min(idx * 35, 280) + 'ms">' +
+    '<div class="rec-head">' +
+    '<div class="rec-days ' + u.cls + '">' +
+    '<div class="n">' + left + '</div><div class="u">' + (left === 0 ? "天 · 今天" : "天后开始") + "</div></div>" +
+    '<div class="rec-info">' +
+    '<div class="rec-name">' + esc(e.title) + "</div>" +
+    '<div class="rec-dl">' + esc(dl) + "</div>" +
+    '<div class="rec-tags">' + srcTag("evt") +
+    (e.repeat.type !== "none" ? '<span class="tag plain">↻ ' + esc(REPEAT_LABEL[e.repeat.type] === "自定义" ? repeatText(e) : REPEAT_LABEL[e.repeat.type]) + "</span>" : "") +
+    (e.loc ? '<span class="tag plain">📍 ' + esc(e.loc.slice(0, 10)) + (e.loc.length > 10 ? "…" : "") + "</span>" : "") +
+    "</div></div>" +
+    '<button class="rec-chev" data-act="row-chev" data-id="' + esc(e.id) + '">' + CHEV_SVG + "</button>" +
+    "</div>" + detail + "</div>";
+}
+
+function homeCard(it, idx) {
+  if (it.k === "todo") return todoHomeCard(it, idx);
+  if (it.k === "evt") return evtHomeCard(it, idx);
+  return recordCard(it.o, idx);
+}
+
 function renderHome() {
   var d = new Date();
   $("homeDate").textContent = d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日 · 周" + WEEK_CN[d.getDay()];
-  var list = liveRecords();
+  var items = homeItems();
   var q = S.query.trim().toLowerCase();
-  if (q) list = list.filter(function (r) { return r.name.toLowerCase().indexOf(q) >= 0; });
+  if (q) {
+    items = items.filter(function (it) {
+      var txt = it.k === "rec" ? it.o.name : (it.k === "todo" ? it.o.text : it.o.title);
+      return txt.toLowerCase().indexOf(q) >= 0;
+    });
+  }
 
-  var now = new Date();
-  var counts = { all: list.length, near: 0, over: 0, nodate: 0 };
-  list.forEach(function (r) {
-    var left = daysLeft(r.deadline);
+  var counts = { all: items.length, near: 0, over: 0, nodate: 0 };
+  items.forEach(function (it) {
+    var left = daysLeft(it.date);
     if (left === null) counts.nodate++;
     else if (left < 0) counts.over++;
     else if (left <= 10) counts.near++;
@@ -2251,31 +2456,33 @@ function renderHome() {
   $("cntOver").textContent = counts.over ? "(" + counts.over + ")" : "";
   $("cntNodate").textContent = counts.nodate ? "(" + counts.nodate + ")" : "";
 
-  if (S.filter === "near") list = list.filter(function (r) { var l = daysLeft(r.deadline); return l !== null && l >= 0 && l <= 10; });
-  if (S.filter === "over") list = list.filter(function (r) { var l = daysLeft(r.deadline); return l !== null && l < 0; });
-  if (S.filter === "nodate") list = list.filter(function (r) { return !validDate(r.deadline); });
+  if (S.filter === "near") items = items.filter(function (it) { var l = daysLeft(it.date); return l !== null && l >= 0 && l <= 10; });
+  if (S.filter === "over") items = items.filter(function (it) { var l = daysLeft(it.date); return l !== null && l < 0; });
+  if (S.filter === "nodate") items = items.filter(function (it) { return !validDate(it.date); });
 
-  list.sort(function (a, b) {
-    var la = daysLeft(a.deadline), lb = daysLeft(b.deadline);
+  items.sort(function (a, b) {
+    var la = daysLeft(a.date), lb = daysLeft(b.date);
     if (la === null && lb === null) return 0;
     if (la === null) return 1;
     if (lb === null) return -1;
-    return la - lb;
+    if (la !== lb) return la - lb;
+    return (a.time || "99:99") < (b.time || "99:99") ? -1 : 1;
   });
 
-  $("homeList").innerHTML = list.map(recordCard).join("");
-  $("homeEmpty").classList.toggle("hidden", list.length > 0);
+  $("homeList").innerHTML = items.map(homeCard).join("");
+  $("homeEmpty").classList.toggle("hidden", items.length > 0);
   var fabEl = $("fabAdd");
-  if (fabEl) fabEl.classList.toggle("hidden", liveRecords().length === 0);
+  if (fabEl) fabEl.classList.toggle("hidden", homeItems().length === 0);
   renderUrgent();
   if (typeof renderTodoBadge === "function") renderTodoBadge();
 }
 
 function renderUrgent() {
   var rd = parseInt(S.profile.reminderDays, 10) || 3;
-  var urgent = liveRecords().filter(function (r) {
-    if (r.fit === "mis") return false;
-    var l = daysLeft(r.deadline);
+  var urgent = homeItems().filter(function (it) {
+    if (it.k === "evt") return false; /* 日程提醒走日历提醒系统 */
+    if (it.k === "rec" && it.o.fit === "mis") return false;
+    var l = daysLeft(it.date);
     return l !== null && l >= 0 && l <= rd;
   });
   var banner = $("urgentBanner"), chip = $("urgentChip");
@@ -2284,12 +2491,13 @@ function renderUrgent() {
     chip.classList.add("hidden");
     return;
   }
-  urgent.sort(function (a, b) { return daysLeft(a.deadline) - daysLeft(b.deadline); });
-  var u0 = urgent[0], l0 = daysLeft(u0.deadline);
+  urgent.sort(function (a, b) { return daysLeft(a.date) - daysLeft(b.date); });
+  var u0 = urgent[0], l0 = daysLeft(u0.date);
+  var verb = u0.k === "todo" ? "到期" : "截止";
   banner.innerHTML = '<div style="display:flex;align-items:center;gap:10px">' +
     '<div style="flex:none;width:38px;height:38px;border-radius:12px;background:var(--mis-bg);display:flex;align-items:center;justify-content:center;color:var(--mis-txt)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>' +
-    '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + esc(u0.name) + "</div>" +
-    '<div style="font-size:11.5px;color:var(--t3);margin-top:3px">' + (l0 === 0 ? "今天截止！" : "还有 " + l0 + " 天截止") + (urgent.length > 1 ? "，另有 " + (urgent.length - 1) + " 项临近" : "") + "</div></div>" +
+    '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + esc(u0.k === "rec" ? u0.o.name : u0.o.text) + "</div>" +
+    '<div style="font-size:11.5px;color:var(--t3);margin-top:3px">' + (l0 === 0 ? "今天" + verb + "！" : "还有 " + l0 + " 天" + verb) + (urgent.length > 1 ? "，另有 " + (urgent.length - 1) + " 项临近" : "") + "</div></div>" +
     '<button class="btn-ghost" style="flex:none;padding:6px 12px;font-size:11.5px" id="btnDismissUrgent">知道了</button></div>';
   banner.classList.remove("hidden");
   var bd = $("btnDismissUrgent");
@@ -2377,7 +2585,19 @@ function deleteRecord(id) {
   if (typeof renderTodoBadge === "function") renderTodoBadge();
 }
 
-/* ---------- 首页列表事件 ---------- */
+/* ---------- 首页列表事件（聚合视图：倒计时 / 待办 / 日程卡片） ---------- */
+function jumpToTodo(id) {
+  S.todoFilter = "open";
+  var segB = document.querySelectorAll("#todoSeg button");
+  for (var i = 0; i < segB.length; i++) segB[i].classList.toggle("on", segB[i].getAttribute("data-f") === "open");
+  S.todoQuery = "";
+  var qi = $("todoQuery"); if (qi) qi.value = "";
+  S.openTodos[id] = true;
+  switchTab("todo");
+  var rowEl = document.querySelector('#todoList .todo[data-id="' + id + '"]');
+  if (rowEl) rowEl.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
 function bindHomeEvents() {
   $("homeList").onclick = function (ev) {
     var t = ev.target;
@@ -2385,7 +2605,7 @@ function bindHomeEvents() {
     if (actEl) {
       var act = actEl.getAttribute("data-act");
       var id = actEl.getAttribute("data-id");
-      if (act === "rec-chev") {
+      if (act === "rec-chev" || act === "row-chev") {
         S.openIds[id] = !S.openIds[id];
         var rowEl = closestEl(actEl, ".rec");
         if (rowEl) rowEl.classList.toggle("open");
@@ -2402,6 +2622,25 @@ function bindHomeEvents() {
       if (act === "rec-link") {
         var rr = S.records.filter(function (x) { return x.id === id; })[0];
         if (rr) copyText(rr.link);
+        return;
+      }
+      if (act === "tu-done") {
+        toggleTodo(id);
+        toast("已完成该待办");
+        return;
+      }
+      if (act === "tu-go") { jumpToTodo(id); return; }
+      if (act === "ev-edit") { openEventForm(id); return; }
+      if (act === "ev-cal") {
+        S.pickedDay = actEl.getAttribute("data-date") || todayIso();
+        S.calY = parseInt(S.pickedDay.slice(0, 4), 10);
+        S.calM = parseInt(S.pickedDay.slice(5, 7), 10);
+        S.calMode = "month";
+        $("calMonthWrap").classList.remove("hidden");
+        $("calListWrap").classList.add("hidden");
+        var mb = document.querySelectorAll("#calModeSeg button");
+        for (var mi = 0; mi < mb.length; mi++) mb[mi].classList.toggle("on", mb[mi].getAttribute("data-m") === "month");
+        switchTab("cal");
         return;
       }
       if (act === "sub-toggle" || act === "sub-del" || act === "sub-add-btn") {
@@ -2520,6 +2759,16 @@ function alarmsOn(iso) {
     return false;
   });
 }
+/* 日程从今天起 60 天内的下一次发生日期（无则返回 ""） */
+function nextEventOccur(e) {
+  if (!e || e.del || e.enabled === false) return "";
+  var today = todayIso();
+  for (var i = 0; i < 60; i++) {
+    var d = addDays(today, i);
+    if (eventOccursOn(e, d)) return d;
+  }
+  return "";
+}
 
 /* ---------- 月视图渲染 ---------- */
 function renderCal() {
@@ -2577,13 +2826,13 @@ function renderCalDayList() {
         '<div class="e-loc">倒计时 · ' + esc(urgency(r).label) + "</div></div></div>";
     });
     tds.forEach(function (t) {
-      html += '<div class="evt"><span class="e-bar" style="background:var(--u-amber)"></span>' +
+      html += '<div class="evt" data-tid="' + esc(t.id) + '"><span class="e-bar" style="background:var(--u-amber)"></span>' +
         '<div class="e-when" style="color:var(--u-amber)">' + (t.dueTime || "待办") + '</div><div class="e-main">' +
         '<div class="e-title" style="' + (t.done ? "text-decoration:line-through;color:var(--t3)" : "") + '">' + esc(t.text) + "</div>" +
         '<div class="e-loc">' + (t.done ? "已完成" : "待办 · " + priText(t.priority)) + "</div></div></div>";
     });
     als.forEach(function (a) {
-      html += '<div class="evt"><span class="e-bar" style="background:var(--u-teal)"></span>' +
+      html += '<div class="evt" data-aid="' + esc(a.id) + '"><span class="e-bar" style="background:var(--u-teal)"></span>' +
         '<div class="e-when" style="color:var(--u-teal)">' + pad2(a.hour) + ":" + pad2(a.minute) + '</div><div class="e-main">' +
         '<div class="e-title">闹钟' + (a.label ? " · " + esc(a.label) : "") + "</div>" +
         '<div class="e-loc">' + esc(alarmRepeatText(a)) + "</div></div></div>";
@@ -2645,7 +2894,7 @@ function renderCalListMode() {
         html += '<div class="evt" data-rid="' + esc(row.r.id) + '"><span class="e-bar" style="background:var(--u-red)"></span><div class="e-when" style="color:var(--u-red)">截止</div><div class="e-main"><div class="e-title">' + esc(row.r.name) + "</div></div></div>";
       } else {
         var t = row.t;
-        html += '<div class="evt"><span class="e-bar" style="background:var(--u-amber)"></span><div class="e-when" style="color:var(--u-amber)">' + esc(t.dueTime || "待办") + '</div><div class="e-main"><div class="e-title" style="' + (t.done ? "text-decoration:line-through;color:var(--t3)" : "") + '">' + esc(t.text) + "</div></div></div>";
+        html += '<div class="evt" data-tid="' + esc(t.id) + '"><span class="e-bar" style="background:var(--u-amber)"></span><div class="e-when" style="color:var(--u-amber)">' + esc(t.dueTime || "待办") + '</div><div class="e-main"><div class="e-title" style="' + (t.done ? "text-decoration:line-through;color:var(--t3)" : "") + '">' + esc(t.text) + "</div></div></div>";
       }
     });
   }
@@ -2825,7 +3074,7 @@ function openEventForm(editId, presetDate) {
 function deleteEvent(id) {
   S.events.forEach(function (e) { if (e.id === id) { e.del = nowU(); e.u = nowU(); } });
   persist();
-  renderCal(); renderStats();
+  renderCal(); renderStats(); renderHome();
 }
 
 /* ---------- 日历事件绑定 ---------- */
@@ -2864,16 +3113,39 @@ function bindCalEvents() {
       if (btns[k].getAttribute("data-m") === target) btns[k].onclick();
     }
   };
-  /* 议程点击 → 编辑 */
-  $("calDayList").onclick = function (ev) {
+  /* 议程点击 → 编辑 / 跳转 */
+  function agendaClick(ev) {
     var evtEl = closestEl(ev.target, ".evt");
     if (!evtEl) return;
     var eid = evtEl.getAttribute("data-eid");
     if (eid) { openEventForm(eid); return; }
     var rid = evtEl.getAttribute("data-rid");
     if (rid) { openRecordForm(rid); return; }
-  };
-  $("calUpcoming").onclick = $("calDayList").onclick;
+    var tid = evtEl.getAttribute("data-tid");
+    if (tid) {
+      /* 待办 → 跳转待办页并展开该条 */
+      S.todoFilter = "open";
+      var segB = document.querySelectorAll("#todoSeg button");
+      for (var i = 0; i < segB.length; i++) segB[i].classList.toggle("on", segB[i].getAttribute("data-f") === "open");
+      S.todoQuery = "";
+      var qi = $("todoQuery"); if (qi) qi.value = "";
+      S.openTodos[tid] = true;
+      switchTab("todo");
+      var rowEl = document.querySelector('#todoList .todo[data-id="' + tid + '"]');
+      if (rowEl) { rowEl.classList.add("open-t"); rowEl.scrollIntoView({ behavior: "smooth", block: "center" }); }
+      return;
+    }
+    var aid = evtEl.getAttribute("data-aid");
+    if (aid) {
+      /* 闹钟 → 跳转闹钟页并高亮 */
+      switchTab("alarm");
+      var aRow = document.querySelector('#alarmList [data-id="' + aid + '"]');
+      if (aRow) aRow.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+  }
+  $("calDayList").onclick = agendaClick;
+  $("calUpcoming").onclick = agendaClick;
 }
 function calShift(n) {
   S.calM += n;
@@ -3486,7 +3758,7 @@ function addTodo(text, due, dueTime, priority) {
   };
   S.todos.push(ensureTodo(t));
   persist();
-  renderTodos(); renderStats(); renderCal(); renderTodoBadge();
+  renderTodos(); renderStats(); renderCal(); renderHome(); renderTodoBadge();
   return true;
 }
 
@@ -3499,13 +3771,13 @@ function toggleTodo(id) {
     }
   });
   persist();
-  renderTodos(); renderStats(); renderCal(); renderTodoBadge();
+  renderTodos(); renderStats(); renderCal(); renderHome(); renderTodoBadge();
 }
 
 function deleteTodo(id) {
   S.todos.forEach(function (t) { if (t.id === id) { t.del = nowU(); t.u = nowU(); } });
   persist();
-  renderTodos(); renderStats(); renderCal(); renderTodoBadge();
+  renderTodos(); renderStats(); renderCal(); renderHome(); renderTodoBadge();
 }
 
 /* ---------- 渲染 ---------- */
@@ -3688,7 +3960,7 @@ function bindTodoEvents() {
         }
       });
       persist();
-      renderTodos(); renderCal(); renderStats();
+      renderTodos(); renderCal(); renderStats(); renderHome();
       toast("已保存");
     }
   };
@@ -4142,11 +4414,13 @@ function genSyncCode() {
   return code;
 }
 
-/* ---------- 应用内更新 ---------- */
+/* ---------- 应用内更新（双源：服务器 + GitHub Release） ---------- */
 function verNum(v) {
   var p = String(v || "").split(".");
   return (parseInt(p[0], 10) || 0) * 10000 + (parseInt(p[1], 10) || 0) * 100 + (parseInt(p[2], 10) || 0);
 }
+
+var UPD_INFO = null; /* 最近一次版本信息（双源地址缓存） */
 
 function checkUpdate(manual) {
   $("updateState").textContent = "当前版本 " + APP_VERSION;
@@ -4156,6 +4430,7 @@ function checkUpdate(manual) {
       return;
     }
     if (verNum(res.version) > verNum(APP_VERSION)) {
+      UPD_INFO = res;
       $("updateDot").classList.remove("hidden");
       $("updateState").textContent = "新版本 " + res.version + " 可用";
       if (manual || S.lastPromptVer !== res.version) {
@@ -4173,40 +4448,65 @@ function checkUpdate(manual) {
 }
 
 function showUpdateModal(info) {
+  var apkLinks = "";
+  var srvApk = info.serverApkUrl ? (String(info.serverApkUrl).indexOf("http") === 0 ? info.serverApkUrl : serverBase() + info.serverApkUrl) : "";
+  if (srvApk || info.apkUrl) {
+    apkLinks = '<div class="upd-links">完整安装包备用：' +
+      (srvApk ? '<a href="' + esc(srvApk) + '" target="_blank" rel="noopener" id="updApkSrv">服务器下载</a>' : "") +
+      (srvApk && info.apkUrl ? '<i>·</i>' : "") +
+      (info.apkUrl ? '<a href="' + esc(info.apkUrl) + '" target="_blank" rel="noopener" id="updApkGh">GitHub 下载</a>' : "") +
+      "</div>";
+  }
   confirmModal("发现新版本 v" + esc(info.version),
-    '<div class="upd-notes">' + esc(info.notes || "问题修复与体验优化") + "</div>",
-    "立即更新", true, function () {
+    '<div class="upd-notes">' + esc(info.notes || "问题修复与体验优化") + "</div>" +
+    '<div class="upd-src"><b>更新来源</b>优先从服务器下载，失败时自动切换 GitHub Release</div>' +
+    apkLinks,
+    "立即更新", false, function () {
       doApplyUpdate();
       return true;
     });
 }
 
+/* 逐源尝试下载 HTML 更新包：服务器 → GitHub Release */
+function fetchUpdateHtml(idx, urls) {
+  if (idx >= urls.length) {
+    toast("两个更新源均下载失败，请检查网络，或点弹窗中的 APK 备用链接");
+    return;
+  }
+  var url = urls[idx];
+  var srcName = idx === 0 ? "服务器" : "GitHub";
+  fetch(url).then(function (r) {
+    if (!r.ok) throw new Error("http " + r.status);
+    return r.text();
+  }).then(function (html) {
+    if (!html || html.length < 10000 || html.indexOf("daojishi.v4") < 0) throw new Error("bad-pkg");
+    var ok = false;
+    try { ok = window.DaoUpdate.saveUpdate(html); } catch (e) { ok = false; }
+    if (ok) {
+      toast("更新完成（" + srcName + "源），正在打开新版本…");
+      setTimeout(function () {
+        try { window.DaoUpdate.reload(); } catch (e) { location.reload(); }
+      }, 700);
+    } else {
+      toast("更新写入失败，可下载新版 APK 安装");
+    }
+  }).catch(function () {
+    toast(srcName + "源下载失败，正在尝试备用源…");
+    setTimeout(function () { fetchUpdateHtml(idx + 1, urls); }, 400);
+  });
+}
+
 function doApplyUpdate() {
   if (IS_ANDROID) {
     toast("正在下载新版本…");
-    fetch(serverBase() + "/app.html").then(function (r) {
-      if (!r.ok) throw new Error("http");
-      return r.text();
-    }).then(function (html) {
-      if (!html || html.length < 10000) { toast("更新包异常，请稍后再试"); return; }
-      var ok = false;
-      try { ok = window.DaoUpdate.saveUpdate(html); } catch (e) { ok = false; }
-      if (ok) {
-        toast("更新完成，正在打开新版本…");
-        setTimeout(function () {
-          try { window.DaoUpdate.reload(); } catch (e) { location.reload(); }
-        }, 700);
-      } else {
-        toast("更新写入失败，可到 GitHub 下载新版 APK");
-      }
-    }).catch(function () {
-      toast("下载失败，请检查网络后重试");
-    });
+    var urls = [serverBase() + "/app.html"];
+    if (UPD_INFO && UPD_INFO.ghHtmlUrl) urls.push(UPD_INFO.ghHtmlUrl);
+    fetchUpdateHtml(0, urls);
   } else if (location.protocol === "http:" || location.protocol === "https:") {
     toast("正在刷新为最新版本…");
     setTimeout(function () { location.reload(); }, 500);
   } else {
-    confirmModal("使用网页版最新功能", "浏览器直接打开的单文件无法自动更新，<br>可以打开网页版继续使用（数据可用同步码互通）：", "打开网页版", true, function () {
+    confirmModal("使用网页版最新功能", "浏览器直接打开的单文件无法自动更新，<br>可以打开网页版继续使用（数据可用同步码互通）：", "打开网页版", false, function () {
       window.open(serverBase() + "/app.html", "_blank");
       return true;
     });
@@ -4243,8 +4543,30 @@ function renderMe() {
     '<button class="icon-btn acc" id="btnProfile"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>' +
     "</div>";
 
-  /* 主题 */
-  html += '<div class="set-card"><div class="set-card-h">界面风格</div><div class="theme-swatches">' + swatches + "</div></div>";
+  /* 个性化：主题 + 自定义背景 */
+  html += '<div class="set-card"><div class="set-card-h">个性化 · 主题与背景</div>' +
+    '<div class="theme-swatches">' + swatches + "</div>" +
+    '<div class="bg-sec">' +
+    '<div class="bg-head"><div class="bg-t">自定义背景</div>' +
+    '<div class="bg-s">' + (S.bgData ? "已设置 · 本机图片" : "选一张喜欢的照片作为应用背景") + "</div></div>" +
+    '<div class="bg-row">' +
+    '<div class="bg-thumb' + (S.bgData ? "" : " empty") + '" id="bgThumb">' +
+    (S.bgData ? "" : '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>') +
+    "</div>" +
+    '<div class="bg-btns">' +
+    '<button class="btn-ghost acc" id="btnBgPick">选择图片</button>' +
+    (S.bgData ? '<button class="btn-ghost" id="btnBgRemove">移除背景</button>' : "") +
+    "</div></div>" +
+    (S.bgData ?
+      '<div class="bg-slider-row"><span class="lb">暗化</span>' +
+      '<input type="range" id="bgDimR" min="0" max="85" step="5" value="' + S.bgDim + '">' +
+      '<span class="val" id="bgDimVal">' + S.bgDim + '%</span></div>' +
+      '<div class="bg-slider-row"><span class="lb">模糊</span>' +
+      '<input type="range" id="bgBlurR" min="0" max="24" step="2" value="' + S.bgBlur + '">' +
+      '<span class="val" id="bgBlurVal">' + S.bgBlur + "px</span></div>"
+      : "") +
+    '<div class="f-hint" style="padding:0 15px 13px">背景仅保存在本机，不随云同步。<br>过亮的照片可调高「暗化」保证文字清晰</div>' +
+    "</div></div>";
 
   /* 智能解析 */
   html += '<div class="set-card"><div class="set-card-h">智能解析</div>' +
@@ -4326,6 +4648,65 @@ function bindMeEvents() {
       renderMe();
       toast("已切换至「" + THEMES.filter(function (t) { return t.id === S.theme; })[0].name + "」主题");
     };
+  }
+  /* 自定义背景 */
+  var bgThumb = $("bgThumb");
+  if (bgThumb && S.bgData) bgThumb.style.backgroundImage = 'url("' + S.bgData + '")';
+  var btnBgPick = $("btnBgPick");
+  if (btnBgPick) {
+    btnBgPick.onclick = function () {
+      var fi = $("bgFileInput");
+      if (!fi) {
+        fi = document.createElement("input");
+        fi.type = "file"; fi.id = "bgFileInput"; fi.accept = "image/*";
+        fi.className = "hidden";
+        document.body.appendChild(fi);
+      }
+      fi.onchange = function () {
+        var f = this.files && this.files[0];
+        this.value = "";
+        if (!f) return;
+        if (!/^image\//.test(f.type)) { toast("请选择图片文件"); return; }
+        toast("正在处理背景图…");
+        compressBgImage(f, function (data) {
+          if (!data) { toast("图片处理失败，请换一张试试"); return; }
+          S.bgData = data;
+          bgOptsSave();
+          applyBackground();
+          renderMe();
+          toast("背景已设置");
+        });
+      };
+      fi.click();
+    };
+  }
+  var btnBgRemove = $("btnBgRemove");
+  if (btnBgRemove) {
+    btnBgRemove.onclick = function () {
+      S.bgData = "";
+      try { localStorage.removeItem("daojishi.bg"); } catch (e) { }
+      applyBackground();
+      renderMe();
+      toast("已恢复默认背景");
+    };
+  }
+  var dimR = $("bgDimR");
+  if (dimR) {
+    dimR.oninput = function () {
+      S.bgDim = parseInt(this.value, 10) || 0;
+      $("bgDimVal").textContent = S.bgDim + "%";
+      applyBackground();
+    };
+    dimR.onchange = function () { bgOptsSave(); };
+  }
+  var blurR = $("bgBlurR");
+  if (blurR) {
+    blurR.oninput = function () {
+      S.bgBlur = parseInt(this.value, 10) || 0;
+      $("bgBlurVal").textContent = S.bgBlur + "px";
+      applyBackground();
+    };
+    blurR.onchange = function () { bgOptsSave(); };
   }
   /* 引擎 */
   $("engineSwitch").onchange = function () {
@@ -4505,6 +4886,36 @@ function importData(json) {
 
 function renderAll() {
   renderHome(); renderCal(); renderAlarms(); renderTodos(); renderStats(); renderMe();
+}
+
+/* ---------- 背景图压缩（canvas，最长边 1440 / JPEG 0.72） ---------- */
+function compressBgImage(file, cb) {
+  var url = "";
+  try { url = URL.createObjectURL(file); } catch (e) { cb(""); return; }
+  var img = new Image();
+  img.onload = function () {
+    try {
+      var MAX = 1440;
+      var w = img.width || 1, h = img.height || 1;
+      var sc = Math.min(1, MAX / Math.max(w, h));
+      var cw = Math.max(1, Math.round(w * sc)), ch = Math.max(1, Math.round(h * sc));
+      var cv = document.createElement("canvas");
+      cv.width = cw; cv.height = ch;
+      cv.getContext("2d").drawImage(img, 0, 0, cw, ch);
+      var out = cv.toDataURL("image/jpeg", 0.72);
+      if (out.length > 3000000) out = cv.toDataURL("image/jpeg", 0.5);
+      URL.revokeObjectURL(url);
+      cb(out || "");
+    } catch (e) {
+      URL.revokeObjectURL(url);
+      cb("");
+    }
+  };
+  img.onerror = function () {
+    URL.revokeObjectURL(url);
+    cb("");
+  };
+  img.src = url;
 }
 </script>
 <script>
@@ -4921,7 +5332,9 @@ function init() {
   var rebooted = androidBootstrap();
   if (rebooted) return; /* Java 端将重新加载页面 */
   loadStore();
+  bgOptsLoad();
   applyTheme();
+  applyBackground();
   bindGlobalEvents();
   renderHome();
   renderCal();
