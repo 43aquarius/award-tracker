@@ -4654,6 +4654,16 @@ function checkUpdate(manual) {
         if (needApkUpdate(res)) showApkUpdateModal(res);
         else showUpdateModal(res);
       }
+    } else if (needApkUpdate(res)) {
+      /* 版本号已是最新，但原生壳过旧（HTML 被热更新进旧 APK）→ 必须安装新安装包 */
+      UPD_INFO = res;
+      $("updateDot").classList.remove("hidden");
+      $("updateState").textContent = "需安装新版 APK（原生功能更新）";
+      if (manual || S.lastPromptVer !== "native" + res.native) {
+        S.lastPromptVer = "native" + res.native;
+        persist();
+        showApkUpdateModal(res);
+      }
     } else {
       $("updateDot").classList.add("hidden");
       if (manual) toast("已是最新版本 " + APP_VERSION);
@@ -4677,8 +4687,9 @@ function needApkUpdate(info) {
 function showApkUpdateModal(info) {
   var srvApk = info.serverApkUrl ? (String(info.serverApkUrl).indexOf("http") === 0 ? info.serverApkUrl : serverBase() + info.serverApkUrl) : "";
   var ghApk = info.apkUrl || "";
+  var newer = verNum(info.version) > verNum(APP_VERSION);
   confirmModal(
-    "发现新版本 v" + esc(info.version) + "（需安装包）",
+    newer ? "发现新版本 v" + esc(info.version) + "（需安装包）" : "需安装新版安装包",
     '<div class="upd-notes">' + esc(info.notes || "问题修复与体验优化") + "</div>" +
     '<div class="upd-src"><b>本次更新包含系统级功能</b>（如锁屏响铃、自定义铃声等原生能力），需要下载新版安装包覆盖安装。数据保留在本机，若开启了云同步可多端无缝衔接。</div>' +
     '<div class="upd-links">下载后点击安装（需允许「未知来源/安装未知应用」）：' +
