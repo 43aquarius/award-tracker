@@ -1261,7 +1261,7 @@ html[data-theme="mono"] {
  * 倒计时 v4 —— 应用核心：版本 / 状态 / 持久化 / 主题 / 通用 UI
  * ========================================================================= */
 
-var APP_VERSION = "4.2.0";
+var APP_VERSION = "4.3.0";
 var SERVER = "https://dddl.space-z.ai";
 var STORE_KEY = "daojishi.v4";
 var OLD_KEY = "daojishi.v3";
@@ -1431,7 +1431,8 @@ function ensureAlarm(a) {
     days: (Object.prototype.toString.call(a.days) === "[object Array]" ? a.days : []).filter(function (x) { return x >= 0 && x <= 6; }),
     enabled: a.enabled !== false,
     snooze: [0, 5, 10, 15, 30].indexOf(parseInt(a.snooze, 10)) >= 0 ? parseInt(a.snooze, 10) : 10,
-    sound: ["classic", "chime", "birds", "digital", "rising"].indexOf(a.sound) >= 0 ? a.sound : "classic",
+    sound: (a.sound === "music" || ["classic", "chime", "birds", "digital", "rising"].indexOf(a.sound) >= 0) ? a.sound : "classic",
+    music: String(a.music || "").slice(0, 120),   /* 自定义铃声：原生音乐文件名（Android）/ 网页音频键名 */
     vibrate: a.vibrate !== false,
     fadein: !!a.fadein,
     once: !!a.once,
@@ -1679,7 +1680,6 @@ function closestEl(el, sel) {
 </script>
 <script>
 "use strict";
-
 "use strict";
 /* =========================================================================
  * 解析引擎 —— 由 award_tracker.py → award-parser.ts 移植为纯 JS
@@ -2038,7 +2038,6 @@ var AWARD = (function () {
 </script>
 <script>
 "use strict";
-
 "use strict";
 /* =========================================================================
  * AI 解析引擎 v3 —— 三档智能模式（极速 / 均衡 / 深度），支持文字 + 图片
@@ -3160,8 +3159,44 @@ function calShift(n) {
  * 倒计时 v4 —— 闹钟：列表 / 表单 / 响铃引擎 / 铃声 / 系统通知
  * ========================================================================= */
 
-var SOUND_NAMES = { classic: "经典", chime: "清脆", birds: "鸟鸣", digital: "数字", rising: "渐强" };
+var SOUND_NAMES = { classic: "经典", chime: "清脆", birds: "鸟鸣", digital: "数字", rising: "渐强", music: "自定义音乐" };
 var SNOOZE_OPTS = [0, 5, 10, 15, 30];
+
+/* ---------- 自定义闹钟音乐 ----------
+ * Android 壳：文件保存在 App 私有目录（files/music/），由原生 MediaPlayer 锁屏播放；
+ * 网页版：音频以 dataURL 存本机 localStorage（daojishi.music.<name>，≤ 2.5MB）。 */
+var MUSIC_PICK = { cur: "" };  /* 表单临时状态：当前选择的铃声名 */
+
+function musicDisplayName(name) {
+  var n = String(name || "").split("/").pop().split("\\").pop();
+  if (n.lastIndexOf(".") > 0) n = n.slice(0, n.lastIndexOf("."));
+  return n.length > 14 ? n.slice(0, 13) + "…" : n;
+}
+var MUZ = { el: null, stopT: null };
+function musicStopWeb() {
+  if (MUZ.stopT) { clearTimeout(MUZ.stopT); MUZ.stopT = null; }
+  if (MUZ.el) { try { MUZ.el.pause(); } catch (e) { } MUZ.el = null; }
+}
+function musicPlayWeb(name, autoStopSec) {
+  musicStopWeb();
+  var url = "";
+  try { url = localStorage.getItem("daojishi.music." + name) || ""; } catch (e) { }
+  if (!url) return false;
+  try {
+    var el = new Audio(url);
+    el.loop = true;
+    el.play();
+    MUZ.el = el;
+  } catch (e) { return false; }
+  if (autoStopSec) MUZ.stopT = setTimeout(musicStopWeb, autoStopSec * 1000);
+  return true;
+}
+function musicDataSave(name, dataUrl) {
+  try { localStorage.setItem("daojishi.music." + name, dataUrl); return true; } catch (e) { return false; }
+}
+function nativeStopRing() {
+  try { if (window.DaoNotify && window.DaoNotify.stopRing) window.DaoNotify.stopRing(); } catch (e) { }
+}
 
 /* ---------- 原生闹钟排程（新 APK 的 DaoNotify 桥；旧壳自动降级为仅网页内响铃） ---------- */
 var NATIVE_SYNC_T = null;
@@ -3183,21 +3218,31 @@ function doSyncNativeAlarms() {
     });
     var tags = [];
     var now = Date.now();
-    function schedule(ts, title, text, tag) {
+    function schedule(ts, title, text, tag, music, snoozeMin) {
       if (ts <= now || ts > now + 8 * 86400000) return;
-      try {
-        if (window.DaoNotify.scheduleAlarm(ts, title, text, tag)) tags.push(tag);
-      } catch (e) { }
+      var done = false;
+      if (music || snoozeMin) {
+        /* 新壳：6 参（含音乐/稍后分钟）；旧壳会调用失败，回退 4 参 */
+        try {
+          var r = window.DaoNotify.scheduleAlarm(ts, title, text, tag, music || "", snoozeMin || 0);
+          if (r === true) { tags.push(tag); done = true; }
+        } catch (e) { }
+      }
+      if (!done) {
+        try { if (window.DaoNotify.scheduleAlarm(ts, title, text, tag)) tags.push(tag); } catch (e) { }
+      }
     }
-    /* 1) 闹钟：每个启用闹钟的下一次响铃（含稍后提醒点） */
+    /* 1) 闹钟：每个启用闹钟的下一次响铃（含稍后提醒点）；自定义音乐一并传给原生 */
     liveAlarms().forEach(function (a) {
       if (!a.enabled) return;
       var t = nextOccurrence(a);
-      if (t) schedule(t, "⏰ " + (a.label || "闹钟"), pad2(a.hour) + ":" + pad2(a.minute) + " 闹钟响铃", "alarm:" + a.id);
+      if (t) schedule(t, "⏰ " + (a.label || "闹钟"), pad2(a.hour) + ":" + pad2(a.minute) + " 闹钟响铃", "alarm:" + a.id,
+        a.sound === "music" ? (a.music || "") : "", a.snooze || 0);
     });
     S.snoozes.forEach(function (z) {
       var a = S.alarms.filter(function (x) { return x.id === z.alarmId && !x.del; })[0];
-      if (a && z.at > now) schedule(z.at, "⏰ " + (a.label || "闹钟") + "（稍后提醒）", "闹钟再次响铃", "snz:" + a.id + ":" + z.at);
+      if (a && z.at > now) schedule(z.at, "⏰ " + (a.label || "闹钟") + "（稍后提醒）", "闹钟再次响铃", "snz:" + a.id + ":" + z.at,
+        a.sound === "music" ? (a.music || "") : "", 0);
     });
     /* 2) 日程提醒：未来 3 天内每个日程的下一次提醒点 */
     for (var i = 0; i < 3; i++) {
@@ -3307,7 +3352,8 @@ function alarmRow(a, idx) {
   var tags = '<span class="a-tag ' + (a.once ? "once" : "rpt") + '">' + esc(alarmRepeatText(a)) + "</span>";
   if (a.once && a.onceDate) tags += '<span class="a-tag">' + esc(fmtMD(a.onceDate)) + "</span>";
   if (!a.once && a.snooze) tags += '<span class="a-tag snz">稍后' + a.snooze + "分</span>";
-  if (a.sound !== "classic") tags += '<span class="a-tag">' + esc(SOUND_NAMES[a.sound]) + "</span>";
+  if (a.sound === "music" && a.music) tags += '<span class="a-tag">♪ ' + esc(musicDisplayName(a.music)) + "</span>";
+  else if (a.sound !== "classic") tags += '<span class="a-tag">' + esc(SOUND_NAMES[a.sound]) + "</span>";
   return '<div class="alarm' + (a.enabled ? "" : " off") + '" data-id="' + esc(a.id) + '" style="animation-delay:' + Math.min(idx * 35, 280) + 'ms">' +
     '<div class="a-main" data-act="alarm-edit" data-id="' + esc(a.id) + '">' +
     '<div class="a-time">' + pad2(a.hour) + ":" + pad2(a.minute) + '</div>' +
@@ -3355,11 +3401,27 @@ function openAlarmForm(editId) {
   function soundSel() {
     var h = '<div style="display:flex;flex-wrap:wrap;gap:6px">';
     var cur = a ? a.sound : "classic";
-    for (var k in SOUND_NAMES) {
+    var order = ["classic", "chime", "birds", "digital", "rising", "music"];
+    order.forEach(function (k) {
       h += '<button type="button" data-asnd="' + k + '" style="padding:7px 12px;border-radius:9px;font-size:12px;font-weight:600;' +
         (k === cur ? "background:var(--brand-soft);color:var(--brand-txt);border:1px solid var(--brand-line)" : "background:var(--card-2);color:var(--t3);border:1px solid transparent") + '">' + SOUND_NAMES[k] + "</button>";
-    }
+    });
     return h + "</div>";
+  }
+  function musicRow() {
+    var has = !!(a && a.sound === "music" && a.music);
+    return '<div id="alMusicRow" style="display:' + ((a ? a.sound : "classic") === "music" ? "block" : "none") + ';border:1px dashed var(--brand-line);border-radius:12px;padding:11px 12px;margin-top:2px">' +
+      '<div style="display:flex;align-items:center;gap:8px;min-width:0">' +
+      '<span style="flex:none;width:30px;height:30px;border-radius:10px;background:var(--brand-soft);color:var(--brand-txt);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>' +
+      '<span id="alMusicName" style="flex:1;min-width:0;font-size:13px;font-weight:600;color:' + (has ? "var(--t1)" : "var(--t3)") + ';overflow:hidden;white-space:nowrap;text-overflow:ellipsis">' + esc(has ? musicDisplayName(a.music) : "尚未选择音乐") + "</span>" +
+      "</div>" +
+      '<div style="display:flex;gap:8px;margin-top:10px">' +
+      '<button type="button" class="btn-ghost acc" id="btnMusicPick" style="flex:1;padding:8px 10px;font-size:12.5px">选择音乐</button>' +
+      '<button type="button" class="btn-ghost" id="btnMusicPrev" style="flex:none;padding:8px 12px;font-size:12.5px">试听</button>' +
+      (has ? '<button type="button" class="btn-ghost" id="btnMusicClr" style="flex:none;padding:8px 12px;font-size:12.5px;color:var(--danger-txt)">移除</button>' : "") +
+      "</div>" +
+      '<div class="f-hint" style="margin-top:8px">' + (IS_ANDROID ? "从本机选择音频，锁屏 / 息屏照常播放" : "选择本机音频文件（≤ 2.5MB）作为铃声") + "</div>" +
+      "</div>";
   }
 
   var html =
@@ -3378,7 +3440,7 @@ function openAlarmForm(editId) {
     '<div class="f-item full" id="alWkWrap" style="display:' + (rep === "custom" ? "flex" : "none") + '"><label>响铃的星期</label>' + wkChips() + "</div>" +
     '<div class="f-item full" id="alOnceHint" style="display:' + (rep === "once" ? "flex" : "none") + '"><div class="f-hint">一次性闹钟：到点响铃后自动关闭，适合午休、抢票等场景</div></div>' +
     '<div class="f-item full"><label>稍后提醒（响铃时再睡一会）</label>' + snoozeSel() + "</div>" +
-    '<div class="f-item full"><label>铃声</label>' + soundSel() + "</div>" +
+    '<div class="f-item full"><label>铃声</label>' + soundSel() + musicRow() + "</div>" +
     '<div class="f-item full"><label style="display:flex;align-items:center;gap:9px"><input type="checkbox" id="alVib" style="width:15px;height:15px;accent-color:var(--brand)" ' + (!a || a.vibrate ? "checked" : "") + ">响铃时振动</label></div>" +
     '<div class="f-item full"><label style="display:flex;align-items:center;gap:9px"><input type="checkbox" id="alFade" style="width:15px;height:15px;accent-color:var(--brand)" ' + (a && a.fadein ? "checked" : "") + ">音量渐强（温柔叫醒）</label></div>" +
     "</div>";
@@ -3397,10 +3459,12 @@ function openAlarmForm(editId) {
     var snd = "classic";
     var sndBtns = document.querySelectorAll("#formBody [data-asnd]");
     for (var m = 0; m < sndBtns.length; m++) if (sndBtns[m].getAttribute("data-cur") === "1") snd = sndBtns[m].getAttribute("data-asnd");
+    if (snd === "music" && !MUSIC_PICK.cur) { toast("请在下方选择一首铃声音乐"); return false; }
     var obj = {
       hour: hour2, minute: min2, label: $("alLabel").value.trim(),
       repeat: rep2, days: days2,
       snooze: snz, sound: snd,
+      music: snd === "music" ? MUSIC_PICK.cur : "",
       vibrate: $("alVib").checked, fadein: $("alFade").checked,
       once: rep2 === "once"
     };
@@ -3429,6 +3493,9 @@ function openAlarmForm(editId) {
     renderAlarms(); renderCal(); renderStats();
     return true;
   });
+
+  MUSIC_PICK.cur = (a && a.sound === "music" && a.music) ? a.music : "";
+  MUSIC_PICK.native = false;
 
   (function () {
     var body = $("formBody");
@@ -3461,8 +3528,70 @@ function openAlarmForm(editId) {
       sndBtns[n].onclick = function () {
         for (var j = 0; j < sndBtns.length; j++) sndBtns[j].setAttribute("data-cur", "0");
         this.setAttribute("data-cur", "1");
+        var sd = this.getAttribute("data-asnd");
+        var mr = $("alMusicRow");
+        if (mr) mr.style.display = sd === "music" ? "block" : "none";
+        if (sd === "music" && !MUSIC_PICK.cur) toast("请在下方选择一首铃声音乐");
       };
     }
+
+    /* ---- 自定义音乐：选择 / 试听 / 移除 ---- */
+    function setMusicName(name, ok) {
+      MUSIC_PICK.cur = name || "";
+      var el = $("alMusicName");
+      if (el) {
+        el.textContent = name ? musicDisplayName(name) : "尚未选择音乐";
+        el.style.color = name ? "var(--t1)" : "var(--t3)";
+      }
+      if (ok) toast("已选择铃声：「" + musicDisplayName(name) + "」");
+    }
+    var pick = $("btnMusicPick");
+    if (pick) pick.onclick = function () {
+      if (IS_ANDROID && window.DaoNotify && window.DaoNotify.pickMusic) {
+        var ok = false;
+        try { ok = window.DaoNotify.pickMusic(); } catch (e) { }
+        if (!ok) toast("无法打开音乐选择器，请重试");
+        /* 结果由原生回调 window.__musicPicked(name) */
+      } else {
+        var fi = $("musicFileInput");
+        if (!fi) {
+          fi = document.createElement("input");
+          fi.type = "file";
+          fi.id = "musicFileInput";
+          fi.accept = "audio/*";
+          fi.className = "hidden";
+          document.body.appendChild(fi);
+          fi.onchange = function () {
+            var f = this.files && this.files[0];
+            if (!f) return;
+            if (f.size > 2.5 * 1024 * 1024) { toast("音频过大（" + (f.size / 1048576).toFixed(1) + "MB），网页版仅支持 2.5MB 内"); this.value = ""; return; }
+            var name = f.name.replace(/[\\/:*?"<>|\s]+/g, "_").slice(0, 60);
+            var rd = new FileReader();
+            var self = this;
+            rd.onload = function () {
+              if (musicDataSave(name, String(rd.result || ""))) { setMusicName(name, true); }
+              else toast("保存失败：本机存储空间不足");
+            };
+            rd.onerror = function () { toast("读取音频失败"); };
+            rd.readAsDataURL(f);
+            self.value = "";
+          };
+        }
+        fi.click();
+      }
+    };
+    var prev = $("btnMusicPrev");
+    if (prev) prev.onclick = function () {
+      if (!MUSIC_PICK.cur) { toast("请先选择音乐"); return; }
+      if (IS_ANDROID && window.DaoNotify && window.DaoNotify.previewMusic) {
+        try { window.DaoNotify.previewMusic(MUSIC_PICK.cur); } catch (e) { toast("试听失败"); }
+      } else {
+        if (!musicPlayWeb(MUSIC_PICK.cur, 6)) toast("本机未找到该音频，请重新选择");
+        else toast("试听 6 秒…");
+      }
+    };
+    var clr = $("btnMusicClr");
+    if (clr) clr.onclick = function () { setMusicName("", false); toast("已移除自定义铃声，将使用合成铃声"); };
   })();
 }
 
@@ -3596,12 +3725,34 @@ function sysNotify(title, body, tag) {
 }
 
 /* ---------- 响铃界面 ---------- */
-var RING = { alarm: null, ts: 0 };
+var RING = { alarm: null, ts: 0, viaNative: false, tag: "" };
 
-function ringStart(alarm, viaSnooze) {
+function ringStart(alarm, viaSnooze, keepNative) {
   RING.alarm = alarm;
   RING.ts = Date.now();
-  sndStartLoop(alarm.sound, alarm.fadein);
+  RING.viaNative = !!keepNative;
+
+  /* 铃声：自定义音乐优先（Android 由原生 MediaPlayer 播放，锁屏可靠） */
+  var musicOn = false;
+  if (alarm.sound === "music" && alarm.music) {
+    if (HAS_NATIVE_NOTIFY && window.DaoNotify) {
+      if (keepNative) {
+        musicOn = true; /* 原生已在播放，接管界面即可 */
+      } else {
+        try {
+          if (window.DaoNotify.playNow) { window.DaoNotify.playNow(alarm.music); musicOn = true; }
+        } catch (e) { }
+        if (!musicOn) nativeStopRing();
+      }
+    } else {
+      musicOn = musicPlayWeb(alarm.music);
+    }
+  }
+  if (!musicOn) {
+    /* 无自定义音乐：先停掉原生响铃（避免叠加），再启动网页合成铃声 */
+    if (!keepNative) nativeStopRing();
+    sndStartLoop(alarm.sound === "music" ? "classic" : alarm.sound, alarm.fadein);
+  }
   if (alarm.vibrate) vibrateStart();
   nativeKeepScreen(true);
   var d = new Date();
@@ -3611,15 +3762,22 @@ function ringStart(alarm, viaSnooze) {
   $("ringSnooze").style.display = alarm.snooze > 0 ? "" : "none";
   $("ringSnoozeSub").textContent = alarm.snooze > 0 ? "再睡 " + alarm.snooze + " 分钟" : "";
   $("ringScreen").classList.remove("hidden");
-  sysNotify("⏰ " + (alarm.label || "闹钟"), pad2(alarm.hour) + ":" + pad2(alarm.minute) + " 闹钟正在响铃" + (viaSnooze ? "（稍后提醒）" : ""), "alarm-" + alarm.id);
+  if (!RING.viaNative) {
+    /* 原生启动路径已由系统发过通知，避免重复 */
+    sysNotify("⏰ " + (alarm.label || "闹钟"), pad2(alarm.hour) + ":" + pad2(alarm.minute) + " 闹钟正在响铃" + (viaSnooze ? "（稍后提醒）" : ""), "alarm-" + alarm.id);
+  }
   renderAlarms();
 }
 function ringStop(dismissedByUser) {
   sndStopLoop();
+  musicStopWeb();
+  nativeStopRing();
   nativeKeepScreen(false);
   $("ringScreen").classList.add("hidden");
   var a = RING.alarm;
   RING.alarm = null;
+  RING.viaNative = false;
+  RING.tag = "";
   if (a && a.once && dismissedByUser) {
     S.alarms.forEach(function (x) {
       if (x.id === a.id) { x.enabled = false; x.u = nowU(); }
@@ -3631,6 +3789,8 @@ function ringStop(dismissedByUser) {
 function ringSnoozeNow() {
   var a = RING.alarm;
   sndStopLoop();
+  musicStopWeb();
+  nativeStopRing();
   nativeKeepScreen(false);
   $("ringScreen").classList.add("hidden");
   if (a && a.snooze > 0) {
@@ -3639,7 +3799,62 @@ function ringSnoozeNow() {
     toast("将在 " + a.snooze + " 分钟后再次响铃");
   }
   RING.alarm = null;
+  RING.viaNative = false;
+  RING.tag = "";
 }
+
+/* ---------- 原生响铃接管（Android 壳：fullScreenIntent / 通知点击进入） ----------
+ * 原生闹钟到点后由系统直接播放铃声（锁屏可靠）；Activity 启动时经
+ * evaluateJavascript 调用 window.__ringLaunch(tag,title,text)，由本函数接管响铃界面。 */
+window.__ringLaunch = function (o) {
+  try {
+    o = o || {};
+    var tag = String(o.tag || "");
+    if (RING.alarm && RING.tag && RING.tag === tag) return; /* 已在响铃，勿重复（原生会多次投递） */
+    RING.tag = tag;
+    var isSnz = tag.indexOf("snz:") === 0;
+    var id = tag.split(":")[1] || "";
+    var a = null;
+    for (var i = 0; i < S.alarms.length; i++) {
+      if (!S.alarms[i].del && S.alarms[i].id === id) { a = S.alarms[i]; break; }
+    }
+    var music = (a && a.sound === "music" && a.music) ? a.music : "";
+    if (!music) nativeStopRing(); /* 无自定义音乐：交给网页合成铃声 */
+    var d = new Date();
+    var mk = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+    if (a) {
+      /* 标记已触发，防止 clockTick 双响 */
+      S.firedAlarms[a.id + "|" + mk] = true;
+      if (S.firedAlarms.__n > 400) S.firedAlarms = {};
+      ringStart(a, isSnz, !!music);
+    } else {
+      /* 数据中已找不到（被删除/他端同步）→ 仍展示响铃界面 */
+      ringStart({
+        id: "", hour: d.getHours(), minute: d.getMinutes(),
+        label: String(o.title || "").replace(/^⏰\s*/, "") || "闹钟",
+        repeat: "once", days: [], enabled: true, snooze: 0,
+        sound: music ? "music" : "classic", music: music,
+        vibrate: false, fadein: false, once: true, onceDate: "",
+        createdAt: todayIso(), u: 0, del: 0
+      }, isSnz, !!music);
+    }
+  } catch (e) { }
+};
+
+/* 原生音乐选择器回调（MainActivity 选择音频并复制到私有目录后调用） */
+window.__musicPicked = function (name) {
+  try {
+    name = String(name || "");
+    MUSIC_PICK.cur = name;
+    MUSIC_PICK.native = !!name;
+    var el = $("alMusicName");
+    if (el && name) {
+      el.textContent = musicDisplayName(name);
+      el.style.color = "var(--t1)";
+    }
+    if (name) toast("已选择铃声：「" + musicDisplayName(name) + "」");
+  } catch (e) { }
+};
 
 /* ---------- 时钟引擎：闹钟 / 日程提醒 / 截止提醒 ---------- */
 var CLOCK = { timer: null, lastMinute: "" };
@@ -4436,7 +4651,8 @@ function checkUpdate(manual) {
       if (manual || S.lastPromptVer !== res.version) {
         S.lastPromptVer = res.version;
         persist();
-        showUpdateModal(res);
+        if (needApkUpdate(res)) showApkUpdateModal(res);
+        else showUpdateModal(res);
       }
     } else {
       $("updateDot").classList.add("hidden");
@@ -4445,6 +4661,35 @@ function checkUpdate(manual) {
   }).catch(function () {
     if (manual) toast("暂时无法连接更新服务器");
   });
+}
+
+/* 本次更新是否需要安装新 APK（原生层变更，热更新无法覆盖） */
+function needApkUpdate(info) {
+  if (!IS_ANDROID || !info || !info.native) return false;
+  var nv = 0;
+  try {
+    if (window.DaoUpdate && window.DaoUpdate.nativeVer) nv = parseInt(window.DaoUpdate.nativeVer(), 10) || 0;
+  } catch (e) { }
+  return parseInt(info.native, 10) > nv;
+}
+
+/* APK 级更新弹窗：服务器 / GitHub 双源下载安装包 */
+function showApkUpdateModal(info) {
+  var srvApk = info.serverApkUrl ? (String(info.serverApkUrl).indexOf("http") === 0 ? info.serverApkUrl : serverBase() + info.serverApkUrl) : "";
+  var ghApk = info.apkUrl || "";
+  confirmModal(
+    "发现新版本 v" + esc(info.version) + "（需安装包）",
+    '<div class="upd-notes">' + esc(info.notes || "问题修复与体验优化") + "</div>" +
+    '<div class="upd-src"><b>本次更新包含系统级功能</b>（如锁屏响铃、自定义铃声等原生能力），需要下载新版安装包覆盖安装。数据保留在本机，若开启了云同步可多端无缝衔接。</div>' +
+    '<div class="upd-links">下载后点击安装（需允许「未知来源/安装未知应用」）：' +
+    (ghApk ? '<a href="' + esc(ghApk) + '" target="_blank" rel="noopener">GitHub Release</a>' : "") +
+    "</div>",
+    srvApk ? "下载 APK（服务器）" : "下载 APK（GitHub）", false, function () {
+      var url = srvApk || ghApk;
+      if (url) window.open(url, "_blank");
+      else toast("暂无下载地址，请稍后再试");
+      return true;
+    });
 }
 
 function showUpdateModal(info) {
@@ -4597,12 +4842,21 @@ function renderMe() {
   if (IS_ANDROID && window.DaoNotify) {
     var permOk = false;
     try { permOk = window.DaoNotify.notifPerm ? !!window.DaoNotify.notifPerm() : true; } catch (e) { permOk = true; }
+    /* Android 14+：全屏通知（锁屏直接弹出响铃界面）为独立授权 */
+    var fsOk = true;
+    try {
+      if (window.DaoNotify.fullScreenPerm) fsOk = !!window.DaoNotify.fullScreenPerm();
+    } catch (e) { fsOk = true; }
     html += '<div class="set-card"><div class="set-card-h">系统级提醒</div>' +
       '<div class="set-row"><div class="sr-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>' +
       '<div class="sr-main"><div class="sr-t">状态栏与锁屏提醒</div><div class="sr-s" id="sysRemindState">' +
       (permOk ? "已开启：App 关闭后仍会准时提醒，息屏响铃" : "未开启，点击右侧按钮授权后才能在后台提醒") +
       '</div></div>' +
       '<button class="btn-ghost' + (permOk ? "" : " acc") + '" style="flex:none;padding:8px 13px" id="btnSysRemind">' + (permOk ? "已就绪" : "去开启") + '</button></div>' +
+      (fsOk ? "" :
+        '<div class="set-row"><div class="sr-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="5" rx="2"/><path d="M12 12v.01"/><path d="M8 12v.01"/><path d="M16 12v.01"/></svg></div>' +
+        '<div class="sr-main"><div class="sr-t">锁屏弹窗权限</div><div class="sr-s">Android 14+ 需授予「全屏通知」，锁屏时才能直接弹出响铃界面（不授权也会正常响铃）</div></div>' +
+        '<button class="btn-ghost acc" style="flex:none;padding:8px 13px" id="btnFsPerm">去授权</button></div>') +
       '</div>';
   }
 
@@ -4777,6 +5031,15 @@ function bindMeEvents() {
       } else {
         toast("请到系统设置 → 应用 → 倒计时 → 通知中开启");
       }
+    };
+  }
+  /* Android 14+ 锁屏全屏弹窗授权 */
+  var btnFsPerm = $("btnFsPerm");
+  if (btnFsPerm) {
+    btnFsPerm.onclick = function () {
+      var ok = false;
+      try { if (window.DaoNotify && window.DaoNotify.openFsPerm) ok = !!window.DaoNotify.openFsPerm(); } catch (e) { }
+      if (!ok) toast("请到 系统设置 → 通知 → 全屏通知 中授权「倒计时」");
     };
   }
   /* 更新 */
@@ -5369,5 +5632,3 @@ if (document.readyState === "loading") {
   init();
 }
 </script>
-</body>
-</html>
