@@ -6,7 +6,7 @@
 <meta name="theme-color" id="metaThemeColor" content="#0B0D13">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>倒计时 · 日程 待办 闹钟</title>
+<title>倒计时 · 日程 待办 闹钟 番茄</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%231c2431'/%3E%3Cpath d='M32 14v20l13 8' stroke='%235eead4' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
 <style>
 /* =========================================================================
@@ -56,36 +56,8 @@ html[data-theme="solar"] #bgLayer::after,
 html[data-theme="sakura"] #bgLayer::after,
 html[data-theme="mono"] #bgLayer::after { background: #fff; }
 
-/* ---------- 顶栏 ---------- */
-.topbar {
-  position: sticky; top: 0; z-index: 40;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: calc(10px + env(safe-area-inset-top)) 18px 10px;
-  background: var(--chrome);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
-}
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-mark {
-  width: 34px; height: 34px; border-radius: 11px;
-  background: var(--btn-grad); background-size: 150% 150%;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 14px var(--btn-shadow);
-}
-.brand-text { font-size: 19px; font-weight: 800; letter-spacing: .5px; }
-.brand-sub { font-size: 10.5px; color: var(--t3); margin-top: 1px; letter-spacing: 2px; }
-.top-actions { display: flex; align-items: center; gap: 8px; }
-
-.urgent-chip {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 11px; border-radius: 999px;
-  background: var(--brand-soft); border: 1px solid var(--brand-line);
-  color: var(--brand-txt); font-size: 12px; font-weight: 600;
-  max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
 /* ---------- 主区与视图 ---------- */
-main { flex: 1; padding: 14px 16px 112px; }
+main { flex: 1; padding: calc(12px + env(safe-area-inset-top)) 16px 112px; }
 .view { display: none; animation: viewIn .28s ease both; }
 .view.on { display: block; }
 @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -122,33 +94,40 @@ main { flex: 1; padding: 14px 16px 112px; }
   .fab { right: calc(50% - 260px + 18px); }
 }
 
-/* ---------- 底部导航 ---------- */
+/* ---------- 底部导航（透明化：让背景图透出） ---------- */
 .dock {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
   max-width: 520px; margin: 0 auto;
   display: flex;
-  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-  background: var(--dock-bg);
-  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-  border-top: 1px solid var(--line);
+  padding: 8px 4px calc(10px + env(safe-area-inset-bottom));
+  background: transparent;
+  border-top: 0;
+}
+body.has-bg .dock {
+  /* 有自定义背景时：极淡的渐变托底，保证图标可读的同时不遮挡背景 */
+  background: linear-gradient(to top, var(--dock-fade) 0%, transparent 92%);
+  padding-top: 12px;
 }
 .dock-item {
   flex: 1; min-width: 0;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   padding: 3px 0; color: var(--t3); border-radius: 12px;
   transition: color .18s; position: relative;
+  text-shadow: 0 1px 3px var(--dock-shadow), 0 0 8px var(--dock-shadow);
 }
-.dock-item .di-ic { opacity: .9; }
+.dock-item .di-ic { opacity: .9; filter: drop-shadow(0 1px 2px var(--dock-shadow)); }
 .dock-item span { font-size: 10px; letter-spacing: .3px; white-space: nowrap; }
 .dock-item.on { color: var(--brand-txt); }
+.dock-item.on span { font-weight: 700; }
 .dock-item.on .di-ic { opacity: 1; }
 .dock-item.on::before {
-  content: ""; position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
+  content: ""; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
   width: 18px; height: 3px; border-radius: 3px; background: var(--brand);
+  box-shadow: 0 0 8px var(--btn-shadow);
 }
 .dock-item .dot {
   position: absolute; top: 1px; right: 22%; width: 7px; height: 7px;
-  border-radius: 50%; background: var(--u-red); border: 2px solid var(--dock-bg);
+  border-radius: 50%; background: var(--u-red); border: 2px solid var(--bg);
 }
 </style>
 <style>
@@ -624,6 +603,43 @@ main { flex: 1; padding: 14px 16px 112px; }
 .done-item:last-child { border-bottom: 0; }
 .done-item .di-txt { flex: 1; min-width: 0; color: var(--t2); text-decoration: line-through; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .done-item .di-when { flex: none; font-size: 10.5px; color: var(--t3); }
+
+/* ---------- 番茄钟 ---------- */
+.pomo-card { text-align: center; margin-bottom: 11px; }
+.pomo-rounds { display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 6px; }
+.pomo-rounds .pd { width: 9px; height: 9px; border-radius: 50%; background: var(--ring-bg); border: 1px solid var(--line); }
+.pomo-rounds .pd.on { background: var(--brand); border-color: transparent; box-shadow: 0 0 8px var(--btn-shadow); }
+.pomo-rounds .pd-lb { font-size: 11px; color: var(--t3); margin-left: 5px; }
+.pomo-ring-wrap { position: relative; width: 218px; height: 218px; margin: 4px auto 10px; }
+.pomo-svg { transform: rotate(-90deg); }
+.pomo-svg .pr-bg { fill: none; stroke: var(--ring-bg); stroke-width: 10; }
+.pomo-svg .pr-fg {
+  fill: none; stroke: var(--brand); stroke-width: 10; stroke-linecap: round;
+  filter: drop-shadow(0 0 6px var(--btn-shadow));
+  transition: stroke-dashoffset .5s linear;
+}
+.pomo-ring-txt { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.pomo-ring-txt .pr-phase { font-size: 13px; font-weight: 700; color: var(--brand-txt); letter-spacing: 1px; }
+.pomo-ring-txt .pr-time { font-size: 46px; font-weight: 800; letter-spacing: 1px; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.pomo-ring-txt .pr-sub { font-size: 11px; color: var(--t3); }
+.pomo-task {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 9px 12px; border-radius: 12px;
+  background: var(--card-2); border: 1px dashed var(--line-2); color: var(--t2);
+  font-size: 12.5px; font-weight: 600; margin-bottom: 12px;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.pomo-task:active { transform: scale(.98); }
+.pomo-ctrl { display: flex; gap: 9px; }
+.pomo-ctrl .pomo-go { flex: 1.6; padding: 13px 0; font-size: 15px; }
+.pomo-ctrl .pomo-sub { flex: 1; }
+.pomo-run { display: flex; align-items: center; gap: 10px; padding: 9px 2px; border-bottom: 1px dashed var(--line); }
+.pomo-run:last-child { border-bottom: 0; }
+.pomo-run .pr-ic { flex: none; width: 28px; height: 28px; border-radius: 9px; background: var(--brand-soft); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.pomo-run .pr-ic.bad { background: var(--mis-bg); opacity: .8; }
+.pomo-run .pr-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pomo-run .pr-txt { font-size: 12.5px; font-weight: 600; color: var(--t1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pomo-run .pr-meta { font-size: 10.5px; color: var(--t3); white-space: nowrap; font-variant-numeric: tabular-nums; }
 </style>
 <style>
 /* =========================================================================
@@ -768,6 +784,7 @@ main { flex: 1; padding: 14px 16px 112px; }
 html[data-theme="night"] {
   --bg: #0B0D13; --bg-soft: #10131B;
   --chrome: rgba(11, 13, 19, 0.88); --dock-bg: rgba(16, 19, 27, 0.94);
+  --dock-shadow: rgba(0, 0, 0, 0.62); --dock-fade: rgba(5, 8, 14, 0.55);
   --modal-bg: #141824; --bar-bg: rgba(16, 19, 27, 0.96);
   --card: rgba(255, 255, 255, 0.045); --card-2: rgba(255, 255, 255, 0.08);
   --card-open: rgba(139, 124, 255, 0.055);
@@ -792,6 +809,7 @@ html[data-theme="night"] {
 html[data-theme="ocean"] {
   --bg: #071426; --bg-soft: #0A1B31;
   --chrome: rgba(7, 20, 38, 0.9); --dock-bg: rgba(10, 27, 49, 0.95);
+  --dock-shadow: rgba(0, 0, 0, 0.62); --dock-fade: rgba(4, 12, 24, 0.55);
   --modal-bg: #0C2038; --bar-bg: rgba(10, 27, 49, 0.96);
   --card: rgba(255, 255, 255, 0.05); --card-2: rgba(255, 255, 255, 0.09);
   --card-open: rgba(56, 189, 248, 0.06);
@@ -817,6 +835,7 @@ html[data-theme="ocean"] {
 html[data-theme="emerald"] {
   --bg: #EFF7F2; --bg-soft: #E6F1EA;
   --chrome: rgba(239, 247, 242, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --dock-shadow: rgba(255, 255, 255, 0.88); --dock-fade: rgba(255, 255, 255, 0.6);
   --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
   --card: #FFFFFF; --card-2: #EDF4EF; --card-open: rgba(15, 169, 113, 0.06);
   --line: rgba(23, 37, 30, 0.09); --line-2: rgba(23, 37, 30, 0.16);
@@ -840,6 +859,7 @@ html[data-theme="emerald"] {
 html[data-theme="solar"] {
   --bg: #FDF6EE; --bg-soft: #F8EDDF;
   --chrome: rgba(253, 246, 238, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --dock-shadow: rgba(255, 255, 255, 0.88); --dock-fade: rgba(255, 255, 255, 0.6);
   --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
   --card: #FFFFFF; --card-2: #FBF0E3; --card-open: rgba(249, 115, 22, 0.06);
   --line: rgba(49, 36, 26, 0.09); --line-2: rgba(49, 36, 26, 0.16);
@@ -863,6 +883,7 @@ html[data-theme="solar"] {
 html[data-theme="sakura"] {
   --bg: #FDF2F6; --bg-soft: #F9E7EE;
   --chrome: rgba(253, 242, 246, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --dock-shadow: rgba(255, 255, 255, 0.88); --dock-fade: rgba(255, 255, 255, 0.6);
   --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
   --card: #FFFFFF; --card-2: #FAE9F0; --card-open: rgba(236, 72, 153, 0.06);
   --line: rgba(51, 32, 42, 0.09); --line-2: rgba(51, 32, 42, 0.16);
@@ -886,6 +907,7 @@ html[data-theme="sakura"] {
 html[data-theme="mono"] {
   --bg: #FAFAF8; --bg-soft: #F1F1EE;
   --chrome: rgba(250, 250, 248, 0.92); --dock-bg: rgba(255, 255, 255, 0.96);
+  --dock-shadow: rgba(255, 255, 255, 0.88); --dock-fade: rgba(255, 255, 255, 0.6);
   --modal-bg: #FFFFFF; --bar-bg: rgba(255, 255, 255, 0.97);
   --card: #FFFFFF; --card-2: #F1F1EE; --card-open: rgba(31, 31, 35, 0.05);
   --line: rgba(26, 26, 26, 0.10); --line-2: rgba(26, 26, 26, 0.18);
@@ -909,22 +931,6 @@ html[data-theme="mono"] {
 <!-- 自定义背景层（个性化，JS 控制） -->
 <div id="bgLayer" class="hidden"></div>
 <div id="app">
-
-  <!-- 顶栏 -->
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-mark">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 13.5"/></svg>
-      </div>
-      <div>
-        <div class="brand-text">倒计时</div>
-        <div class="brand-sub">日程 · 待办 · 闹钟</div>
-      </div>
-    </div>
-    <div class="top-actions">
-      <button class="urgent-chip hidden" id="urgentChip"></button>
-    </div>
-  </header>
 
   <main>
 
@@ -1106,6 +1112,41 @@ html[data-theme="mono"] {
       </div>
     </section>
 
+    <!-- ============ 番茄钟 ============ -->
+    <section class="view" id="view-pomo">
+      <div class="page-head">
+        <div>
+          <div class="page-title">番茄钟</div>
+          <div class="page-sub" id="pomoSub">专注 · 小憩 · 长休</div>
+        </div>
+        <div class="head-btns">
+          <button class="icon-btn" id="btnPomoSet" title="番茄设置">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="card pad pomo-card">
+        <div class="pomo-rounds" id="pomoRounds"></div>
+        <div class="pomo-ring-wrap">
+          <svg class="pomo-svg" width="218" height="218" viewBox="0 0 218 218">
+            <circle class="pr-bg" cx="109" cy="109" r="95"></circle>
+            <circle class="pr-fg" id="pomoRing" cx="109" cy="109" r="95"></circle>
+          </svg>
+          <div class="pomo-ring-txt">
+            <div class="pr-phase" id="pomoPhaseLb">准备专注</div>
+            <div class="pr-time" id="pomoClock">25:00</div>
+            <div class="pr-sub" id="pomoSub2"></div>
+          </div>
+        </div>
+        <button class="pomo-task" id="pomoTask">自由专注 · 点此选择任务</button>
+        <div class="pomo-ctrl" id="pomoCtrl"></div>
+      </div>
+
+      <div class="stat-grid" id="pomoCells" style="margin-bottom:11px"></div>
+      <div class="card pad" id="pomoHist"></div>
+    </section>
+
     <!-- ============ 统计 ============ -->
     <section class="view" id="view-stats">
       <div class="page-head">
@@ -1203,6 +1244,11 @@ html[data-theme="mono"] {
       <span>待办</span>
       <span class="dot hidden" id="todoBadge"></span>
     </button>
+    <button class="dock-item" data-tab="pomo">
+      <span class="di-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5c-2.5 0-4.2 2-4.2 4.5 0 2.6 1.9 4.5 4.2 4.5 2.4 0 4.2-1.9 4.2-4.5 0-2.5-1.7-4.5-4.2-4.5z"/><path d="M12 3v1.5"/><path d="M5 7l1.3.9"/><path d="M19 7l-1.3.9"/><path d="M4.5 13h1.4"/><path d="M18.1 13h1.4"/></svg></span>
+      <span>番茄</span>
+      <span class="dot hidden" id="pomoDot"></span>
+    </button>
     <button class="dock-item" data-tab="stats">
       <span class="di-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
       <span>统计</span>
@@ -1261,7 +1307,7 @@ html[data-theme="mono"] {
  * 倒计时 v4 —— 应用核心：版本 / 状态 / 持久化 / 主题 / 通用 UI
  * ========================================================================= */
 
-var APP_VERSION = "4.3.0";
+var APP_VERSION = "4.4.0";
 var SERVER = "https://dddl.space-z.ai";
 var STORE_KEY = "daojishi.v4";
 var OLD_KEY = "daojishi.v3";
@@ -1330,6 +1376,13 @@ var S = {
   todos: [],     /* {id,text,note,due,dueTime,priority,done,createdAt,doneAt,u,del,subtasks:[{id,text,done,doneAt,u}]} */
   events: [],    /* {id,title,date,start,end,allDay,loc,note,color,repeat:{type,days},until,reminders,enabled,createdAt,u,del} */
   alarms: [],    /* {id,hour,minute,label,repeat,enabled,snooze,sound,vibrate,fadein,once,createdAt,u,del} */
+  /* 番茄钟（对标「番茄ToDo」）：设置 / 记录 / 进行中时段 */
+  pomoSet: { work: 25, short: 5, long: 15, longEvery: 4, auto: true, keep: true, notify: true, noise: "rain", noiseOn: true, strict: false },
+  pomos: [],     /* {id,type,label,todoId,start,end,mins,ok,date,u,del} */
+  pomoActive: null,  /* {phase,start,end,label,todoId,pausedAt} */
+  pomoCycle: 0,      /* 当前循环内已完成的番茄数 */
+  pomoBind: { label: "", todoId: "" },  /* 待关联的专注任务 */
+  pomoWarned: false,
   filter: "all", query: "",
   todoFilter: "open", todoQuery: "", todoFoldDone: false, todoCollapseAll: false,
   calY: new Date().getFullYear(), calM: new Date().getMonth() + 1, pickedDay: todayIso(),
@@ -1389,6 +1442,7 @@ function ensureTodo(t) {
     createdAt: t.createdAt || todayIso(),
     doneAt: t.doneAt || 0,
     subtasks: ensureSub(t.subtasks),
+    pomo: parseInt(t.pomo, 10) || 0,
     u: parseInt(t.u, 10) || 0, del: t.del || 0
   };
 }
@@ -1450,6 +1504,8 @@ function persist() {
       profile: S.profile, profileU: S.profileU,
       records: S.records, todos: S.todos, events: S.events, alarms: S.alarms,
       snoozes: S.snoozes,
+      pomos: S.pomos, pomoSet: S.pomoSet, pomoActive: S.pomoActive,
+      pomoCycle: S.pomoCycle, pomoBind: S.pomoBind,
       settings: {
         engine: S.engine, mode: S.mode, theme: S.theme,
         autoSync: S.autoSync, syncCode: S.syncCode,
@@ -1500,6 +1556,20 @@ function loadStore() {
         S.events = (o.events || []).map(function (e) { return ensureEvent(e); }).filter(Boolean);
         S.alarms = (o.alarms || []).map(function (a) { return ensureAlarm(a); }).filter(Boolean);
         S.snoozes = o.snoozes || [];
+        if (typeof ensurePomoSet === "function") {
+          S.pomoSet = ensurePomoSet(o.pomoSet || {});
+          S.pomos = (Object.prototype.toString.call(o.pomos) === "[object Array]" ? o.pomos : []).map(function (r) { return ensurePomoRun(r); }).filter(Boolean);
+          S.pomoActive = (o.pomoActive && o.pomoActive.phase && (o.pomoActive.phase === "work" || o.pomoActive.phase === "short" || o.pomoActive.phase === "long")) ? o.pomoActive : null;
+          if (S.pomoActive) {
+            S.pomoActive.start = parseInt(S.pomoActive.start, 10) || 0;
+            S.pomoActive.end = parseInt(S.pomoActive.end, 10) || 0;
+            S.pomoActive.pausedAt = parseInt(S.pomoActive.pausedAt, 10) || 0;
+            S.pomoActive.label = String(S.pomoActive.label || "").slice(0, 60);
+            S.pomoActive.todoId = String(S.pomoActive.todoId || "");
+          }
+          S.pomoCycle = parseInt(o.pomoCycle, 10) || 0;
+          S.pomoBind = (o.pomoBind && typeof o.pomoBind === "object") ? { label: String(o.pomoBind.label || "").slice(0, 60), todoId: String(o.pomoBind.todoId || "") } : { label: "", todoId: "" };
+        }
         try {
           var nt = localStorage.getItem("daojishi.nativeTags");
           if (nt) S.nativeTags = JSON.parse(nt) || [];
@@ -1640,17 +1710,23 @@ function switchTab(tab) {
   for (var i = 0; i < btns.length; i++) {
     btns[i].classList.toggle("on", btns[i].getAttribute("data-tab") === tab);
   }
-  var views = ["home", "cal", "alarm", "todo", "stats", "me", "parse"];
+  var views = ["home", "cal", "alarm", "todo", "pomo", "stats", "me", "parse"];
   for (var j = 0; j < views.length; j++) {
     var el = $("view-" + views[j]);
     if (el) el.classList.toggle("on", views[j] === tab);
   }
   var fab = $("fabAdd");
   if (fab) fab.classList.toggle("hidden", tab !== "home");
+  /* 强力专注：专注进行中切走页面时提醒一次（计时继续，不阻断） */
+  if (tab !== "pomo" && S.pomoActive && S.pomoActive.phase === "work" && S.pomoSet.strict && !S.pomoWarned) {
+    S.pomoWarned = true;
+    toast("🍅 专注仍在计时中，别分心哦（剩余 " + (typeof pomoLeftText === "function" ? pomoLeftText() : "") + "）", 2800);
+  }
   if (tab === "home") renderHome();
   if (tab === "cal") renderCal();
   if (tab === "alarm") renderAlarms();
   if (tab === "todo") renderTodos();
+  if (tab === "pomo" && typeof renderPomo === "function") renderPomo();
   if (tab === "stats") renderStats();
   if (tab === "me") renderMe();
 }
@@ -2484,10 +2560,9 @@ function renderUrgent() {
     var l = daysLeft(it.date);
     return l !== null && l >= 0 && l <= rd;
   });
-  var banner = $("urgentBanner"), chip = $("urgentChip");
+  var banner = $("urgentBanner");
   if (!urgent.length || S.alertDismissed) {
     banner.classList.add("hidden");
-    chip.classList.add("hidden");
     return;
   }
   urgent.sort(function (a, b) { return daysLeft(a.date) - daysLeft(b.date); });
@@ -2501,8 +2576,6 @@ function renderUrgent() {
   banner.classList.remove("hidden");
   var bd = $("btnDismissUrgent");
   if (bd) bd.onclick = function () { S.alertDismissed = true; renderUrgent(); };
-  chip.textContent = "临近 " + urgent.length + " 项";
-  chip.classList.remove("hidden");
 }
 
 /* ---------- 快捷添加菜单（头部 + / 悬浮按钮均打开） ---------- */
@@ -2681,12 +2754,6 @@ function bindHomeEvents() {
   $("emptyGoAdd").onclick = function () { openRecordForm(null); };
   $("emptyGoParse").onclick = function () { switchTab("parse"); };
   $("btnCalToggle").onclick = function () { switchTab("cal"); };
-  $("urgentChip").onclick = function () {
-    S.filter = "near";
-    var segb = document.querySelectorAll("#homeSeg button");
-    for (var j = 0; j < segb.length; j++) segb[j].classList.toggle("on", segb[j].getAttribute("data-f") === "near");
-    renderHome();
-  };
 }
 </script>
 <script>
@@ -3272,6 +3339,17 @@ function doSyncNativeAlarms() {
           schedule(new Date(y[0], y[1] - 1, y[2], 9, 0, 0).getTime(), "⏳ 今天截止：" + r.name, "别错过，今天就截止了", "rec:" + r.id + ":" + dIso);
         }
       });
+    }
+    /* 4) 番茄钟到点提醒（后台 / 息屏时也能收到系统通知） */
+    if (S.pomoActive && !S.pomoActive.pausedAt && S.pomoSet && S.pomoSet.notify !== false) {
+      var pa = S.pomoActive;
+      if (pa.end > now && pa.end <= now + 4 * 3600000) {
+        var pTitle = pa.phase === "work" ? "🍅 番茄专注完成" : "🌿 番茄休息结束";
+        var pTxt = pa.phase === "work"
+          ? "完成了 " + Math.max(1, Math.round((pa.end - pa.start) / 60000)) + " 分钟专注" + (pa.label && pa.label !== "自由专注" ? "：" + pa.label : "") + "，休息一下吧"
+          : "休息结束，回来继续下一轮专注";
+        schedule(pa.end, pTitle, pTxt, "pomo:end:" + pa.start);
+      }
     }
     S.nativeTags = tags;
     try { localStorage.setItem("daojishi.nativeTags", JSON.stringify(tags)); } catch (e) { }
@@ -3930,6 +4008,8 @@ function clockTick() {
       });
     }
   }
+  /* 5) 番茄钟每秒心跳（刷新圆环 / 到点结算） */
+  if (typeof pomoTick === "function") pomoTick();
 }
 function alarmTsFromTime(iso, hhmm) {
   var p = isoToYmd(iso), hm = String(hhmm).split(":");
@@ -4009,6 +4089,7 @@ function todoRow(t, idx) {
     var sd = subs.filter(function (x) { return x.done; }).length;
     tags += '<span class="t-tag sub">子项 ' + sd + "/" + subs.length + "</span>";
   }
+  if (t.pomo) tags += '<span class="t-tag sub">🍅 ' + t.pomo + "</span>";
   var created = t.createdAt ? "创建于 " + t.createdAt : "";
   var doneAt = t.done && t.doneAt ? "完成于 " + fmtRel(t.doneAt) : "";
   var time = doneAt || created;
@@ -4033,7 +4114,8 @@ function todoRow(t, idx) {
     '<button data-act="todo-pri" data-id="' + esc(t.id) + '" data-v="2" class="' + (t.priority === 2 ? "on p2" : "") + '">紧急</button>' +
     "</div></div>" +
     subtaskBox(t, "todo") +
-    '<div class="t-foot"><span class="t-time">' + esc(time) + "</span>" +
+    '<div class="t-foot"><span class="t-time">' + esc(time) + (t.pomo ? " · 已专注 " + t.pomo + " 个番茄" : "") + "</span>" +
+    (t.done ? "" : '<button class="btn-ghost acc" data-act="todo-pomo" data-id="' + esc(t.id) + '" style="padding:5px 11px;font-size:11.5px">🍅 开始专注</button>') +
     '<button class="btn-danger-txt" data-act="todo-del" data-id="' + esc(t.id) + '"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>删除</button></div>' +
     "</div></div>";
 }
@@ -4143,6 +4225,10 @@ function bindTodoEvents() {
         var v = parseInt(actEl.getAttribute("data-v"), 10);
         S.todos.forEach(function (x) { if (x.id === id) { x.priority = v; x.u = nowU(); } });
         persist(); renderTodos();
+        return;
+      }
+      if (act === "todo-pomo") {
+        if (typeof pomoJumpTodo === "function") pomoJumpTodo(id);
         return;
       }
       if (act === "todo-fold") { S.todoFoldDone = !S.todoFoldDone; renderTodos(); return; }
@@ -4318,6 +4404,584 @@ function bindTodoBar() {
 <script>
 "use strict";
 /* =========================================================================
+ * 倒计时 v4 —— 番茄钟（对标「番茄ToDo」主要功能）
+ * 专注 / 小憩 / 长休 · 任务关联 · 白噪音 · 强力专注 · 打卡统计 · 系统级提醒
+ * 计时基于绝对时间戳：刷新 / 重启 / 后台回来均不丢进度
+ * ========================================================================= */
+
+var POMO_PHASE = { work: "专注", short: "小憩", long: "长休" };
+var POMO_NOISES = { off: "静音", rain: "雨声", wind: "林风", cafe: "咖啡馆", fire: "篝火" };
+var POMO_UI = { total: 0 };
+
+function pomoClamp(n, lo, hi, dv) {
+  n = parseInt(n, 10);
+  if (isNaN(n) || n < lo) return dv !== undefined ? dv : lo;
+  return Math.min(n, hi);
+}
+function ensurePomoSet(p) {
+  p = p || {};
+  return {
+    work: pomoClamp(p.work, 5, 180, 25),
+    short: pomoClamp(p.short, 1, 60, 5),
+    long: pomoClamp(p.long, 5, 90, 15),
+    longEvery: pomoClamp(p.longEvery, 2, 8, 4),
+    auto: p.auto !== false,
+    keep: p.keep !== false,
+    notify: p.notify !== false,
+    noise: POMO_NOISES[p.noise] ? p.noise : "rain",
+    noiseOn: p.noiseOn !== false,
+    strict: !!p.strict
+  };
+}
+function ensurePomoRun(r) {
+  if (!r) return null;
+  var type = r.type === "short" || r.type === "long" ? r.type : "work";
+  return {
+    id: String(r.id || uid("p")),
+    type: type,
+    label: String(r.label || "").slice(0, 60),
+    todoId: String(r.todoId || ""),
+    start: parseInt(r.start, 10) || 0,
+    end: parseInt(r.end, 10) || 0,
+    mins: Math.max(0, Math.round(parseFloat(r.mins) || 0)),
+    ok: r.ok !== false,
+    date: validDate(r.date) ? r.date : todayIso(),
+    u: parseInt(r.u, 10) || 0,
+    del: r.del || 0
+  };
+}
+function todoById(id) {
+  for (var i = 0; i < S.todos.length; i++) {
+    if (S.todos[i].id === id && !S.todos[i].del) return S.todos[i];
+  }
+  return null;
+}
+function pomoDurMin(phase) {
+  var st = S.pomoSet;
+  if (phase === "short") return st.short;
+  if (phase === "long") return st.long;
+  return st.work;
+}
+
+/* ---------- 统计 ---------- */
+function pomoWorks() {
+  return S.pomos.filter(function (r) { return !r.del && r.type === "work" && r.ok; });
+}
+function pomoStatsCalc() {
+  var today = todayIso();
+  var works = pomoWorks();
+  var tw = works.filter(function (r) { return r.date === today; });
+  var todayMins = 0;
+  tw.forEach(function (r) { todayMins += r.mins; });
+  var totalMins = 0;
+  works.forEach(function (r) { totalMins += r.mins; });
+  /* 连续打卡：今天（或昨天）起往回连续有完成番茄的天数 */
+  var days = {};
+  works.forEach(function (r) { days[r.date] = true; });
+  var streak = 0, cur = today;
+  if (!days[cur]) cur = addDays(today, -1);
+  while (days[cur]) { streak++; cur = addDays(cur, -1); }
+  return { todayN: tw.length, todayMins: todayMins, totalN: works.length, totalMins: totalMins, streak: streak };
+}
+function pomoLeftText() {
+  var a = S.pomoActive;
+  if (!a) return "";
+  var ms = (a.pausedAt ? a.pausedAt : Date.now()) >= a.end ? 0 : a.end - (a.pausedAt || Date.now());
+  return pomoFmtMs(ms);
+}
+function pomoFmtMs(ms) {
+  if (ms < 0) ms = 0;
+  var s = Math.round(ms / 1000);
+  var m = Math.floor(s / 60);
+  return pad2(m) + ":" + pad2(s % 60);
+}
+
+/* ---------- 白噪音（Web Audio 程序合成，无音频文件依赖） ---------- */
+var POMO_NOISE = { src: null, gain: null, filt: null, lfo: null, lfoG: null, timer: null };
+function pomoNoiseStop() {
+  try {
+    if (POMO_NOISE.src) { POMO_NOISE.src.stop(); POMO_NOISE.src = null; }
+    if (POMO_NOISE.lfo) { POMO_NOISE.lfo.stop(); POMO_NOISE.lfo = null; }
+  } catch (e) { }
+  POMO_NOISE.lfoG = null; POMO_NOISE.filt = null;
+  if (POMO_NOISE.timer) { clearInterval(POMO_NOISE.timer); POMO_NOISE.timer = null; }
+}
+function pomoNoiseStart() {
+  pomoNoiseStop();
+  var kind = S.pomoSet.noise;
+  if (!S.pomoSet.noiseOn || kind === "off") return;
+  sndUnlock();
+  if (!SND.ctx) return;
+  try {
+    var ctx = SND.ctx;
+    var len = Math.floor(2 * ctx.sampleRate);
+    var buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    var data = buf.getChannelData(0);
+    var last = 0, w;
+    for (var i = 0; i < len; i++) {
+      w = Math.random() * 2 - 1;
+      if (kind === "rain") data[i] = w * 0.55;
+      else if (kind === "wind") { last = (last + 0.02 * w) / 1.02; data[i] = last * 3.4; }
+      else if (kind === "cafe") { last = (last + 0.025 * w) / 1.025; data[i] = last * 3.0 + w * 0.1; }
+      else { last = (last + 0.02 * w) / 1.02; data[i] = last * 3.4; }  /* fire：棕噪声打底 */
+    }
+    var src = ctx.createBufferSource();
+    src.buffer = buf; src.loop = true;
+    var filt = ctx.createBiquadFilter();
+    var gain = ctx.createGain();
+    if (kind === "rain") { filt.type = "lowpass"; filt.frequency.value = 1700; gain.gain.value = 0.10; }
+    else if (kind === "wind") { filt.type = "lowpass"; filt.frequency.value = 460; gain.gain.value = 0.16; }
+    else if (kind === "cafe") { filt.type = "lowpass"; filt.frequency.value = 950; gain.gain.value = 0.13; }
+    else { filt.type = "lowpass"; filt.frequency.value = 300; gain.gain.value = 0.17; }
+    src.connect(filt); filt.connect(gain); gain.connect(ctx.destination);
+    src.start();
+    POMO_NOISE.src = src; POMO_NOISE.gain = gain; POMO_NOISE.filt = filt;
+    if (kind === "wind") {
+      /* 风声起伏：低频 LFO 调制滤波截止频率 */
+      var lfo = ctx.createOscillator(), lg = ctx.createGain();
+      lfo.frequency.value = 0.09; lg.gain.value = 230;
+      lfo.connect(lg); lg.connect(filt.frequency); lfo.start();
+      POMO_NOISE.lfo = lfo; POMO_NOISE.lfoG = lg;
+    }
+    if (kind === "fire") {
+      /* 篝火噼啪：随机短促爆裂音 */
+      POMO_NOISE.timer = setInterval(function () {
+        if (Math.random() < 0.75) {
+          sndPlayTone(1400 + Math.random() * 2600, 0.025, 0, 0.02 + Math.random() * 0.05, "square");
+        }
+      }, 140);
+    }
+  } catch (e) { }
+}
+
+/* ---------- 到点提示音 ---------- */
+function pomoChime() {
+  sndUnlock();
+  if (!SND.ctx) return;
+  sndPattern("chime", 0, 0.6);
+  setTimeout(function () { sndPattern("chime", 0, 0.5); }, 640);
+  setTimeout(function () { sndPattern("birds", 0, 0.42); }, 1280);
+  try { if (navigator.vibrate) navigator.vibrate([280, 150, 280]); } catch (e) { }
+}
+
+/* ---------- 阶段流转 ---------- */
+function pomoStart(phase, opts) {
+  opts = opts || {};
+  var min = pomoDurMin(phase);
+  var now = Date.now();
+  var label = opts.label, todoId = opts.todoId || "";
+  if (phase === "work") {
+    if (todoId) {
+      var t = todoById(todoId);
+      if (t) { label = t.text; S.pomoBind = { label: t.text, todoId: todoId }; }
+    }
+    if (!label && S.pomoBind && S.pomoBind.todoId) {
+      var tb = todoById(S.pomoBind.todoId);
+      if (tb) { label = tb.text; todoId = tb.id; S.pomoBind = { label: tb.text, todoId: tb.id }; }
+      else { S.pomoBind = { label: "", todoId: "" }; }
+    }
+    if (!label) label = opts.label || "自由专注";
+  } else {
+    label = POMO_PHASE[phase];
+    todoId = "";
+  }
+  S.pomoWarned = false;
+  S.pomoActive = {
+    phase: phase, start: now, end: now + min * 60000,
+    label: String(label).slice(0, 60), todoId: todoId,
+    pausedAt: 0
+  };
+  if (phase === "work") {
+    if (S.pomoSet.keep) nativeKeepScreen(true);
+    if (S.pomoSet.noiseOn && S.pomoSet.noise !== "off") pomoNoiseStart();
+  }
+  persist();
+  renderPomo();
+  toast(POMO_PHASE[phase] + "开始 · " + min + " 分钟" + (phase === "work" ? (todoId ? "" : "，加油！") : "，放松一下"));
+}
+
+function pomoPause() {
+  var a = S.pomoActive;
+  if (!a || a.pausedAt) return;
+  a.pausedAt = Date.now();
+  pomoNoiseStop();
+  nativeKeepScreen(false);
+  persist();
+  renderPomo();
+}
+function pomoResume() {
+  var a = S.pomoActive;
+  if (!a || !a.pausedAt) return;
+  a.end += Date.now() - a.pausedAt;
+  a.pausedAt = 0;
+  if (a.phase === "work") {
+    if (S.pomoSet.keep) nativeKeepScreen(true);
+    if (S.pomoSet.noiseOn && S.pomoSet.noise !== "off") pomoNoiseStart();
+  }
+  persist();
+  renderPomo();
+}
+function pomoGiveUp() {
+  var a = S.pomoActive;
+  if (!a) return;
+  function doGiveUp() {
+    var endMs = a.pausedAt || Date.now();
+    S.pomos.push(ensurePomoRun({
+      id: uid("p"), type: a.phase, label: a.phase === "work" ? a.label : POMO_PHASE[a.phase],
+      todoId: a.phase === "work" ? a.todoId : "",
+      start: a.start, end: endMs, mins: Math.max(1, Math.round((endMs - a.start) / 60000)),
+      ok: false, date: dkey(new Date(endMs)), u: nowU()
+    }));
+    S.pomoActive = null;
+    pomoNoiseStop();
+    nativeKeepScreen(false);
+    persist();
+    renderPomo(); renderStats(); renderTodos();
+    toast("已放弃本次" + POMO_PHASE[a.phase] + "（记录为中断）");
+  }
+  if (a.phase === "work" && S.pomoSet.strict) {
+    confirmModal("放弃本次专注？",
+      "强力专注已开启：本次还剩 <b>" + pomoLeftText() + "</b>，<br>放弃将记录为一次中断。", "仍要放弃", false, doGiveUp);
+  } else doGiveUp();
+}
+function pomoSkip() {
+  var a = S.pomoActive;
+  if (!a) return;
+  a.end = Date.now();
+  pomoFinish(true);
+}
+
+/* 自然到点 / 跳过 结算 */
+function pomoFinish(skipped) {
+  var a = S.pomoActive;
+  if (!a) return;
+  var late = Date.now() - a.end;
+  var endMs = a.end;
+  var run = {
+    id: uid("p"), type: a.phase,
+    label: a.phase === "work" ? a.label : POMO_PHASE[a.phase],
+    todoId: a.phase === "work" ? a.todoId : "",
+    start: a.start, end: endMs,
+    mins: Math.max(1, Math.round((endMs - a.start) / 60000)),
+    ok: true, date: dkey(new Date(endMs)), u: nowU()
+  };
+  S.pomos.push(ensurePomoRun(run));
+  if (S.pomos.length > 600) S.pomos = S.pomos.slice(-600);
+
+  var nextPhase = "";
+  if (a.phase === "work") {
+    /* 完成一个番茄：关联待办计数 +1 */
+    if (a.todoId) {
+      S.todos.forEach(function (t) {
+        if (t.id === a.todoId && !t.del) { t.pomo = (parseInt(t.pomo, 10) || 0) + 1; t.u = nowU(); }
+      });
+    }
+    S.pomoCycle = (parseInt(S.pomoCycle, 10) || 0) + 1;
+    nextPhase = (S.pomoCycle % S.pomoSet.longEvery === 0) ? "long" : "short";
+  } else if (a.phase === "long") {
+    S.pomoCycle = 0;
+    nextPhase = "work";
+  } else {
+    nextPhase = "work";
+  }
+  S.pomoActive = null;
+  pomoNoiseStop();
+  nativeKeepScreen(false);
+
+  if (!skipped && late < 90000) {
+    pomoChime();
+    if (S.pomoSet.notify) {
+      if (a.phase === "work") {
+        sysNotify("🍅 专注完成", "完成 " + run.mins + " 分钟专注" + (a.label && a.label !== "自由专注" ? "：" + a.label : "") + "，休息一下吧", "pomo");
+      } else {
+        sysNotify("🌿 休息结束", "休息结束，回来继续下一轮专注吧", "pomo");
+      }
+    }
+  }
+  persist();
+
+  if (S.pomoSet.auto && !skipped && late < 90000) {
+    /* 自动开始下一段（仅在真实到点附近；后台错过太久则不自作主张） */
+    pomoStart(nextPhase);
+    if (nextPhase === "work") { renderStats(); renderTodos(); }
+  } else {
+    renderPomo(); renderStats(); renderTodos();
+    if (!skipped && S.tab !== "pomo") {
+      toast(a.phase === "work" ? "🍅 一个番茄完成！" : "🌿 休息结束", 2600);
+    }
+  }
+}
+
+/* ---------- 每秒心跳（由 clockTick 调用） ---------- */
+function pomoTick() {
+  var a = S.pomoActive;
+  if (!a) return;
+  if (!a.pausedAt && Date.now() >= a.end) { pomoFinish(false); return; }
+  if (S.tab === "pomo") pomoRenderTime();
+}
+/* 载入时结算错过的时段（App 关闭期间到点 → 静默计为完成） */
+function pomoSettle() {
+  var a = S.pomoActive;
+  if (a && !a.pausedAt && Date.now() >= a.end) pomoFinish(false);
+}
+
+/* ---------- 渲染 ---------- */
+function pomoRingHtml() {
+  return '<svg class="pomo-svg" width="218" height="218" viewBox="0 0 218 218">' +
+    '<circle class="pr-bg" cx="109" cy="109" r="95"></circle>' +
+    '<circle class="pr-fg" id="pomoRing" cx="109" cy="109" r="95"></circle></svg>';
+}
+function renderPomo() {
+  pomoSettle();
+  var a = S.pomoActive;
+  var st = S.pomoSet;
+  var ps = pomoStatsCalc();
+  $("pomoSub").textContent = "专注 " + st.work + " · 小憩 " + st.short + " · 长休 " + st.long + "（每 " + st.longEvery + " 轮）" +
+    (a ? "" : " · 今日 🍅 " + ps.todayN);
+
+  /* 圆点进度（本轮循环内的番茄数） */
+  var cyc = parseInt(S.pomoCycle, 10) || 0;
+  var pos = cyc % st.longEvery;
+  var full = cyc > 0 && pos === 0;                 /* 刚完成整轮（长休中） */
+  var doneDots = full ? st.longEvery : pos;
+  var nextN = full ? 1 : pos + 1;
+  var dots = "";
+  for (var i = 0; i < st.longEvery; i++) dots += '<span class="pd' + (i < doneDots ? " on" : "") + '"></span>';
+  $("pomoRounds").innerHTML = dots + '<span class="pd-lb">' + (a && a.phase === "work" ? "第 " + nextN + " 个番茄" : "下一轮是第 " + nextN + " 个番茄") + "</span>";
+
+  var ring = $("pomoRing");
+  if (!ring) return;
+
+  /* 任务行 */
+  var bindT = (S.pomoBind && S.pomoBind.todoId) ? todoById(S.pomoBind.todoId) : null;
+  var bindTxt = a && a.phase === "work"
+    ? (a.todoId ? "🎯 " + esc(a.label) : "自由专注 · 点此关联待办")
+    : (bindT ? "🎯 " + esc(bindT.text) : "自由专注 · 点此选择任务");
+
+  if (a) {
+    var min = Math.max(1, Math.round((a.end - a.start) / 60000));
+    POMO_UI.total = min * 60000;
+    $("pomoPhaseLb").textContent = POMO_PHASE[a.phase] + (a.pausedAt ? " · 已暂停" : "中");
+    var a2 = a.phase === "work" ? (cyc + 1) % st.longEvery === 0 : false;
+    $("pomoSub2").textContent = a.phase === "work"
+      ? "完成后" + (a2 ? "进入长休 " + st.long + " 分钟" : "小憩 " + st.short + " 分钟")
+      : "休息结束继续专注";
+    $("pomoTask").innerHTML = bindTxt;
+    var ctrl = "";
+    if (a.phase === "work") {
+      ctrl = (a.pausedAt
+        ? '<button class="btn-primary pomo-go" id="pomoBtnResume">继续专注</button>'
+        : '<button class="btn-primary pomo-go" id="pomoBtnPause">暂停</button>') +
+        '<button class="btn-ghost pomo-sub" id="pomoBtnGiveUp">放弃</button>';
+    } else {
+      ctrl = (a.pausedAt
+        ? '<button class="btn-primary pomo-go" id="pomoBtnResume">继续休息</button>'
+        : '<button class="btn-primary pomo-go" id="pomoBtnPause">暂停</button>') +
+        '<button class="btn-ghost pomo-sub" id="pomoBtnSkip">跳过休息</button>';
+    }
+    $("pomoCtrl").innerHTML = ctrl;
+    var bp = $("pomoBtnPause"); if (bp) bp.onclick = pomoPause;
+    var br = $("pomoBtnResume"); if (br) br.onclick = pomoResume;
+    var bg = $("pomoBtnGiveUp"); if (bg) bg.onclick = pomoGiveUp;
+    var bs = $("pomoBtnSkip"); if (bs) bs.onclick = pomoSkip;
+    pomoRenderTime();
+  } else {
+    POMO_UI.total = st.work * 60000;
+    $("pomoPhaseLb").textContent = "准备专注";
+    $("pomoClock").textContent = pad2(st.work) + ":00";
+    $("pomoSub2").textContent = "完成后" + (st.longEvery === 1 ? "进入长休" : "小憩 " + st.short + " · 每 " + st.longEvery + " 轮长休 " + st.long);
+    $("pomoTask").innerHTML = bindTxt;
+    $("pomoCtrl").innerHTML =
+      '<button class="btn-primary pomo-go" id="pomoBtnStart"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>开始专注</button>' +
+      '<button class="btn-ghost pomo-sub" id="pomoBtnBreak">先休息一会</button>';
+    $("pomoBtnStart").onclick = function () { pomoStart("work"); };
+    $("pomoBtnBreak").onclick = function () { pomoStart("short"); };
+    var c = 2 * Math.PI * 95;
+    $("pomoRing").style.strokeDasharray = c;
+    $("pomoRing").style.strokeDashoffset = 0;
+  }
+  var pt = $("pomoTask");
+  if (pt) pt.onclick = function () {
+    openPomoTaskPick(!!(S.pomoActive && S.pomoActive.phase === "work"));
+  };
+
+  /* 今日统计格 */
+  $("pomoCells").innerHTML =
+    '<div class="stat-cell warm"><div class="sc-n">' + ps.todayN + '</div><div class="sc-lb">今日番茄</div></div>' +
+    '<div class="stat-cell brand"><div class="sc-n">' + ps.todayMins + '</div><div class="sc-lb">今日专注分钟</div></div>' +
+    '<div class="stat-cell cool"><div class="sc-n">' + ps.totalN + '</div><div class="sc-lb">累计番茄</div></div>' +
+    '<div class="stat-cell hot"><div class="sc-n">' + ps.streak + '</div><div class="sc-lb">连续打卡天</div></div>';
+
+  renderPomoHist();
+  var dot = $("pomoDot");
+  if (dot) dot.classList.toggle("hidden", !(S.pomoActive && !S.pomoActive.pausedAt));
+}
+
+function pomoRenderTime() {
+  var a = S.pomoActive;
+  if (!a) return;
+  var now = a.pausedAt || Date.now();
+  var left = a.end - now;
+  if (left < 0) left = 0;
+  $("pomoClock").textContent = pomoFmtMs(left);
+  var c = 2 * Math.PI * 95;
+  var total = Math.max(60000, POMO_UI.total || (a.end - a.start));
+  var pct = Math.max(0, Math.min(1, left / total));
+  var ring = $("pomoRing");
+  if (ring) {
+    ring.style.strokeDasharray = c;
+    ring.style.strokeDashoffset = String(c * (1 - pct));
+  }
+}
+
+/* 今日专注记录 */
+function renderPomoHist() {
+  var today = todayIso();
+  var runs = S.pomos.filter(function (r) { return !r.del && r.date === today; })
+    .sort(function (a, b) { return b.start - a.start; });
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+    '<span style="font-size:13px;font-weight:700">今日专注记录</span>' +
+    '<span style="font-size:11px;color:var(--t3)">' + (runs.length ? runs.length + " 条" : "暂无记录") + "</span></div>";
+  if (!runs.length) {
+    html += '<div style="font-size:12px;color:var(--t3);text-align:center;padding:10px 0 4px">完成第一个番茄后，这里会显示每段专注的开始时间与时长</div>';
+  } else {
+    html += runs.slice(0, 12).map(function (r) {
+      var s = new Date(r.start), e = new Date(r.end);
+      var when = pad2(s.getHours()) + ":" + pad2(s.getMinutes()) + " – " + pad2(e.getHours()) + ":" + pad2(e.getMinutes());
+      return '<div class="pomo-run">' +
+        '<span class="pr-ic ' + (r.ok ? "" : "bad") + '">' + (r.type === "work" ? "🍅" : "🌿") + "</span>" +
+        '<span class="pr-main"><span class="pr-txt">' + (r.type === "work" ? esc(r.label || "自由专注") : POMO_PHASE[r.type]) + "</span>" +
+        '<span class="pr-meta">' + when + " · " + r.mins + " 分钟" + (r.ok ? "" : " · 中断") + "</span></span>" +
+        "</div>";
+    }).join("");
+  }
+  $("pomoHist").innerHTML = html;
+}
+
+/* ---------- 任务关联（选择待办） ---------- */
+function openPomoTaskPick(midRun) {
+  var open = liveTodos().filter(function (t) { return !t.done; });
+  var html = '<div class="sheet-actions">';
+  html += '<button class="sa-item" data-pid="">' +
+    '<span class="sa-ic soft"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 13.5"/></svg></span>' +
+    '<span class="sa-main"><span class="sa-t">自由专注</span><span class="sa-s">不关联任务，专心做好眼前的事</span></span></button>';
+  open.slice(0, 30).forEach(function (t) {
+    var tag = (t.pomo ? "已专注 " + t.pomo + " 个番茄 · " : "") + (t.due ? "截止 " + fmtMD(t.due) : "无日期");
+    html += '<button class="sa-item" data-pid="' + esc(t.id) + '">' +
+      '<span class="sa-ic grad"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0-3.2 11.07V17a2 2 0 0 0 2 2h2.4a2 2 0 0 0 2-2v-1.93A6 6 0 0 0 12 3z"/><path d="M10 22h4"/></svg></span>' +
+      '<span class="sa-main"><span class="sa-t" style="white-space:normal;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">' + esc(t.text) + "</span>" +
+      '<span class="sa-s">' + tag + "</span></span></button>";
+  });
+  html += "</div>";
+  openSheet(midRun ? "切换专注任务" : "选择专注任务", html, "", null, { noFoot: true });
+  var btns = document.querySelectorAll("#formBody [data-pid]");
+  for (var i = 0; i < btns.length; i++) {
+    (function (b) {
+      b.onclick = function () {
+        var id = b.getAttribute("data-pid") || "";
+        S.pomoBind = { label: "", todoId: id };
+        closeSheet();
+        persist();
+        if (!S.pomoActive) pomoStart("work", { todoId: id });
+        else {
+          renderPomo();
+          toast(id ? "已关联任务，将在下一轮专注生效" : "已切换为自由专注");
+        }
+      };
+    })(btns[i]);
+  }
+  if (!open.length) {
+    var tip = document.createElement("div");
+    tip.className = "f-hint";
+    tip.style.textAlign = "center";
+    tip.textContent = "还没有未完成的待办，可直接开始自由专注";
+    $("formBody").appendChild(tip);
+  }
+}
+
+/* ---------- 番茄设置 ---------- */
+function openPomoSet() {
+  var st = S.pomoSet;
+  function numRow(id, label, val, lo, hi, unit) {
+    return '<div class="f-item"><label>' + label + '</label>' +
+      '<div style="display:flex;align-items:center;gap:6px">' +
+      '<input type="number" id="' + id + '" min="' + lo + '" max="' + hi + '" value="' + val + '" style="flex:1;background:var(--input);border:1px solid var(--line);border-radius:11px;padding:10px 12px;color:var(--t1);font-size:15px;font-weight:700;outline:none;text-align:center">' +
+      '<span style="font-size:11.5px;color:var(--t3)">' + unit + "</span></div></div>";
+  }
+  function chk(id, label, on) {
+    return '<div class="f-item full"><label style="display:flex;align-items:center;gap:9px;cursor:pointer">' +
+      '<input type="checkbox" id="' + id + '" style="width:15px;height:15px;accent-color:var(--brand)" ' + (on ? "checked" : "") + ">" + label + "</label></div>";
+  }
+  var noiseChips = "";
+  Object.keys(POMO_NOISES).forEach(function (k) {
+    noiseChips += '<button type="button" data-pns="' + k + '" style="padding:7px 12px;border-radius:9px;font-size:12px;font-weight:600;' +
+      (k === st.noise ? "background:var(--brand-soft);color:var(--brand-txt);border:1px solid var(--brand-line)" : "background:var(--card-2);color:var(--t3);border:1px solid transparent") + '">' + POMO_NOISES[k] + "</button>";
+  });
+  var html = '<div class="f-grid" style="margin-bottom:10px">' +
+    numRow("psWork", "专注时长", st.work, 5, 180, "分钟") +
+    numRow("psShort", "小憩时长", st.short, 1, 60, "分钟") +
+    numRow("psLong", "长休时长", st.long, 5, 90, "分钟") +
+    numRow("psEvery", "长休间隔", st.longEvery, 2, 8, "个番茄") +
+    "</div>" +
+    '<div class="f-item full" style="margin-bottom:10px"><label>专注白噪音（帮助进入状态）</label>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:6px">' + noiseChips + "</div>" +
+    '<div class="f-hint" style="margin-top:6px">雨声 / 林风 / 咖啡馆 / 篝火为程序实时合成，仅在专注期间播放</div></div>' +
+    '<div class="f-grid" style="align-items:center">' +
+    chk("psAuto", "到点自动开始下一段", st.auto) +
+    chk("psKeep", "专注时保持屏幕常亮", st.keep) +
+    chk("psNotify", "结束时系统通知提醒", st.notify) +
+    chk("psStrict", "强力专注（放弃需二次确认）", st.strict) +
+    "</div>" +
+    (S.pomoActive ? '<div class="f-hint" style="margin-top:10px">时长修改将在下一段开始时生效</div>' : "");
+  openSheet("番茄设置", html, "保存", function () {
+    var nsEl = document.querySelector("#formBody [data-pns][data-cur='1']");
+    S.pomoSet = ensurePomoSet({
+      work: parseInt($("psWork").value, 10),
+      short: parseInt($("psShort").value, 10),
+      long: parseInt($("psLong").value, 10),
+      longEvery: parseInt($("psEvery").value, 10),
+      auto: $("psAuto").checked,
+      keep: $("psKeep").checked,
+      notify: $("psNotify").checked,
+      strict: $("psStrict").checked,
+      noise: nsEl ? nsEl.getAttribute("data-pns") : st.noise,
+      noiseOn: st.noiseOn
+    });
+    persist();
+    renderPomo();
+    toast("番茄设置已保存");
+    return true;
+  });
+  var chips = document.querySelectorAll("#formBody [data-pns]");
+  for (var i = 0; i < chips.length; i++) {
+    chips[i].setAttribute("data-cur", chips[i].getAttribute("data-pns") === st.noise ? "1" : "0");
+    chips[i].onclick = function () {
+      for (var j = 0; j < chips.length; j++) chips[j].setAttribute("data-cur", "0");
+      this.setAttribute("data-cur", "1");
+    };
+  }
+}
+
+/* ---------- 番茄页事件 ---------- */
+function bindPomoEvents() {
+  $("btnPomoSet").onclick = openPomoSet;
+}
+
+/* 待办页「开始专注」入口：绑定任务并跳转 */
+function pomoJumpTodo(id) {
+  S.pomoBind = { label: "", todoId: id };
+  switchTab("pomo");
+  if (!S.pomoActive) pomoStart("work", { todoId: id });
+  else {
+    persist();
+    renderPomo();
+    toast("专注进行中，已切换关联任务（下一轮生效）");
+  }
+}
+</script>
+<script>
+"use strict";
+/* =========================================================================
  * 倒计时 v4 —— 统计汇总视图
  * ========================================================================= */
 
@@ -4344,6 +5008,7 @@ function renderStats() {
   var week = addDays(today, 7);
   var evWeek = 0;
   for (var i = 0; i < 7; i++) evWeek += eventsOn(addDays(today, i)).length;
+  var ps = (typeof pomoStatsCalc === "function") ? pomoStatsCalc() : { todayN: 0, todayMins: 0, totalN: 0, totalMins: 0, streak: 0 };
 
   var near = recs.filter(function (r) { var l = daysLeft(r.deadline); return l !== null && l >= 0 && l <= 10; }).length;
   var recOver = recs.filter(function (r) { var l = daysLeft(r.deadline); return l !== null && l < 0; }).length;
@@ -4370,6 +5035,11 @@ function renderStats() {
     '<div class="stat-cell cool"><div class="sc-n">' + evWeek + '</div><div class="sc-lb">未来 7 天日程</div></div>' +
     '<div class="stat-cell brand"><div class="sc-n">' + events.length + '</div><div class="sc-lb">日历日程总数</div></div>' +
     '<div class="stat-cell cool"><div class="sc-n">' + alarmsOn.length + '</div><div class="sc-lb">启用闹钟</div></div>' +
+    '<div class="stat-cell warm"><div class="sc-n">🍅 ' + ps.todayN + '</div><div class="sc-lb">今日专注番茄</div></div>' +
+    '<div class="stat-cell brand"><div class="sc-n">' + ps.todayMins + '</div><div class="sc-lb">今日专注分钟</div></div>' +
+    '<div class="stat-cell cool"><div class="sc-n">' + ps.totalN + '</div><div class="sc-lb">累计番茄数</div></div>' +
+    '<div class="stat-cell hot"><div class="sc-n">' + ps.totalMins + '</div><div class="sc-lb">累计专注分钟</div></div>' +
+    '<div class="stat-cell brand"><div class="sc-n">' + ps.streak + '</div><div class="sc-lb">连续打卡天数</div></div>' +
     "</div>";
 
   /* 近 7 天完成柱状图 */
@@ -4389,6 +5059,30 @@ function renderStats() {
       '<span class="bar-v">' + dc.n + "</span></div>";
   });
   html += '<div class="card pad" style="margin-bottom:11px"><div style="font-size:13px;font-weight:700;margin-bottom:12px">近 7 天完成待办</div>' + bars + "</div>";
+
+  /* 近 7 天番茄专注柱状图 */
+  if (typeof pomoWorks === "function") {
+    var pworks = pomoWorks();
+    var pMax = 1;
+    var pDays = [];
+    for (var pd = 6; pd >= 0; pd--) {
+      var pIso = addDays(today, -pd);
+      var pn = pworks.filter(function (r) { return r.date === pIso; }).length;
+      var pm = 0;
+      pworks.forEach(function (r) { if (r.date === pIso) pm += r.mins; });
+      pDays.push({ iso: pIso, n: pn, m: pm });
+      if (pn > pMax) pMax = pn;
+    }
+    var pBars = "";
+    pDays.forEach(function (dc) {
+      var h2 = Math.round(dc.n / pMax * 100);
+      pBars += '<div class="bar-row"><span class="bar-lb">' + (dc.iso === today ? "今天" : fmtWeek(dc.iso)) + '</span>' +
+        '<div class="bar-track"><div class="bar-fill" style="width:' + (dc.n ? Math.max(h2, 8) : 0) + '%"></div></div>' +
+        '<span class="bar-v">' + dc.n + "</span></div>";
+    });
+    html += '<div class="card pad" style="margin-bottom:11px"><div style="font-size:13px;font-weight:700;margin-bottom:4px">近 7 天番茄专注</div>' +
+      '<div style="font-size:11px;color:var(--t3);margin-bottom:9px">今日 ' + ps.todayN + " 个番茄 · " + ps.todayMins + " 分钟 · 连续打卡 " + ps.streak + " 天</div>" + pBars + "</div>";
+  }
 
   /* 倒计时子待办进度 */
   var recSubs = recs.filter(function (r) { return (r.subtasks || []).length; });
@@ -4457,13 +5151,14 @@ function syncSnapshot() {
     records: S.records, todos: S.todos,
     events: S.events, alarms: S.alarms,
     snoozes: S.snoozes,
+    pomos: S.pomos,
     savedAt: nowIso()
   });
 }
 
 /* 按类型逐项合并（LWW：u 时间戳大者胜；远端为 v3 时仅含 records/todos） */
 function mergeRemote(remote) {
-  var stat = { evAdd: 0, evUp: 0, tdAdd: 0, tdUp: 0, calAdd: 0, calUp: 0, alAdd: 0, alUp: 0, prof: false };
+  var stat = { evAdd: 0, evUp: 0, tdAdd: 0, tdUp: 0, calAdd: 0, calUp: 0, alAdd: 0, alUp: 0, pmAdd: 0, pmUp: 0, prof: false };
   if (!remote) return stat;
   if (remote.v === 3) {
     /* v3 快照：只有 records / todos / profile */
@@ -4506,6 +5201,10 @@ function mergeRemote(remote) {
   if (remote.v === 4) {
     mergeList("events", ensureEvent, { add: "calAdd", up: "calUp" });
     mergeList("alarms", ensureAlarm, { add: "alAdd", up: "alUp" });
+    if (typeof ensurePomoRun === "function") {
+      mergeList("pomos", ensurePomoRun, { add: "pmAdd", up: "pmUp" });
+      if (S.pomos.length > 600) S.pomos = S.pomos.slice(-600);
+    }
     if (Object.prototype.toString.call(remote.snoozes) === "[object Array]") {
       var future = remote.snoozes.filter(function (z) { return z && z.at > Date.now(); });
       var mine = S.snoozes.filter(function (z) { return z && z.at > Date.now(); });
@@ -4541,11 +5240,12 @@ function syncNow(silent) {
       if (res && res.ok && res.found && res.data) {
         try { stat = mergeRemote(JSON.parse(res.data)); } catch (e) { /* 快照损坏按空处理 */ }
       } else if (res && res.ok && !res.found) {
-        stat = { evAdd: 0, evUp: 0, tdAdd: 0, tdUp: 0, calAdd: 0, calUp: 0, alAdd: 0, alUp: 0, prof: false };
+        stat = { evAdd: 0, evUp: 0, tdAdd: 0, tdUp: 0, calAdd: 0, calUp: 0, alAdd: 0, alUp: 0, pmAdd: 0, pmUp: 0, prof: false };
       }
       if (stat) {
         purgeTombstones();
         renderHome(); renderTodos(); renderStats(); renderCal(); renderAlarms(); renderTodoBadge();
+        if (typeof renderPomo === "function") renderPomo();
         if (stat.prof && typeof fillProfileForm === "function") fillProfileForm();
       }
       return fetchJson(serverBase() + "/api/sync", {
@@ -4568,6 +5268,7 @@ function syncNow(silent) {
             if (stat.tdUp) parts.push("待办更新 " + stat.tdUp);
             if (stat.calAdd) parts.push("日历 +" + stat.calAdd);
             if (stat.alAdd) parts.push("闹钟 +" + stat.alAdd);
+            if (stat.pmAdd) parts.push("番茄记录 +" + stat.pmAdd);
             if (stat.prof) parts.push("资料已更新");
             if (parts.length) msg += "：" + parts.join("，");
           }
@@ -5573,6 +6274,7 @@ function bindGlobalEvents() {
   bindTodoBar();
   bindStatsEvents();
   bindParseEvents();
+  if (typeof bindPomoEvents === "function") bindPomoEvents();
   /* 隐藏的导入文件选择 */
   var fi = document.createElement("input");
   fi.type = "file";
@@ -5615,6 +6317,7 @@ function init() {
   renderAlarms();
   renderTodos();
   renderMe();
+  if (typeof renderPomo === "function") renderPomo();
   clockStart();
   startSyncPeriodic();
   checkUpdate(false);
